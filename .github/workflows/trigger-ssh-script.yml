@@ -22,4 +22,4 @@ jobs:
         script: |
           #!/bin/bash
           # Remplacez par le chemin vers votre script ou commande spécifique
-          /scripts/test.sh
+          /scripts/update_commus.sh
