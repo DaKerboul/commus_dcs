@@ -17,5 +17,5 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         script: |
           echo "Running SSH script..."
-          /scripts/update_commus.sh > /dev/null 2>&1
+          /scripts/update_commus.sh
 
