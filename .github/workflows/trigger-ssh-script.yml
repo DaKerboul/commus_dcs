@@ -30,6 +30,26 @@ jobs:
       - name: Build documentation
         run: npm run docs:build
 
+      - name: Nettoyage Fichiers Temporaires
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            echo "Running SSH script..."
+            /scripts/update_commus_temp.sh
+
+      - name: Copy dist folder using scp
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          scp -o StrictHostKeyChecking=no -r ./docs/.vitepress/dist/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/kerboul/sites/CommusDCS_temp/
+          rm -f ~/.ssh/id_rsa
+
       - name: Execute SSH command
         uses: appleboy/ssh-action@master
         with:
@@ -39,13 +59,3 @@ jobs:
           script: |
             echo "Running SSH script..."
             /scripts/update_commus.sh
-
-      - name: Copy dist folder using scp
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
-        run: |
-          mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          scp -o StrictHostKeyChecking=no -r ./docs/.vitepress/dist/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/kerboul/sites/CommusDCS_official/
-          rm -f ~/.ssh/id_rsa
