@@ -30,6 +30,10 @@ Voici le lien :
 
 Libre à vous de choisir la plateforme que vous préférez, les deux sont synchronisées.
 
+### Si vous n'êtes pas à l'aise avec GitHub :
+
+Si vous n'êtes pas à l'aise avec GitHub, vous pouvez simplement envoyer un message sur discord à ```kerboul```, et il se chargera de mettre à jour le site pour vous.
+
 ## Comment fonctionne le site ?
 
 Le site est hébergé sur les serveurs du Kerboulistan, et est mis à jour automatiquement à chaque modification de fichier.
