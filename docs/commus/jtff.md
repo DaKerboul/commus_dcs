@@ -7,14 +7,14 @@ title: JTFF
 
 [Accéder au site](https://jtff.fr/SITE/)
 
-[Accéder au Discord](https://discord.com/invite/jg9zrrr)
+[Accéder au Discord](https://discord.gg/2dzfwvNWby)
 
 ---
-<img src="/commus_img/jtff.png" alt="drawing" width="200" style="display: block; margin-left: auto; margin-right: auto;"/>
+<img src="commus_img/jtff.png" alt="drawing" width="200" style="display: block; margin-left: auto; margin-right: auto;"/>
 
 ## Présentation du groupe
 
-Le Joint Task Force Francophone est un rassemblement de Squadrons, chacun étant spécifiquement dédié à un appareil ; F/A 18C, F-16 Bck 50, Mirage 2000-C, A-10C, F14B.
+Le Joint Task Force Francophone est un rassemblement de Squadrons, chacun étant spécifiquement dédié à un appareil ; F/A 18C, F-16 Bck 50, Mirage 2000-C, Mirages F1, F-15 E, F14 A & B.
 
 L'ambition et le but de cette escadrille, est de créer un rassemblement de pilotes, confirmés, mais en vue d'un aspect opérationnel complètement Mil-sim, et j'insiste sur ce dernier mot. Rigueur, procédures, stratégies, contraintes spatiotemporelles & logistiques accrues, tels seront les facteurs principaux des missions inter-escadrons.
 
@@ -24,23 +24,23 @@ Nous avons aujourd’hui, 6 escadrons ouverts, listés par appareil ;
 
 - **79TH FS « Tigers »** évoluant sur F-16 Bck. 50.
 
-- **354TH FS « Bulldogs »** évoluant sur A-10C.
+- **494TH FS « Panther »** évoluant sur F-15E.
 
 - **E.C. 2/5 « Ile de France»** évoluant sur Mirage 2000-C
 
-Ainsi qu’une **Carrier Air Wing**, regroupant toute l’aéronavale du JTFF, disposée de la sorte ;
+- **E.R. 2/33 « Savoie »** évoluant sur Mirage F1
 
-- **VMFA 314 « Black Knights »** évoluant sur F/A-18C Hornet.
+Ainsi qu’une **Carrier Air Wing**, regroupant toute l’aéronavale du JTFF, disposée de la sorte ;
 
 - **VF84 « Jolly Rogers »** évoluant sur F-14B Tomcat.
 
-- **VFA 131 « Wildcats »** évoluant sur F/A-18C Hornet.
+- **VMFA 314 « Black Knights »** évoluant sur F/A-18C Hornet.
 
 En cas de projet ou de proposition pour un escadron pas encore représenté à la JTFF, n’hésitez pas à rejoindre notre discord et à prendre contact avec Marco ou Zanck pour en discuter.
 
 Vous retrouverez, tous les détails relatifs à chacun dans l’onglet « Nos Escadrilles » sur le [site officiel](https://jtff.fr/SITE/).
 
-<img src="https://jtff.fr/SITE/wp-content/uploads/2021/04/34-768x374.jpg" alt="drawing" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
+<img src="https://jtff.fr/SITE/wp-content/uploads/2020/10/Screen_201029_221026-2000x1098.jpg" alt="drawing" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
 
 ## Informations Complémentaires
 
@@ -48,7 +48,7 @@ Je vais néanmoins, vous donner un complément d’informations, sur les bases d
 
 - Premier point, il n’y a aucune, formation sur l’appareil choisi. Si vous voulez nous rejoindre, vous devez disposer d’une maitrise confirmée de votre appareil, et d’une expérience solide en Multijoueur.
 - Utilisation d’un Serveur Dédié. Templates de missions complexes sur chaque théâtre.
-- Events spécifiques, par exemple, le Red Flag 2020 qui se déroule actuellement.
+- Events spécifiques, par exemple, le Red Flag, des exercices Poker, Des campagnes scénarisées et immersives en multijoueurs.
 - Utilisation de SimpleRadio sur chaque entrainement.
 - Documentation fournie.
 - Planning hebdomadaire en ligne pour prévoir les disponibilités.
@@ -58,8 +58,8 @@ Si vous êtes maitre de votre appareil, et que vous souhaitez aller plus loin da
 
 ## Quelques images
 
-<img src="https://media.discordapp.net/attachments/745235136358121582/745249358995259442/DCS_2020-08-07_01-59-20.png?ex=666e29cd&is=666cd84d&hm=59c9d4b537ddbc1291e2a7a286d3ce58af5a34e11237a4983492a3801922fa22&=&format=webp&quality=lossless&width=1440&height=423" alt="drawing" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
+<img src="https://cdn.discordapp.com/attachments/1076988498936078366/1231596879607763094/Digital_Combat_Simulator_Black_Shark_Screenshot_2024.04.18_-_21.00.21.99.png?ex=666ee7fa&is=666d967a&hm=c91bd30e916fbeca61121834b3d184879fa4af7aa4f5def7bb430dca1cda0b53&" alt="drawing" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
 
-<img src="https://media.discordapp.net/attachments/745235136358121582/745250603202117642/DCS_2020-08-12_01-51-48.png?ex=666e2af5&is=666cd975&hm=877baa40706ebd1ef79e1ebf8d26370c265314d8ee8156e0fbeb097b31996602&=&format=webp&quality=lossless&width=1440&height=462" alt="drawing" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
+<img src="https://cdn.discordapp.com/attachments/1076988498936078366/1231596543728025756/Digital_Combat_Simulator_Black_Shark_Screenshot_2024.04.18_-_20.53.57.77.png?ex=666ee7a9&is=666d9629&hm=985141b522ff33963f00e4cf2e567437113d761b33508fae331f8990ea2e86a9&" alt="drawing" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
 
-<img src="https://media.discordapp.net/attachments/745235136358121582/745253926470811818/DCS_2020-08-05_17-11-04.png?ex=666e2e0e&is=666cdc8e&hm=24b297af5617ca26808ed4b2da6b3a1d7372377557b757925738d73f567c7859&=&format=webp&quality=lossless&width=1440&height=460" alt="drawing" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
+<img src="https://cdn.discordapp.com/attachments/649537828627283979/1250553158594330704/Digital_Combat_Simulator_Black_Shark_Screenshot_2024.06.12_-_21.42.51.95.png?ex=666ea7a3&is=666d5623&hm=3e4846edac73768707c0043e430f433fc256d91b119fa5369a540693e3117da3&" alt="drawing" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
