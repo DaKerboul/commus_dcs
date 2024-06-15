@@ -20,13 +20,13 @@ La NOeZ est un groupe francophone dédié au MILSIM Lite, multimodule, ayant pou
 - **Taille** : Moyenne Taille (+30 pilotes)
 - **Type** : Escadron Semi-Ouvert (partie publique + partie interne)
 - **Fondateur** : les Fondateur de la NOeZ (Lead)
-- **Contact Principal** : [VFA-87] Tiger / [VF-142 NOeZ] Igor.O / [157th FS] Justice / [204th TFS] Phenex / [RC 2/30] Fury / [391St ftr]Yirro
+- **Contact Principal** : [VFA-87] Tiger / [VF-142 NOeZ] Igor.O / [157th FS] Justice / [204th TFS] Phenex / [RC 2/30] Zemouton / [391St ftr]Yirro
 - **Recrutement** : Oui - Ouvert
 - **Lien Principal** : [Instagram](https://instagram.com/dcs_world_noescapezone?igshid=bpl8wo0yjjt8), [Discord](https://discord.gg/5Eqw2yg7vd)
 - **Période Historique** :
   - Cold War - Late (1970-1980s)
-  - Début Moderne (2000s)
   - Gulf War (1990s)
+  - Début Moderne (2000s)
   - Post Moderne (2010s et +)
 
 - **Liste détaillée des Modules** : Tous les Modules Avions, Tous les Modules Hélicoptères
@@ -48,6 +48,7 @@ La NOeZ est un groupe francophone dédié au MILSIM Lite, multimodule, ayant pou
 
 - **Conditions d'Entrée** : Connaître son module de manière minimale à moyenne, et être disponible à moyen et long terme.
 
-- **Recherché par la Commu** : F-14, F-15C, F-15E, F-16C, F-4E, Mirage F1
+- **Recherché par la Commu** : F-14, F-15C, F-16C, F-4E, Mirage F1
 
 - **Liens Annexes** : (N/A)
+<img src="/![Screen_221231_140540](https://github.com/DaKerboul/commus_dcs/assets/172898271/c8cbf1e9-77c6-428b-97ec-5a41054ac8cb)" alt="drawing" width="200" style="display: block; margin-left: auto; margin-right: auto;"/>
