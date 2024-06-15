@@ -19,5 +19,5 @@ jobs:
     - name: Launch site update
       run: |
         echo "Lancement du rendu du site..."
-        ssh -i ~/ssh_key -o StrictHostKeyChecking=no ${{ secrets.SSH_HOST }} '/scripts/test.sh'
+        ssh -i ~/ssh_key ${{ secrets.SSH_HOST }} '/scripts/test.sh'
         echo "Site mis à jour."
