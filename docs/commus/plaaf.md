@@ -1,9 +1,9 @@
 ---
 layout: doc
-title: PLAAF | People's Liberation Army Air Force
+title: BOLT | Battlefield Operations Liaison Team
 ---
 
-# PLAAF | People's Liberation Army Air Force
+# BOLT | Battlefield Operations Liaison Team
 
 [Accéder au Discord](https://discord.gg/RxXz3FF4)
 
@@ -12,8 +12,7 @@ title: PLAAF | People's Liberation Army Air Force
 
 ## Présentation du groupe
 
-La PLAAF, acronyme de People's Liberation Army Air Force, est un escadron de chasse spécialisé dans l'utilisation des appareils suivants : le JF-17, le J-11A, le SU-27, le J-15 (SU-33), le MIG-21 Bis, le MIG-19, le MIG-15, le KA-50 II et III. L'objectif de cet escadron est de rendre plus complexes les opérations des autres escadrons. Ainsi, de nombreuses missions de cet escadron seront orientées en mode PVP (joueur contre joueur).
-
+La BOLT, pour Battlefield Operations Liaison Team, est un escadron créé dans un contexte PVP.
 ## Informations Complémentaires
 
 - **Nom du Groupe** : PLAAF People's Liberation Army Air Force
