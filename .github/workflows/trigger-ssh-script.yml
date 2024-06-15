@@ -20,6 +20,12 @@ jobs:
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_KEY }}
         script: |
-          #!/bin/bash
-          # Remplacez par le chemin vers votre script ou commande spécifique
-          /scripts/update_commus.sh
+          echo "Lancement du Script"
+          cd /home/kerboul/sites/CommusDCS/
+          echo "Arrivée dans le dossier CommusDCS"
+          git fetch
+          echo "fetch done"
+          git pull --force
+          echo "pull done"
+          npm run docs:build
+          echo "Fin du Script"

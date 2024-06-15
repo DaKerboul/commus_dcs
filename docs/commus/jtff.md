@@ -10,7 +10,7 @@ title: JTFF
 [Accéder au Discord](https://discord.gg/2dzfwvNWby)
 
 ---
-<img src="commus_img/jtff.png" alt="drawing" width="200" style="display: block; margin-left: auto; margin-right: auto;"/>
+<img src="/commus_img/jtff.png" alt="drawing" width="200" style="display: block; margin-left: auto; margin-right: auto;"/>
 
 ## Présentation du groupe
 
@@ -58,8 +58,8 @@ Si vous êtes maitre de votre appareil, et que vous souhaitez aller plus loin da
 
 ## Quelques images
 
-<img src="https://cdn.discordapp.com/attachments/1076988498936078366/1231596879607763094/Digital_Combat_Simulator_Black_Shark_Screenshot_2024.04.18_-_21.00.21.99.png?ex=666ee7fa&is=666d967a&hm=c91bd30e916fbeca61121834b3d184879fa4af7aa4f5def7bb430dca1cda0b53&" alt="drawing" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
+<img src="/commus_img/jtff/jtff1.png" alt="drawing" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
 
-<img src="https://cdn.discordapp.com/attachments/1076988498936078366/1231596543728025756/Digital_Combat_Simulator_Black_Shark_Screenshot_2024.04.18_-_20.53.57.77.png?ex=666ee7a9&is=666d9629&hm=985141b522ff33963f00e4cf2e567437113d761b33508fae331f8990ea2e86a9&" alt="drawing" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
+<img src="/commus_img/jtff/jtff2.png" alt="drawing" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
 
-<img src="https://cdn.discordapp.com/attachments/649537828627283979/1250553158594330704/Digital_Combat_Simulator_Black_Shark_Screenshot_2024.06.12_-_21.42.51.95.png?ex=666ea7a3&is=666d5623&hm=3e4846edac73768707c0043e430f433fc256d91b119fa5369a540693e3117da3&" alt="drawing" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
+<img src="/commus_img/jtff/jtff3.png" alt="drawing" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
