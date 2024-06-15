@@ -22,7 +22,7 @@ La NOeZ est un groupe francophone dédié au MILSIM Lite, multimodule, ayant pou
 - **Fondateur** : les Fondateur de la NOeZ (Lead)
 - **Contact Principal** : [VFA-87] Tiger / [VF-142 NOeZ] Igor.O / [157th FS] Justice / [204th TFS] Phenex / [RC 2/30] Fury / [391St ftr]Yirro
 - **Recrutement** : Oui - Ouvert
-- **Lien Principal** : [Instagram](https://instagram.com/dcs_world_noescapezone?igshid=bpl8wo0yjjt8)
+- **Lien Principal** : [Instagram](https://instagram.com/dcs_world_noescapezone?igshid=bpl8wo0yjjt8), [Discord](https://discord.gg/5Eqw2yg7vd)
 - **Période Historique** :
   - Cold War - Late (1970-1980s)
   - Début Moderne (2000s)
