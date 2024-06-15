@@ -21,8 +21,8 @@ La Cirrus Flight est un escadron français composé de 5 escadrilles participant
 - **Nom du Groupe** : Cirrus Flight
 - **Taille** : Moyenne Taille (+30 pilotes)
 - **Type** : Escadron Semi-Ouvert
-- **Fondateur** : Sim, Erepma, Azery (Lead)
-- **Contact Principal** : `Cirrus 1-1 Sim__` sur Discord, présent sur le discord du Kerboulistan, sur BFR, Couteau, Growling, Asta...
+- **Fondateur** : Sim, Erepma, Azery
+- **Contact Principal** : `Cirrus 1-1 Sim__` et `Cirrus 2-1 Erepma`sur Discord, présent sur le discord du Kerboulistan, sur BFR, Couteau, Growling, Asta...
 - **Recrutement** : Oui - Ouvert
 - **Lien Principal** : [Discord de la Cirrus](https://discord.gg/XF7kgadG7J)
 - **Période Historique** : Cold War - Late (1970-1980s), Début Moderne (2000s), Gulf War (1990s), Post Moderne (2010s et +)
