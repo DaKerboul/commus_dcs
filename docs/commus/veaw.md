@@ -25,16 +25,18 @@ La 4th Virtual Expeditionary Air Wing (VEAW4) est un regroupement d'escadrons de
 - **Lien Principal** : [Discord 4th VEAW](https://discord.com/invite/UXHPDtcEES)
 - **Période Historique** : Cold War - Late (1970-1980s), Gulf War (1990s)
 - **Liste détaillée des Modules** :
-  - A-4E, AJS-37, F-15E, F-16C, F-4E, F-5E, Mi-24, Mi-8, MiG-29, Mirage F1
+  - F-4E, F-16C, F-5E, Mi-24, Mi-8, MiG-29, Mirage F1
+    Ouvert à l'ouverture de nouveaux escadrons. 
 - **Fréquence des évènements** : Hebdomadaire (1 chaque semaine)
 - **Expériences Proposées** :
   - Communauté dédiée aux confirmés/pilotes aguerris
   - Formations à la Phraséo/Communication (SRS)
   - Missions MILSIM Lite
   - Présence d'AWACS Humains (Avec/Sans LotATC)
-  - Présence d'un Serveur Dédié à la demande
+  - Présence d'un Serveur Dédié
   - Rôle : ANTISHIP, CAS, SEAD, STRIKE
   - Événements Inter-Communautaires
+  - Nombreuses documentations fournies (réels et adaptées)
 
 - **Objectif du Groupe** :
   - Effectuer des missions et campagnes immersives historiquement inspirées
@@ -45,7 +47,7 @@ La 4th Virtual Expeditionary Air Wing (VEAW4) est un regroupement d'escadrons de
   - Capacité à voler en formation
   - Engagement à respecter les procédures et tactiques définies par le groupe
 
-- **Recherché par la Commu** : AJS-37, F-15E, F-5E, Mi-24, Mi-8
+- **Recherché par la Commu** : F-5E, Mi-24, Mi-8
 
 - **Liens Annexes** :
   - [Site Web 4th VEAW](https://veaw4.fr/)
