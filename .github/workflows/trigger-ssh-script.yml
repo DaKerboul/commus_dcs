@@ -24,11 +24,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build documentation
-        run: npm run docs:build
-
       - name: Install Vitepress
         run: npm add -D vitepress
+
+      - name: Build documentation
+        run: npm run docs:build
 
       - name: Execute SSH command
         uses: appleboy/ssh-action@master
