@@ -1,0 +1,25 @@
+name: Trigger SSH Script
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  run-ssh-script:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Execute SSH command
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          #!/bin/bash
+          # Remplacez par le chemin vers votre script ou commande spécifique
+          /path/to/your/script.sh
