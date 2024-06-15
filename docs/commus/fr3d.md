@@ -20,6 +20,10 @@ FR3D Studio est une communauté dédiée au développement de mods pour la simul
 
 Le mod est actuellement en cours de développement et n'est pas finalisé. Le téléchargement n'est pas disponible en permanence. 
 
+::: tip
+### Le mod est actuellement disponible au téléchargement sur le Discord de FR3D Studio.
+:::
+
 ### Installation
 
 Il est essentiel d'installer le mod avec OVGME pour pouvoir le désactiver avant les mises à jour de ED ou pour utiliser le FA-18C. 
