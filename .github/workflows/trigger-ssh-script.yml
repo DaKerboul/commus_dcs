@@ -8,6 +8,7 @@ on:
 jobs:
   run-ssh-script:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -17,6 +18,15 @@ jobs:
         with:
           node-version: '22.3.0'
 
+      - name: Check npm version
+        run: npm --version
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build documentation
+        run: npm run docs:build
+
       - name: Execute SSH command
         uses: appleboy/ssh-action@master
         with:
@@ -24,14 +34,9 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            echo "Lancement du Script"
-            cd /home/kerboul/sites/CommusDCS/
-            echo "Arrivée dans le dossier CommusDCS"
-            git fetch
-            echo "fetch done"
-            git pull --force
-            echo "pull done"
-            npm install
-            echo "npm install done"
-            npm run docs:build || true
-            echo "Fin du Script"
+            echo "Running SSH script..."
+            /scripts/update_commus.sh
+
+      - name: Copy dist folder using scp
+        run: |
+          scp -r ./docs/.vitepress/dist/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/kerboul/sites/CommusDCS/docs/.vitepress/dist/
