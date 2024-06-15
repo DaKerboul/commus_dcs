@@ -50,6 +50,7 @@ export default defineConfig({
           { text: 'RelaX', link: '/commus/relax' },
           { text: 'Sky Haven', link: '/commus/skyhaven' },
           { text: 'Split-Air', link: '/commus/splitair' },
+          { text: 'DCS Screenshots World', link: '/commus/screens'},
           { text: 'Swiss Alpine Fighters', link: '/commus/saf' },
           { text: 'Virtual Aerobatics Prestige', link: '/commus/vap' },
           { text: 'Virtual Belgian Air Force', link: '/commus/vbaf' },
