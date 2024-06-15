@@ -43,7 +43,7 @@ export default defineConfig({
           { text: 'Gameplan', link: '/commus/gameplan' },
           { text: 'Groupement de Chasse 22', link: '/commus/gc22' },
           { text: 'Joint Task Force Francophone', link: '/commus/jtff'},
-          { text: 'Kerboul', link: '/commus/kerboul' },
+          { text: 'Kerboulistan', link: '/commus/kerboul' },
           { text: 'Liaison 16', link: '/commus/l16' },
           { text: 'Leading Edge', link: '/commus/lde' },
           { text: 'No Escape Zone', link: '/commus/noez' },
