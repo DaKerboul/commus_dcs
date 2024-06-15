@@ -1,4 +1,4 @@
-name: Trigger SSH Script
+name: Publish Site
 
 on:
   push:
@@ -6,19 +6,21 @@ on:
       - main
 
 jobs:
-  run-ssh-script:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Execute SSH command
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USER }}
-        password: ${{ secrets.PASSWORD }}
-        script: |
-          #!/bin/bash
-          ls -al
+    - name: Set up SSH key
+      run: |
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/ssh_key
+        chmod 600 ~/ssh_key
+        echo "SSH validé, prêt à se connecter au serveur web."
+
+    - name: Launch site update
+      run: |
+        echo "Lancement du rendu du site..."
+        ssh -i ~/ssh_key -o StrictHostKeyChecking=no ${{ secrets.SSH_HOST }} '/scripts/test.sh'
+        echo "Site mis à jour."
