@@ -22,12 +22,11 @@ Il remplace l'ancien site [(Version Notion)](https://tinyurl.com/KerboulistanCom
 
 Ce site est basé sur un système de fichiers Markdown, qui permet à n'importe qui de proposer des modifications, ou d'ajouter une nouvelle communauté.
 
-Le site est hébergé sur GitHub et GitLab, et vous pouvez proposer des modifications en créant une "Pull Request" sur le dépôt GitHub ou GitLab.
+Le site est hébergé sur GitHub, et vous pouvez proposer des modifications en créant une "Pull Request" sur le dépôt GitHub.
 
-Voici les liens :
+Voici le lien :
 
 - [GitHub](https://github.com/DaKerboul/commus_dcs/)
-- [GitLab du Kerboulistan](https://gitlab.kerboul.me/kerboul_projets/dcs/commus_dcs)
 
 Libre à vous de choisir la plateforme que vous préférez, les deux sont synchronisées.
 
