@@ -18,8 +18,7 @@ jobs:
       with:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USER }}
-        key: ${{ secrets.SSH_KEY }}
+        password: ${{ secrets.PASSWORD }}
         script: |
           #!/bin/bash
-          # Remplacez par le chemin vers votre script ou commande spécifique
-          /path/to/your/script.sh
+          ls -al
