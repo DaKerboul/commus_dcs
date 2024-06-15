@@ -27,7 +27,7 @@ Créée en juin 2004, l'Escadre de Chasse Virtuelle 3rd Wing est un regroupement
 - **Contact Principal** : Forum ([http://www.3rd-wing.net](http://www.3rd-wing.net))
 - **Recrutement** : Oui - Ouvert
 - **Lien Principal** : [http://www.3rd-wing.net](http://www.3rd-wing.net)
-- **Période Historique** : Début Moderne (2000s), Gulf War (1990s), Post Moderne (2010s et +)
+- **Période Historique** : Gulf War (1990s), Début Moderne (2000s), Post Moderne (2010s et +)
 - **Liste détaillée des Modules** : A-10C, AV-8B, Combined Arms, F-14, F-15E, F-16C, F/A-18C, M2000-C
 - **Fréquence des évènements** : Très fréquent (+ d'1 par semaine)
 - **Expériences Proposées** :
@@ -36,15 +36,10 @@ Créée en juin 2004, l'Escadre de Chasse Virtuelle 3rd Wing est un regroupement
   - Missions MILSIM Lite
   - Présence d'AWACS Humains (Avec/Sans LotATC)
   - Présence d'un Serveur Dédié à la demande
-  - Rôle: ANTISHIP
-  - Rôle: CAP
-  - Rôle: CAS
-  - Rôle: SEAD
-  - Rôle: STRIKE
 - **Conditions d'Entrée** :
   - Maîtriser l'atterrissage et le décollage
   - Savoir un minimum voler en formation
   - Bien connaître son avion, ses instruments
   - Disposer du logiciel Teamspeak 3 pour discuter ensemble
   - Savoir rejoindre une partie multijoueur depuis DCS World, idéalement en disposant déjà du plug-in SRS pour la gestion des comms (simulation de la radio).
-- **Recherché par la Commu** : A-10C, AV-8B, F-14, F-16C
+- **Recherché par la Commu** : A-10C, AV-8B, F-14, F-16C, Contrôleurs
