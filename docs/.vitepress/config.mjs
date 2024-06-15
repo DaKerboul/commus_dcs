@@ -38,6 +38,7 @@ export default defineConfig({
           { text: 'ECT RFV', link: '/commus/ectrfv' },
           { text: 'ERAF', link: '/commus/eraf' },
           { text: 'ESCA', link: '/commus/esca' },
+          { text: 'FR3D Studio', link: '/commus/fr3d' },
           { text: 'Gameplan', link: '/commus/gameplan' },
           { text: 'Groupement de Chasse 22', link: '/commus/gc22' },
           { text: 'Joint Task Force Francophone', link: '/commus/jtff'},
