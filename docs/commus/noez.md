@@ -8,7 +8,7 @@ title: NOeZ
 [Accéder à Instagram](https://instagram.com/dcs_world_noescapezone?igshid=bpl8wo0yjjt8)
 
 ---
-<img src="/commus_img/noez.png" alt="drawing" width="200" style="display: block; margin-left: auto; margin-right: auto;"/>
+<img src="/commus_img/noez.png" alt="drawing" width="250" style="display: block; margin-left: auto; margin-right: auto;"/>
 
 ## Présentation du groupe
 
@@ -51,4 +51,7 @@ La NOeZ est un groupe francophone dédié au MILSIM Lite, multimodule, ayant pou
 - **Recherché par la Commu** : F-14, F-15C, F-16C, F-4E, Mirage F1
 
 - **Liens Annexes** : (N/A)
-<img src="https://media.discordapp.net/attachments/921390691060437032/1251509135246360667/Screen_221231_140540.png?ex=666ed635&is=666d84b5&hm=73abef0edfb678f4ea4f2799bfc7970382f6ae0b9e72d6d1b4c1d2032e534b1b&=&format=webp&quality=lossless&width=1202&height=676" alt="drawing" width="200" style="display: block; margin-left: auto; margin-right: auto;"/>
+
+---
+
+<img src="https://media.discordapp.net/attachments/921390691060437032/1251509135246360667/Screen_221231_140540.png?ex=666ed635&is=666d84b5&hm=73abef0edfb678f4ea4f2799bfc7970382f6ae0b9e72d6d1b4c1d2032e534b1b&=&format=webp&quality=lossless&width=1202&height=676" alt="drawing" width="1000" style="display: block; margin-left: auto; margin-right: auto;"/>
