@@ -14,7 +14,7 @@ title: BFR
 
 ## Présentation du groupe
 
-BFR est une communauté comptant bientôt 2000 membres, établie sur Discord et dotée de son propre serveur dédié. Ce serveur propose d'importants théâtres d'opération originaux et bénéficie d'un contrôle humain, comprenant des responsabilités telles que l'ATC (contrôle de la circulation aérienne), l'AWACS (avion de surveillance et de commandement aéroporté) et le JTAC (contrôleur des attaques au sol).
+BFR est une communauté comptant plus de 2000 membres, établie sur Discord et dotée de son propre serveur dédié. Ce serveur propose d'importants théâtres d'opération originaux et bénéficie d'un contrôle humain, comprenant des responsabilités telles que l'ATC (contrôle de la circulation aérienne), l'AWACS (avion de surveillance et de commandement aéroporté) et le JTAC (contrôleur des attaques au sol).
 
 ## Informations Complémentaires
 
