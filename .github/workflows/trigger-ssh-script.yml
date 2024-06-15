@@ -47,5 +47,5 @@ jobs:
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          scp -o StrictHostKeyChecking=no -r ./docs/.vitepress/dist/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/kerboul/sites/CommusDCS/docs/.vitepress/
+          scp -o StrictHostKeyChecking=no -r ./docs/.vitepress/dist/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/kerboul/sites/CommusDCS/docs/.vitepress/dist/
           rm -f ~/.ssh/id_rsa
