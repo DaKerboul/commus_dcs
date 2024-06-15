@@ -50,5 +50,5 @@ Groupe Suisse et francophone volant dans la joie et la bonne humeur, se retrouva
 - **Recherché par la Commu** : A-10C, AH-64D, Combined Arms, F-15E, F-16C, F/A-18C, JF-17, M2000-C, UH-1
 
 - **Liens Annexes** :
-  - [TeamSpeak](ts3server://ts.esca-team.fr)
+  - [Discord](https://discord.gg/8XCWuZmqxH))
 
