@@ -25,7 +25,7 @@ Rejoignez-nous dans le ciel virtuel, où l'action, l'histoire et l'adrénaline v
 ## Informations Complémentaires
 
 - **Nom du Groupe** : BOLT - Battlefield Operations Liaison Team
-- **Taille** : Grande Taille :
+- **Taille** : Grande Taille
 - **Type** : Escadron Semi-Ouvert (partie publique + partie interne)
 - **Fondateur** : FanBoy & CHANUR
 - **Contact Principal** : FanBoy (FanBoy9983)
