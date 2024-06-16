@@ -13,33 +13,36 @@ title: Cellules Rapaces
 
 ## Présentation du groupe
 
-Les Cellules Rapaces est une communauté francophone dédiée à la simulation de vol de combat, notamment sur DCS World. Fondée il y a 17 ans, cette équipe a pour ambition de constituer une team d'élite dans le domaine de la simulation de vol de combat et de participer à des compétitions.
+🦅 La team **Cellules Rapaces** est une équipe francophone dédiée à la simulation de vol de combat, aujourd'hui sur DCS World. Fondée le **25 mars 2004**, cette équipe a pour ambition de constituer une **équipe eSport** de référence.
+Particularité : en tant qu'équipe d'aviateurs, elle représente également la communauté des *Gamers de l'Armée de l'Air et de l'Espace* dans les compétitions sur DCS World.
 
 ## Informations Complémentaires
 
 - **Nom du Groupe** : Cellules Rapaces
-- **Taille** : Communauté active de joueurs
-- **Type** : Team de simulation de vol de combat
-- **Fondateur** : Non spécifié
-- **Contact Principal** : Non spécifié
-- **Recrutement** : Ouvert aux passionnés de simulation de vol militaire
-- **Lien Principal** : [Discord](https://discord.gg/8mpyQxPaZf), [Site Officiel](https://www.cellules-rapaces.fr/)
+- **Taille** : 4 compétiteurs actifs (2024)
+- **Type** : équipe eSport
+- **Fondateur** : Couby
+- **Contact Principal** : `coubystark` sur Discord
+- **Recrutement** : Ouvert aux aviateurs et civils (actifs et anciens) de la Base Aérienne 118, Mont-de-Marsan, France
+- **Lien Principal** : [Discord](https://discord.gg/8mpyQxPaZf)🌐, [Site Officiel](https://www.cellules-rapaces.fr/)🌐
 - **Période Historique** : Aucune période particulière
-- **Modules DCS Disponibles** : A-10C, F/A-18C, F-16C, F-14, et autres modules courants de DCS World
+- **Modules DCS Utilisés** : F-16C, F-15E, F-18, F-14, M-2000C, Mirage F-1, Su-27, F-4E, Persian Gulf
+- **Créneaux de vols hebdomadaires** : lundi et jeudi, 21h00 - 22h00, courts mais denses !
+- **Activités proposées** : entrainements et préparations à des compétitions, propositions de petits défis
 
-## Philosophie et Règles de la Communauté
+## Philosophie de vol
 
-La communauté des Cellules Rapaces se distingue par une ambiance de bonne humeur, de fun, d'amabilité et de bienveillance. Les membres sont encouragés à se lancer des défis dans un esprit de provocation saine et mesurée.
+Ce qui nous rassemble en premier lieu, c'est le plaisir que l'on peut trouver dans la pratique du **combat aérien** : c'est une activité à la fois complexe, exigeante et passionnante.
+Bien entendu, nous avons envie de gagner 🏆 et dominer !
+Apprendre et toujours s'améliorer, en acceptant nos faiblesses et en développant nos forces, constituent le carburant ⛽ de notre motivation.
+
+Si les Cellules Rapaces comprennent toujours du *moustachu*🥸, elles acceptent tous les niveaux. Le plus important c'est l'envie de progresser et de présenter une présence dans les entrainements aussi régulière que possible.
+Bien que nos objectifs et activités soient orientés "compétitions", le plaisir de jeu, la participation de tous, le partage et l'entre-aide guident les choix du leadeur suprême.
 
 ### Rapace Spirit
 
-Les règles de base sont les suivantes :
-- Bonne humeur et fun
-- Amabilité et bienveillance
-- Provocation mesurée et saine pour encourager les défis
+Les ingrédients de base sont les suivants :
+- 😊 Bonne humeur et fun
+- 🤝 Amabilité et bienveillance
+- 🔥 Avec une pointe légèrement émoussée de provocation au défi
 
-L'administration se réserve le droit de modifier les règles et l'organisation pour offrir la meilleure expérience possible aux membres.
-
-## Engagement des Membres
-
-En rejoignant la communauté, les membres acceptent de suivre le Rapace Spirit. Les erreurs sont tolérées, à condition qu'elles soient reconnues et corrigées une fois signalées.
