@@ -37,6 +37,7 @@ export default defineConfig({
           { text: 'Couteau Alpha', link: '/commus/couteau' },
           { text: 'EA-11', link: '/commus/ea11' },
           { text: 'ECT RFV', link: '/commus/ectrfv' },
+          { text: 'Escadron Guerre Froide Francophone', link: '/commus/egff' },
           { text: 'ERAF', link: '/commus/eraf' },
           { text: 'ESCA', link: '/commus/esca' },
           { text: 'FR3D Studio', link: '/commus/fr3d' },
