@@ -7,7 +7,7 @@ title: KAS
 
 [Discord](https://discord.gg/ADseKTyZzN)
 
-<img src="commus_img\kas.png" width="200" style="display: block;margin-left:auto; margin-right: auto;">
+<img src="/commus_img/kas.png" width="200" style="display: block;margin-left:auto; margin-right: auto;">
 
 ## Description
 
@@ -34,4 +34,4 @@ Voici les étapes de la checkride:
 - Atterrissage (VFR Overhead Break)
 - Parking
 
-<img src="commus_img\kas\background.png">
+<img src="/commus_img/kas/background.png">
