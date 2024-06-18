@@ -7,7 +7,7 @@ title: KAS
 
 [Discord](https://discord.gg/ADseKTyZzN)
 
-<img src="/commus_img/kas.png" width="200" style="display: block;margin-left:auto; margin-right: auto;">
+<img src="/commus_img/kas.png" width="350" style="display: block;margin-left:auto; margin-right: auto;">
 
 ## Description
 
@@ -16,7 +16,7 @@ Le Killer Aggressor Squadron est un squadron aggresseur basé sur le F-16C. Nous
 ## Fighter Weapons School
 
 Red Flag est une école offerte, plus généralement pour apprendre les bases des modules sur DCS. Il n'y a pas de conditions pour participer à Red Flag.
-Cela peut être autant simplement pour apprendre à démarrer son avion, que pour apprendre à naviguer, comment utiliser DSC SRS et les radios.
+Cela peut être autant simplement pour apprendre à démarrer son avion, que pour apprendre à naviguer, comment utiliser DCS SRS et les radios.
 
 ## Objectif du Squadron
 Le squadron a pour but de planifier des sorties training structurées en interne et aussi en externe (avec d'autres squadrons). 
@@ -33,5 +33,9 @@ Voici les étapes de la checkride:
 - Aerial Refueling
 - Atterrissage (VFR Overhead Break)
 - Parking
+
+---
+
+## Quelques images
 
 <img src="/commus_img/kas/background.png">
