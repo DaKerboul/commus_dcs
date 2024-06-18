@@ -5,7 +5,7 @@ title: KAS
 
 # Killer Aggressor Squadron
 
-[Discord](https://discord.gg/ADseKTyZzN)
+[Accéder au Discord](https://discord.gg/ADseKTyZzN)
 
 <img src="/commus_img/kas.png" width="350" style="display: block;margin-left:auto; margin-right: auto;">
 
