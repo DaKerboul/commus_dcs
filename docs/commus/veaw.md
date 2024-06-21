@@ -1,28 +1,28 @@
 ---
 layout: doc
-title: 4th VEAW (Virtual Expeditionary Air Wing)
+title: VEAW (Virtual Expeditionary Air Wing)
 ---
 
-# 4th VEAW (Virtual Expeditionary Air Wing)
+# VEAW (Virtual Expeditionary Air Wing)
 
-[Accéder au Discord 4th VEAW](https://discord.com/invite/UXHPDtcEES) | [Accéder au Site Web 4th VEAW](https://veaw4.fr/)
+[Accéder au Discord VEAW](https://discord.com/invite/UXHPDtcEES) | [Accéder au Site Web VEAW](https://veaw4.fr/)
 
 ---
 <img src="/commus_img/veaw.png" alt="drawing" width="200" style="display: block; margin-left: auto; margin-right: auto;"/>
 
 ## Présentation du groupe
 
-La 4th Virtual Expeditionary Air Wing (VEAW4) est un regroupement d'escadrons de combat virtuels évoluant sur DCS World. Ils se concentrent sur des missions et campagnes immersives situées dans le contexte de la Guerre Froide tardive et de la Guerre du Golfe, en utilisant des tactiques et procédures réalistes.
+La Virtual Expeditionary Air Wing (VEAW) est un regroupement d'escadrons de combat virtuels évoluant sur DCS World. Ils se concentrent sur des missions et campagnes immersives situées dans le contexte de la Guerre Froide tardive et de la Guerre du Golfe, en utilisant des tactiques et procédures réalistes.
 
 ## Informations Complémentaires
 
-- **Nom du Groupe** : 4th VEAW (Virtual Expeditionary Air Wing)
+- **Nom du Groupe** : VEAW (Virtual Expeditionary Air Wing)
 - **Taille** : Moyenne Taille (+30 pilotes)
 - **Type** : Escadron Fermé avec Inscriptions
 - **Fondateur** : Voodoo / Noiser
 - **Contact Principal** : Voodoo / Noiser
 - **Recrutement** : Oui - Ouvert
-- **Lien Principal** : [Discord 4th VEAW](https://discord.com/invite/UXHPDtcEES)
+- **Lien Principal** : [Discord VEAW](https://discord.com/invite/UXHPDtcEES)
 - **Période Historique** : Cold War - Late (1970-1980s), Gulf War (1990s)
 - **Liste détaillée des Modules** :
   - F-4E, F-16C, F-5E, Mi-24, Mi-8, MiG-29, Mirage F1
@@ -50,5 +50,5 @@ La 4th Virtual Expeditionary Air Wing (VEAW4) est un regroupement d'escadrons de
 - **Recherché par la Commu** : F-5E, Mi-24, Mi-8
 
 - **Liens Annexes** :
-  - [Site Web 4th VEAW](https://veaw4.fr/)
-  - [Facebook 4th VEAW](https://www.facebook.com/veaw4)
+  - [Site Web VEAW](https://veaw4.fr/)
+  - [Facebook VEAW](https://www.facebook.com/veaw4)
