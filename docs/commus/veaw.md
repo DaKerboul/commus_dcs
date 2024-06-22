@@ -1,9 +1,9 @@
 ---
 layout: doc
-title: VEAW (Virtual Expeditionary Air Wing)
+title: 4th VEAW (4th Virtual Expeditionary Air Wing)
 ---
 
-# VEAW (Virtual Expeditionary Air Wing)
+# 4th VEAW (4th Virtual Expeditionary Air Wing)
 
 [Accéder au Discord VEAW](https://discord.com/invite/UXHPDtcEES) | [Accéder au Site Web VEAW](https://veaw4.fr/)
 
@@ -12,11 +12,11 @@ title: VEAW (Virtual Expeditionary Air Wing)
 
 ## Présentation du groupe
 
-La Virtual Expeditionary Air Wing (VEAW) est un regroupement d'escadrons de combat virtuels évoluant sur DCS World. Ils se concentrent sur des missions et campagnes immersives situées dans le contexte de la Guerre Froide tardive et de la Guerre du Golfe, en utilisant des tactiques et procédures réalistes.
+La 4th Virtual Expeditionary Air Wing (4th VEAW) est un regroupement d'escadrons de combat virtuels évoluant sur DCS World. Ils se concentrent sur des missions et campagnes immersives situées dans le contexte de la Guerre Froide tardive et de la Guerre du Golfe, en utilisant des tactiques et procédures réalistes.
 
 ## Informations Complémentaires
 
-- **Nom du Groupe** : VEAW (Virtual Expeditionary Air Wing)
+- **Nom du Groupe** : 4th VEAW (Virtual Expeditionary Air Wing)
 - **Taille** : Moyenne Taille (+30 pilotes)
 - **Type** : Escadron Fermé avec Inscriptions
 - **Fondateur** : Voodoo / Noiser
@@ -47,7 +47,7 @@ La Virtual Expeditionary Air Wing (VEAW) est un regroupement d'escadrons de comb
   - Capacité à voler en formation
   - Engagement à respecter les procédures et tactiques définies par le groupe
 
-- **Recherché par la Commu** : F-5E, Mi-24, Mi-8
+- **Recherché par la Commu** : F-4E, F-16C, MIG-29, Mirage F1, F-5E, Mi-24, Mi-8
 
 - **Liens Annexes** :
   - [Site Web VEAW](https://veaw4.fr/)
