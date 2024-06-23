@@ -25,8 +25,8 @@ Détecter, identifier, intervenir, traiter, soutenir et fortifier. Nous faisons 
 
 ## Informations Complémentaires
 
-- **Fondateur** : Gen J. Seluj
-- **Contact(s)** : Nomad, Dread, Seluj
+- **Fondateur** : Amiral J. Seluj
+- **Contact(s)** : Lt. Colonel Nomad, Lt. Colonel Dread, Amiral Seluj
 - **Recrutement** : Ouvert
 - **Période Historique** : Aucune Période Particulière
 - **Modules** : Tous les Modules Avions, Tous les Modules Hélicoptères
