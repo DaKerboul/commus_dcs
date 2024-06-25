@@ -5,7 +5,7 @@ title: BOLT | Battlefield Operations Liaison Team
 
 # BOLT | Battlefield Operations Liaison Team
 
-[Accéder au Discord](https://discord.gg/RxXz3FF4)
+[Accéder au Discord](https://discord.gg/cas23dYpuY)
 
 ---
 <img src="/commus_img/bolt/bolt.png" alt="drawing" width="300" style="display: block; margin-left: auto; margin-right: auto;"/>
@@ -30,7 +30,7 @@ Rejoignez-nous dans le ciel virtuel, où l'action, l'histoire et l'adrénaline v
 - **Fondateur** : FanBoy & CHANUR
 - **Contact Principal** : FanBoy (FanBoy9983)
 - **Recrutement** : Oui - Ouvert 
-- **Lien Principal** : [Discord](https://discord.gg/RxXz3FF4)
+- **Lien Principal** : [Discord](https://discord.gg/cas23dYpuY)
 - **Période Historique** :
   - Cold War - Mid (1960-1970s)
   - Début Moderne (2000s)
