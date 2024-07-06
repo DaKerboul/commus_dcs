@@ -27,7 +27,7 @@ Particularité : en tant qu'équipe d'aviateurs, elle représente également la 
 - **Lien Principal** : [Discord](https://discord.gg/8mpyQxPaZf)🌐, [Site Officiel](https://www.cellules-rapaces.fr/)🌐
 - **Période Historique** : Aucune période particulière
 - **Modules DCS Utilisés** : F-16C, F-15E, F-18, F-14, M-2000C, Mirage F-1, Su-27, F-4E, Persian Gulf
-- **Créneaux de vols hebdomadaires** : lundi et jeudi, 21h00 - 22h00, courts mais denses !
+- **Créneaux de vols hebdomadaires** : lundi et mercredi, 21h00 - 22h00, courts mais denses !
 - **Activités proposées** : entrainements et préparations à des compétitions, propositions de petits défis
 
 ## Philosophie de vol
