@@ -19,7 +19,7 @@ L'association Virtual European Air Force (VEAF) se consacre au développement de
 - **Nom du Groupe** : VEAF (Virtual European Air Force)
 - **Taille** : Très Grande Taille (+150 pilotes)
 - **Type** : Escadron Semi-Ouvert (partie publique + partie interne)
-- **Fondateur** : Magic
+- **Fondateur** : Couby
 - **Contact Principal** : Sur notre Discord: Tipiak, Ti'Rco, The Reaper, Jed
 - **Recrutement** : Oui - Ouvert
 - **Lien Principal** : [Site VEAF](https://www.veaf.org)
