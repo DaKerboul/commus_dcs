@@ -33,8 +33,32 @@ title: Liens Officiels
 
 ---
 
-## Polychop
+## Polychop Simulations
 
 [Site Officiel de Polychop](http://www.polychop-sims.com/)
 
 [Serveur Discord Officiel de Polychop](https://discord.com/invite/7pMhx6t)
+
+---
+
+## Magnitude 3
+[Site Officiel de Magnitude 3](https://magnitude-3.com)
+
+---
+
+## Aviodev
+
+[Site Officiel de Aviodev](http://www.aviodev.com)
+
+---
+
+## Aerges
+
+[Site Officiel de Aerges](http://aergesengineering.com)
+[]()
+
+---
+
+## Orbx
+
+[Site Officiel de Orbx](https://orbxdirect.com)
