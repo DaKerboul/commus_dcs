@@ -29,6 +29,7 @@ export default defineConfig({
           { text: '2nd French Fighter Squadron', link: '/commus/2ffs' },
           { text: '3rd Wing', link: '/commus/3rdwing' },
           { text: '06th Multirole Helicopter Regiment', link: '/commus/06mhr' },
+          { text: 'AAE Esport/Gaming', link: '/commus/aaeeg'},
           { text: 'BOLT', link: '/commus/bolt' },
           { text: 'Bullseye Francophone', link: '/commus/bfr' },
           { text: 'CheckSix', link: '/commus/c6' },

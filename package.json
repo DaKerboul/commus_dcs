@@ -4,5 +4,8 @@
     "docs:build": "vitepress build docs",
     "docs:build-silent": "vitepress build docs > /dev/null",
     "docs:preview": "vitepress preview docs"
+  },
+  "devDependencies": {
+    "vitepress": "^1.3.0"
   }
 }
