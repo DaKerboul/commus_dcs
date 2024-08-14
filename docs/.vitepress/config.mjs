@@ -34,7 +34,6 @@ export default defineConfig({
           { text: '51th Massilia', link: '/commus/51thMassilia.md' },
           { text: '64 vFAS', link: '/commus/64vFAS.md' },
           { text: '71st WASP', link: '/commus/71stWASP.md' },
-          { text: 'AAE Esport Gaming', link: '/commus/AAEEsportGaming.md' },
           { text: 'AAE Esport/Gaming', link: '/commus/aaeeg'},
           { text: 'Ashayar', link: '/commus/Ashayar.md' },
           { text: 'ATAC', link: '/commus/ATAC.md' },
