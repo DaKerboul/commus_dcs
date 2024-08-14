@@ -9,7 +9,6 @@ title: TheSkyline35
 
 [Youtube](https://www.youtube.com/@TheSkyline35)
 ---
-
 ## Présentation du groupe
 
 ## Informations Complémentaires
