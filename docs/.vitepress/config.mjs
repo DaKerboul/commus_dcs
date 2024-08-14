@@ -49,7 +49,7 @@ export default defineConfig({
           { text: 'DCS Screenshots World', link: '/commus/screens'},
           { text: 'Digital Joint Squadron', link: '/commus/DigitalJointSquadron.md' },
           { text: 'Dilixo Country', link: '/commus/DilixoCountry.md' },
-          { text: 'Duck's Squadron (VFA-12)', link: '/commus/DucksSquadron(VFA-12).md' },
+          { text: 'Duck s Squadron (VFA-12)', link: '/commus/DucksSquadron(VFA-12).md' },
           { text: 'EA-11', link: '/commus/ea11' },
           { text: 'EC 2/18 Frelon', link: '/commus/EC2-18Frelon.md' },
           { text: 'ECT RFV', link: '/commus/ectrfv' },
