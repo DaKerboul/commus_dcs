@@ -27,36 +27,11 @@ jobs:
       - name: Install Vitepress
         run: npm add -D vitepress
 
-      - name: Build documentation
+      - name: Build Website
         run: npm run docs:build
 
-      - name: Nettoyage Fichiers Temporaires
-        uses: appleboy/ssh-action@master
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            echo "Running SSH script..."
-            ls -l
-            /scripts/clean.sh
-
-      - name: Copy dist folder using scp
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
-        run: |
-          mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          scp -o StrictHostKeyChecking=no -r ./docs/.vitepress/dist/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/kerboul/serveur_web/commus_temp/
-          rm -f ~/.ssh/id_rsa
-
-      - name: Execute SSH command
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            echo "Running SSH script..."
-            /scripts/update.sh
+          name: vitepress-dist
+          path: ./docs/.vitepress/dist
