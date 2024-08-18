@@ -38,7 +38,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             echo "Running SSH script..."
-            /scripts/update_commus_temp.sh
+            /home/kerboul/serveur_web/commus_scripts/clean.sh
 
       - name: Copy dist folder using scp
         env:
@@ -47,7 +47,7 @@ jobs:
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          scp -o StrictHostKeyChecking=no -r ./docs/.vitepress/dist/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/kerboul/sites/CommusDCS_temp/
+          scp -o StrictHostKeyChecking=no -r ./docs/.vitepress/dist/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/kerboul/serveur_web/commus_temp/
           rm -f ~/.ssh/id_rsa
 
       - name: Execute SSH command
@@ -58,4 +58,4 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             echo "Running SSH script..."
-            /scripts/update_commus.sh
+            /home/kerboul/serveur_web/commus_scripts/update.sh
