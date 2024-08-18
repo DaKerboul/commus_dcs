@@ -21,8 +21,10 @@ Les missions traitées au sein du DJS sont:
 -Offensive Counter Air (Air Interdiction, SEAD/DEAD, SWEEP, ESCORT…)
 -Defensive Counter Air (Air Defence, BARCAP, TARCAP...)
 
-Ce groupe n'a pas vocation à former sur l'utilisation de l'appareil de A à Z mais nous accompagnons les nouveaux dans leur apprentissage. Nous focalisons les entrainements sur l'emploi tactique au sein d'une patrouille, notre objectif étant par la suite de pouvoir réaliser des COMAO (Composite Air Operations) d'envergure à plusieurs patrouilles. Pour les membres d'escadrons virtuels qui passeraient par là, nous sommes plus qu'intéressés par des missions en inter-escadrons, envoyez un message à l'un des admins ! 
--
+Ce groupe n'a pas vocation à former sur l'utilisation de l'appareil de A à Z mais nous accompagnons les nouveaux dans leur apprentissage. Nous focalisons les entrainements sur l'emploi tactique au sein d'une patrouille, notre objectif étant par la suite de pouvoir réaliser des COMAO (Composite Air Operations) d'envergure à plusieurs patrouilles. 
+> [!NOTE]
+> Pour les membres d'escadrons virtuels qui passeraient par là, nous sommes plus qu'intéressés par des missions en inter-escadrons, envoyez un message à l'un des admins !
+
 Nous avons adopté un système de qualifications similaires à celui que nous pouvons retrouver dans les escadrons de chasse français. Le nouvel arrivant commencera en temps que PIM ou Pilote de Combat Opérationnel selon son niveau puis pourra être leader d'une patrouille de deux en devenant Sous Chef de Patrouille avant de finir Chef de Patrouille pouvant emmener quatre appareils au combat.
 
 Pour les personnes simplement curieuses, nous vous attendons sur Discord dans l'⁠escale ou en vocal sur le Bar ! Passez dire bonjour et parlez avions !
