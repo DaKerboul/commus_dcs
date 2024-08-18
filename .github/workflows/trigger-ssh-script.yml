@@ -38,6 +38,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             echo "Running SSH script..."
+            ls -l
             /scripts/clean.sh
 
       - name: Copy dist folder using scp
