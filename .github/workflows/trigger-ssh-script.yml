@@ -38,7 +38,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             echo "Running SSH script..."
-            /home/kerboul/serveur_web/commus_scripts/clean.sh
+            /home/scripts/clean.sh
 
       - name: Copy dist folder using scp
         env:
@@ -58,4 +58,4 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             echo "Running SSH script..."
-            /home/kerboul/serveur_web/commus_scripts/update.sh
+            /home/scripts/update.sh
