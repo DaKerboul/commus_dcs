@@ -1,4 +1,4 @@
-name: Trigger SSH Script
+name: Déploiement du site
 
 on:
   push:
@@ -30,7 +30,7 @@ jobs:
       - name: Build Website
         run: npm run docs:build
 
-      - name: Nettoyage Fichiers Temporaires
+      - name: Préparation du déplacement
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -38,7 +38,8 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             echo "Running SSH script..."
-            ls -l
+            cd /home/kerboul/temp_github
+            mkdir site_commus
   
       - name: Copy dist folder using scp
         env:
@@ -47,7 +48,7 @@ jobs:
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          scp -o StrictHostKeyChecking=no -r ./docs/.vitepress/dist/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/kerboul/serveur_web/commus_temp/
+          scp -o StrictHostKeyChecking=no -r ./docs/.vitepress/dist/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/kerboul/temp_github/site_commus
           rm -f ~/.ssh/id_rsa
   
       - name: Execute SSH command
@@ -57,5 +58,5 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            echo "Running SSH script..."
-            echo "BIDULE"
+            cd /home/kerboul/temp_github/site_commus
+            ls -la
