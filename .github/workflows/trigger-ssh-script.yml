@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  site-deploy:
+  run-ssh-script:
     runs-on: ubuntu-latest
 
     steps:
@@ -61,3 +61,5 @@ jobs:
             cd /home/kerboul/temp_github/site_commus
             rsync -avz -e "ssh -o StrictHostKeyChecking=no" . kerboul@mikoshi:/home/kerboul/serveur_web/commus_dcs_wip/
             ssh kerboul@mikoshi "cd /home/kerboul/serveur_web/commus_dcs_wip/ && rm -rf /home/kerboul/serveur_web/commus_dcs/* && mv /home/kerboul/serveur_web/commus_dcs_wip/* /home/kerboul/serveur_web/commus_dcs/*"
+            cd /home/kerboul/temp_github
+            rm -rf site_commus
