@@ -30,12 +30,32 @@ jobs:
       - name: Build Website
         run: npm run docs:build
 
-      - name: Tailscale
-        uses: tailscale/github-action@v2
+      - name: Nettoyage Fichiers Temporaires
+        uses: appleboy/ssh-action@master
         with:
-          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
-          tags: tag:ci
-
-      - name: Ping
-        run : ping mikoshi
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            echo "Running SSH script..."
+            ls -l
+  
+      - name: Copy dist folder using scp
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          scp -o StrictHostKeyChecking=no -r ./docs/.vitepress/dist/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/kerboul/serveur_web/commus_temp/
+          rm -f ~/.ssh/id_rsa
+  
+      - name: Execute SSH command
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            echo "Running SSH script..."
+            echo "BIDULE"
