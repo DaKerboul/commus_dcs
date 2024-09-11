@@ -48,7 +48,7 @@ jobs:
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./docs/.vitepress/dist/ kerboul@mikoshi:/home/kerboul/temp_github/site_commus
+          scp -o StrictHostKeyChecking=no -r -v ./docs/.vitepress/dist/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/kerboul/temp_github/site_commus
           rm -f ~/.ssh/id_rsa
   
       - name: Execute SSH command
