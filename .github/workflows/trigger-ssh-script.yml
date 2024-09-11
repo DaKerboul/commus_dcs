@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  run-ssh-script:
+  site-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -48,7 +48,7 @@ jobs:
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          scp -o StrictHostKeyChecking=no -r ./docs/.vitepress/dist/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/kerboul/temp_github/site_commus
+          scp -o StrictHostKeyChecking=no -r -v ./docs/.vitepress/dist/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/kerboul/temp_github/site_commus
           rm -f ~/.ssh/id_rsa
   
       - name: Execute SSH command
@@ -59,4 +59,5 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd /home/kerboul/temp_github/site_commus
-            ls -la
+            rsync -avz -e "ssh -o StrictHostKeyChecking=no" . kerboul@mikoshi:/home/kerboul/serveur_web/commus_dcs_wip/
+            ssh kerboul@mikoshi "cd /home/kerboul/serveur_web/commus_dcs_wip/ && rm -rf /home/kerboul/serveur_web/commus_dcs/* && mv /home/kerboul/serveur_web/commus_dcs_wip/* /home/kerboul/serveur_web/commus_dcs/*"
