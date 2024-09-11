@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  run-ssh-script:
+  site-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -41,7 +41,7 @@ jobs:
             cd /home/kerboul/temp_github
             mkdir site_commus
   
-      - name: Copy dist folder using scp
+      - name: Déplacement du site construit via SSH
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
         run: |
@@ -51,7 +51,7 @@ jobs:
           scp -o StrictHostKeyChecking=no -r -v ./docs/.vitepress/dist/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/kerboul/temp_github/site_commus
           rm -f ~/.ssh/id_rsa
   
-      - name: Execute SSH command
+      - name: Application des changements et update du site
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -60,6 +60,6 @@ jobs:
           script: |
             cd /home/kerboul/temp_github/site_commus
             rsync -avz -e "ssh -o StrictHostKeyChecking=no" . kerboul@mikoshi:/home/kerboul/serveur_web/commus_dcs_wip/
-            ssh kerboul@mikoshi "mv /home/kerboul/serveur_web/commus_dcs_wip/* /home/kerboul/serveur_web/commus_dcs/"
+            ssh kerboul@mikoshi "rm -rf /home/kerboul/serveur_web/commus_dcs/* && mv /home/kerboul/serveur_web/commus_dcs_wip/* /home/kerboul/serveur_web/commus_dcs/"
             cd /home/kerboul/temp_github
             rm -rf site_commus
