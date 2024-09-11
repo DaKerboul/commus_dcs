@@ -30,8 +30,12 @@ jobs:
       - name: Build Website
         run: npm run docs:build
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
+      - name: Tailscale
+        uses: tailscale/github-action@v2
         with:
-          name: vitepress-dist
-          path: ./docs/.vitepress/dist
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+
+      - name: Ping
+        run : ping mikoshi
