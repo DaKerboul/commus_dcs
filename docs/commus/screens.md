@@ -8,7 +8,7 @@ title: DCS Screenshots World
 [Rejoindre le Discord](https://discord.gg/AwNRRwj5qj)
 
 ---
-<img src="https://media.discordapp.net/attachments/1235223463120339014/1249416131735851154/Capture_decran_2024-06-09_155649.png?ex=666e7932&is=666d27b2&hm=21534eb1e49bb904db384749e957081afccbd30692b85ff7914fe11a735470bf&=&format=webp&quality=lossless&width=1202&height=676" alt="drawing" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
+<img src="/commus_img/screenshot_world.png" alt="drawing" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
 
 ## Présentation de la communauté
 
