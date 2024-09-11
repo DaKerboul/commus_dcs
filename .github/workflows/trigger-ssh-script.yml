@@ -48,7 +48,7 @@ jobs:
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          scp -o StrictHostKeyChecking=no -r -v ./docs/.vitepress/dist/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/kerboul/temp_github/site_commus
+          rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./docs/.vitepress/dist/ kerboul@mikoshi:/home/kerboul/temp_github/site_commus
           rm -f ~/.ssh/id_rsa
   
       - name: Execute SSH command
@@ -60,6 +60,6 @@ jobs:
           script: |
             cd /home/kerboul/temp_github/site_commus
             rsync -avz -e "ssh -o StrictHostKeyChecking=no" . kerboul@mikoshi:/home/kerboul/serveur_web/commus_dcs_wip/
-            ssh kerboul@mikoshi "cd /home/kerboul/serveur_web/commus_dcs_wip/ && rm -rf /home/kerboul/serveur_web/commus_dcs/* && mv /home/kerboul/serveur_web/commus_dcs_wip/* /home/kerboul/serveur_web/commus_dcs/*"
+            ssh kerboul@mikoshi "mv /home/kerboul/serveur_web/commus_dcs_wip/* /home/kerboul/serveur_web/commus_dcs/"
             cd /home/kerboul/temp_github
             rm -rf site_commus
