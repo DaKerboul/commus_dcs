@@ -44,6 +44,7 @@ export default defineConfig({
           { text: 'Cellules Rapaces', link: '/commus/cellulesrapaces' },
           { text: 'CheckSix', link: '/commus/c6' },
           { text: 'Cirrus', link: '/commus/cirrus' },
+          { text: 'Contrôleurs Francophone', link: '/commus/ctrfra' },
           { text: 'Couteau Alpha', link: '/commus/couteau' },
           { text: 'DCS Screenshots World', link: '/commus/screens'},
           { text: 'Digital Joint Squadron', link: '/commus/djs' },
