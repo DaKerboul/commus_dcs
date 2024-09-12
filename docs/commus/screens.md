@@ -8,7 +8,7 @@ title: DCS Screenshots World
 [Rejoindre le Discord](https://discord.gg/AwNRRwj5qj)
 
 ---
-<img src="/commus_img/screenshot_world.png" alt="drawing" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
+<img src="/commus_img/screenshot_world.png" alt="drawing" width="200" style="display: block; margin-left: auto; margin-right: auto;"/>
 
 ## Présentation de la communauté
 
