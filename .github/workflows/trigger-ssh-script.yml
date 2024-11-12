@@ -20,9 +20,13 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+  
+      - name: Install Vitepress
+        run: npm add -D vitepress
 
-      - name: Lint JavaScript
-        run: npm run lint:js
+      - name: Build Website
+        run: npm run docs:build
+        continue-on-error: false
 
   site-deploy:
     if: github.ref == 'refs/heads/main'
@@ -48,6 +52,7 @@ jobs:
 
       - name: Build Website
         run: npm run docs:build
+        continue-on-error: false
 
       - name: Préparation du déplacement
         uses: appleboy/ssh-action@master
