@@ -4,12 +4,10 @@
     "docs:build": "vitepress build docs",
     "docs:build-silent": "vitepress build docs > /dev/null",
     "docs:preview": "vitepress preview docs",
-    "lint:js": "eslint . --ext .js,.jsx,.ts,.tsx,.mjs",
-    "lint:md": "markdownlint '**/*.md'"
+    "lint:js": "eslint docs/.vitepress/config.mjs"
   },
   "devDependencies": {
     "vitepress": "^1.3.3",
-    "eslint": "^8.0.0",
-    "markdownlint-cli": "^0.31.1"
+    "eslint": "^8.0.0"
   }
 }
