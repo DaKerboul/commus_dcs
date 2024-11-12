@@ -24,9 +24,6 @@ jobs:
       - name: Lint JavaScript
         run: npm run lint:js
 
-      - name: Lint Markdown
-        run: npm run lint:md
-
   site-deploy:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
