@@ -3,10 +3,33 @@ name: Déploiement du site
 on:
   push:
     branches:
-      - main
+      - '**'
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '22.3.0'
+
+      - name: Install dependencies
+        run: npm install
+  
+      - name: Install Vitepress
+        run: npm add -D vitepress
+
+      - name: Build Website
+        run: npm run docs:build
+        continue-on-error: false
+
   site-deploy:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
     steps:
@@ -29,6 +52,7 @@ jobs:
 
       - name: Build Website
         run: npm run docs:build
+        continue-on-error: false
 
       - name: Préparation du déplacement
         uses: appleboy/ssh-action@master
