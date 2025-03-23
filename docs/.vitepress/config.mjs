@@ -61,6 +61,7 @@ export default defineConfig({
           { text: 'Split-Air', link: '/commus/splitair' },
           { text: 'Swiss Alpine Fighters', link: '/commus/saf' },
           { text: 'TheSkyline35', link: '/commus/ts35' },
+          { text: 'DCS Vietnam War', link: '/commus/vietnam' },
           { text: 'Virtual Aerobatics Prestige', link: '/commus/vap' },
           { text: 'Virtual Belgian Air Force', link: '/commus/vbaf' },
           { text: 'Virtual European Air Force', link: '/commus/veaf' },

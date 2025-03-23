@@ -9,33 +9,33 @@ import {
 } from "./chunk-PAUCAATC.js";
 
 // node_modules/vitepress/dist/client/theme-default/index.js
-import "E:/Développement/commus_dcs/commus_dcs/node_modules/vitepress/dist/client/theme-default/styles/fonts.css";
+import "/workspaces/commus_dcs/node_modules/vitepress/dist/client/theme-default/styles/fonts.css";
 
 // node_modules/vitepress/dist/client/theme-default/without-fonts.js
-import "E:/Développement/commus_dcs/commus_dcs/node_modules/vitepress/dist/client/theme-default/styles/vars.css";
-import "E:/Développement/commus_dcs/commus_dcs/node_modules/vitepress/dist/client/theme-default/styles/base.css";
-import "E:/Développement/commus_dcs/commus_dcs/node_modules/vitepress/dist/client/theme-default/styles/icons.css";
-import "E:/Développement/commus_dcs/commus_dcs/node_modules/vitepress/dist/client/theme-default/styles/utils.css";
-import "E:/Développement/commus_dcs/commus_dcs/node_modules/vitepress/dist/client/theme-default/styles/components/custom-block.css";
-import "E:/Développement/commus_dcs/commus_dcs/node_modules/vitepress/dist/client/theme-default/styles/components/vp-code.css";
-import "E:/Développement/commus_dcs/commus_dcs/node_modules/vitepress/dist/client/theme-default/styles/components/vp-code-group.css";
-import "E:/Développement/commus_dcs/commus_dcs/node_modules/vitepress/dist/client/theme-default/styles/components/vp-doc.css";
-import "E:/Développement/commus_dcs/commus_dcs/node_modules/vitepress/dist/client/theme-default/styles/components/vp-sponsor.css";
-import VPBadge from "E:/Développement/commus_dcs/commus_dcs/node_modules/vitepress/dist/client/theme-default/components/VPBadge.vue";
-import Layout from "E:/Développement/commus_dcs/commus_dcs/node_modules/vitepress/dist/client/theme-default/Layout.vue";
-import { default as default2 } from "E:/Développement/commus_dcs/commus_dcs/node_modules/vitepress/dist/client/theme-default/components/VPBadge.vue";
-import { default as default3 } from "E:/Développement/commus_dcs/commus_dcs/node_modules/vitepress/dist/client/theme-default/components/VPImage.vue";
-import { default as default4 } from "E:/Développement/commus_dcs/commus_dcs/node_modules/vitepress/dist/client/theme-default/components/VPButton.vue";
-import { default as default5 } from "E:/Développement/commus_dcs/commus_dcs/node_modules/vitepress/dist/client/theme-default/components/VPHomeContent.vue";
-import { default as default6 } from "E:/Développement/commus_dcs/commus_dcs/node_modules/vitepress/dist/client/theme-default/components/VPHomeHero.vue";
-import { default as default7 } from "E:/Développement/commus_dcs/commus_dcs/node_modules/vitepress/dist/client/theme-default/components/VPHomeFeatures.vue";
-import { default as default8 } from "E:/Développement/commus_dcs/commus_dcs/node_modules/vitepress/dist/client/theme-default/components/VPHomeSponsors.vue";
-import { default as default9 } from "E:/Développement/commus_dcs/commus_dcs/node_modules/vitepress/dist/client/theme-default/components/VPDocAsideSponsors.vue";
-import { default as default10 } from "E:/Développement/commus_dcs/commus_dcs/node_modules/vitepress/dist/client/theme-default/components/VPSponsors.vue";
-import { default as default11 } from "E:/Développement/commus_dcs/commus_dcs/node_modules/vitepress/dist/client/theme-default/components/VPTeamPage.vue";
-import { default as default12 } from "E:/Développement/commus_dcs/commus_dcs/node_modules/vitepress/dist/client/theme-default/components/VPTeamPageTitle.vue";
-import { default as default13 } from "E:/Développement/commus_dcs/commus_dcs/node_modules/vitepress/dist/client/theme-default/components/VPTeamPageSection.vue";
-import { default as default14 } from "E:/Développement/commus_dcs/commus_dcs/node_modules/vitepress/dist/client/theme-default/components/VPTeamMembers.vue";
+import "/workspaces/commus_dcs/node_modules/vitepress/dist/client/theme-default/styles/vars.css";
+import "/workspaces/commus_dcs/node_modules/vitepress/dist/client/theme-default/styles/base.css";
+import "/workspaces/commus_dcs/node_modules/vitepress/dist/client/theme-default/styles/icons.css";
+import "/workspaces/commus_dcs/node_modules/vitepress/dist/client/theme-default/styles/utils.css";
+import "/workspaces/commus_dcs/node_modules/vitepress/dist/client/theme-default/styles/components/custom-block.css";
+import "/workspaces/commus_dcs/node_modules/vitepress/dist/client/theme-default/styles/components/vp-code.css";
+import "/workspaces/commus_dcs/node_modules/vitepress/dist/client/theme-default/styles/components/vp-code-group.css";
+import "/workspaces/commus_dcs/node_modules/vitepress/dist/client/theme-default/styles/components/vp-doc.css";
+import "/workspaces/commus_dcs/node_modules/vitepress/dist/client/theme-default/styles/components/vp-sponsor.css";
+import VPBadge from "/workspaces/commus_dcs/node_modules/vitepress/dist/client/theme-default/components/VPBadge.vue";
+import Layout from "/workspaces/commus_dcs/node_modules/vitepress/dist/client/theme-default/Layout.vue";
+import { default as default2 } from "/workspaces/commus_dcs/node_modules/vitepress/dist/client/theme-default/components/VPBadge.vue";
+import { default as default3 } from "/workspaces/commus_dcs/node_modules/vitepress/dist/client/theme-default/components/VPImage.vue";
+import { default as default4 } from "/workspaces/commus_dcs/node_modules/vitepress/dist/client/theme-default/components/VPButton.vue";
+import { default as default5 } from "/workspaces/commus_dcs/node_modules/vitepress/dist/client/theme-default/components/VPHomeContent.vue";
+import { default as default6 } from "/workspaces/commus_dcs/node_modules/vitepress/dist/client/theme-default/components/VPHomeHero.vue";
+import { default as default7 } from "/workspaces/commus_dcs/node_modules/vitepress/dist/client/theme-default/components/VPHomeFeatures.vue";
+import { default as default8 } from "/workspaces/commus_dcs/node_modules/vitepress/dist/client/theme-default/components/VPHomeSponsors.vue";
+import { default as default9 } from "/workspaces/commus_dcs/node_modules/vitepress/dist/client/theme-default/components/VPDocAsideSponsors.vue";
+import { default as default10 } from "/workspaces/commus_dcs/node_modules/vitepress/dist/client/theme-default/components/VPSponsors.vue";
+import { default as default11 } from "/workspaces/commus_dcs/node_modules/vitepress/dist/client/theme-default/components/VPTeamPage.vue";
+import { default as default12 } from "/workspaces/commus_dcs/node_modules/vitepress/dist/client/theme-default/components/VPTeamPageTitle.vue";
+import { default as default13 } from "/workspaces/commus_dcs/node_modules/vitepress/dist/client/theme-default/components/VPTeamPageSection.vue";
+import { default as default14 } from "/workspaces/commus_dcs/node_modules/vitepress/dist/client/theme-default/components/VPTeamMembers.vue";
 
 // node_modules/vitepress/dist/client/theme-default/support/utils.js
 import { withBase } from "vitepress";
