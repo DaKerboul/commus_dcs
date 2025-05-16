@@ -24,7 +24,7 @@ services:
       - ./:/app
       - /var/run/docker.sock:/var/run/docker.sock  # Accès au daemon Docker pour rebuild le frontend
     environment:
-      - GITHUB_SECRET=${COMMUS_SECRET}
+      - COMMUS_SECRET=${COMMUS_SECRET}
     ports:
       - "9000:9000"
     networks:
