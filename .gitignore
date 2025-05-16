@@ -35,3 +35,9 @@ yarn-error.log*
 # Environment variables
 .env
 .env.local
+
+# SSH et secrets
+*.pem
+*.key
+id_rsa*
+known_hosts
