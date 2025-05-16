@@ -2,7 +2,7 @@
 
 ## 1. Prérequis
 - Un serveur avec Docker et Docker Compose installés
-- Un reverse proxy (ex: Nginx, Traefik) configuré pour pointer `https://commus.kerboul.me` vers le port 4173 du conteneur frontend
+- Un reverse proxy (ex: Nginx, Traefik) configuré pour pointer `https://commus.kerboul.me` vers le port 80 du conteneur frontend
 - Un accès SSH ou root au serveur
 
 ## 2. Déploiement initial
@@ -31,7 +31,19 @@
 5. Events : `Just the push event` (ou tout ce que tu veux)
 6. Active le webhook
 
-## 4. GitHub Actions (optionnel)
+## 4. Fonctionnement
+
+Le système fonctionne de la façon suivante :
+1. Le frontend est un serveur Nginx statique qui sert les fichiers HTML/CSS/JS précompilés
+2. Le webhook écoute les notifications de GitHub
+3. Quand un nouveau commit est poussé, le webhook :
+   - Pull le repo git
+   - Reconstruit le conteneur frontend (qui refait le build des docs)
+   - Redémarre le conteneur frontend avec le nouveau contenu
+
+Ce flux de travail garantit que le site est toujours à jour sans nécessiter d'intervention manuelle.
+
+## 5. GitHub Actions (optionnel)
 
 Si tu veux déclencher le webhook via GitHub Actions (au lieu du webhook natif) :
 
@@ -56,7 +68,7 @@ jobs:
 
 > Remplace `${{ secrets.GITHUB_SECRET }}` par le secret utilisé côté serveur et ajoute-le dans les secrets GitHub.
 
-## 5. Mise à jour manuelle
+## 6. Mise à jour manuelle
 
 Pour forcer une mise à jour :
 ```bash
@@ -65,7 +77,4 @@ curl -X POST -H "X-Hub-Signature-256: sha256=<signature>" https://commus.kerboul
 
 ---
 
-**Résumé** :
-- Le webhook déclenche un `git pull`, rebuild le site et redémarre le frontend automatiquement.
-- Le reverse proxy doit pointer vers le port 4173 du conteneur frontend.
-- Le domaine https://commus.kerboul.me affichera toujours la dernière version du site après chaque push.
+**Note importante** : Le webhook a besoin d'accès au socket Docker pour reconstruire le conteneur frontend. Cette approche simplifiée évite d'avoir à gérer manuellement le processus de build et de déploiement.

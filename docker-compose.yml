@@ -7,16 +7,11 @@ services:
       dockerfile: Dockerfile.frontend
     container_name: vitepress_frontend
     restart: unless-stopped
-    working_dir: /app
-    volumes:
-      - ./:/app
-    command: ["npm", "run", "docs:preview"]
-    depends_on:
-      - webhook
+    # Plus besoin de volumes car tout est buildé dans l'image
     networks:
       - commus
     ports:
-      - "4173:4173"  # Port par défaut vitepress preview
+      - "80:80"  # Port standard pour Nginx
 
   webhook:
     build:
@@ -27,6 +22,7 @@ services:
     working_dir: /app
     volumes:
       - ./:/app
+      - /var/run/docker.sock:/var/run/docker.sock  # Accès au daemon Docker pour rebuild le frontend
     environment:
       - GITHUB_SECRET=${COMMUS_SECRET}
     ports:

@@ -22,16 +22,17 @@ def webhook():
         abort(403)
     # Pull les dernières modifs
     subprocess.run(["git", "pull"], cwd=REPO_PATH)
-    # Rebuild le frontend
-    subprocess.run(["npm", "install"], cwd=REPO_PATH)
-    subprocess.run(["npm", "run", "docs:build"], cwd=REPO_PATH)
-    # Redémarre le conteneur frontend via Docker SDK
+    
+    # Rebuild le conteneur frontend (plus simple et propre)
     try:
-        client = docker.from_env()
-        frontend = client.containers.get("vitepress_frontend")
-        frontend.restart()
+        print("Rebuilding et redémarrage du conteneur frontend...")
+        # Docker compose build + up pour le service frontend uniquement
+        subprocess.run(["docker", "compose", "build", "frontend"], cwd=REPO_PATH)
+        subprocess.run(["docker", "compose", "up", "-d", "frontend"], cwd=REPO_PATH)
+        print("Rebuild terminé avec succès")
     except Exception as e:
-        print(f"Erreur lors du restart du conteneur frontend : {e}")
+        print(f"Erreur lors du rebuild du conteneur frontend : {e}")
+    
     return "OK", 200
 
 if __name__ == "__main__":
