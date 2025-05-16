@@ -1,0 +1,38 @@
+# Docker Compose pour VitePress frontend + Webhook Flask
+version: '3.8'
+
+services:
+  frontend:
+    build: ./docker/frontend
+    container_name: vitepress_frontend
+    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - ../:/app
+    command: ["npm", "run", "docs:build"]
+    # Le build se fait au démarrage, puis on sert le dossier dist
+    depends_on:
+      - webhook
+    networks:
+      - commus
+    # Le serveur statique sera lancé par le webhook après build
+    ports:
+      - "4173:4173" # Port par défaut vitepress preview
+
+  webhook:
+    build: ./docker/webhook
+    container_name: vitepress_webhook
+    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - ../:/app
+    environment:
+      - GITHUB_SECRET=${COMMUS_SECRET}
+    ports:
+      - "9000:9000"
+    networks:
+      - commus
+
+networks:
+  commus:
+    driver: bridge
