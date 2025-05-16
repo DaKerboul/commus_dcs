@@ -1,8 +1,8 @@
 # Dockerfile pour le service webhook Flask
 FROM python:3.11-slim
 WORKDIR /app
-COPY docker/webhook/requirements.txt ./
+COPY requirements.webhook.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
-COPY docker/webhook/webhook.py ./
+COPY webhook.py /app/
 EXPOSE 9000
-CMD ["python", "webhook.py"]
+CMD ["python", "/app/webhook.py"]

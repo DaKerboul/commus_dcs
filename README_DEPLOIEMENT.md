@@ -10,9 +10,12 @@
 1. Clone le dépôt sur ton serveur :
    ```bash
    git clone https://github.com/<ton_user>/<ton_repo>.git
-   cd <ton_repo>/docker
+   cd <ton_repo>
    ```
-2. Configure le secret du webhook dans `docker-compose.yml` (remplace `change_me` par une valeur forte et la même dans GitHub).
+2. Définis la variable d'environnement pour le secret du webhook :
+   ```bash
+   export COMMUS_SECRET="ton_secret_fort"
+   ```
 3. Lance les services :
    ```bash
    docker compose up -d --build
@@ -24,7 +27,7 @@
 1. Va dans les paramètres de ton repo GitHub > Webhooks > Add webhook
 2. URL : `https://commus.kerboul.me/webhook` (ou l'URL publique de ton serveur + `/webhook`)
 3. Content type : `application/json`
-4. Secret : la même valeur que dans `docker-compose.yml` (GITHUB_SECRET)
+4. Secret : la même valeur que dans `COMMUS_SECRET` définie sur le serveur
 5. Events : `Just the push event` (ou tout ce que tu veux)
 6. Active le webhook
 
