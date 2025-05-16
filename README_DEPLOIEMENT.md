@@ -25,9 +25,9 @@
 ## 3. Configuration du webhook GitHub
 
 1. Va dans les paramètres de ton repo GitHub > Webhooks > Add webhook
-2. URL : `https://commus.kerboul.me/webhook` (ou l'URL publique de ton serveur + `/webhook`)
+2. URL : `https://commus.kerboul.me/ton_secret` (où `ton_secret` correspond à la valeur de COMMUS_SECRET)
 3. Content type : `application/json`
-4. Secret : la même valeur que dans `COMMUS_SECRET` définie sur le serveur
+4. Pas besoin de secret (le secret est dans l'URL)
 5. Events : `Just the push event` (ou tout ce que tu veux)
 6. Active le webhook
 
@@ -61,18 +61,17 @@ jobs:
     steps:
       - name: Appel du webhook de déploiement
         run: |
-          curl -X POST \
-            -H "X-Hub-Signature-256: sha256=$(echo -n '${{ github.event.head_commit.id }}' | openssl dgst -sha256 -hmac '${{ secrets.GITHUB_SECRET }}' | sed 's/^.* //')" \
-            https://commus.kerboul.me/webhook
+          curl -X POST https://commus.kerboul.me/${{ secrets.COMMUS_SECRET }}
 ```
 
-> Remplace `${{ secrets.GITHUB_SECRET }}` par le secret utilisé côté serveur et ajoute-le dans les secrets GitHub.
+> Ajoute la valeur du secret dans les secrets GitHub sous le nom COMMUS_SECRET.
 
 ## 6. Mise à jour manuelle
 
 Pour forcer une mise à jour :
 ```bash
-curl -X POST -H "X-Hub-Signature-256: sha256=<signature>" https://commus.kerboul.me/webhook
+# Remplacer ton_secret par la valeur définie dans COMMUS_SECRET
+curl -X GET https://commus.kerboul.me/ton_secret
 ```
 
 ---
