@@ -4,26 +4,24 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: docker/frontend/Dockerfile
+      dockerfile: Dockerfile.frontend
     container_name: vitepress_frontend
     restart: unless-stopped
     working_dir: /app
     volumes:
       - ./:/app
-    command: ["npm", "run", "docs:build"]
-    # Le build se fait au démarrage, puis on sert le dossier dist
+    command: ["npm", "run", "docs:preview"]
     depends_on:
       - webhook
     networks:
       - commus
-    # Le serveur statique sera lancé par le webhook après build
     ports:
-      - "4173:4173" # Port par défaut vitepress preview
+      - "4173:4173"  # Port par défaut vitepress preview
 
   webhook:
     build:
       context: .
-      dockerfile: docker/webhook/Dockerfile
+      dockerfile: Dockerfile.webhook
     container_name: vitepress_webhook
     restart: unless-stopped
     working_dir: /app
