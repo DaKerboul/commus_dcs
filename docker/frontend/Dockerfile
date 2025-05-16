@@ -1,8 +1,8 @@
 # Dockerfile pour builder et servir le frontend VitePress
 FROM node:20-alpine as build
 WORKDIR /app
-COPY ../../package.json ./
-COPY ../../docs ./docs
+COPY package.json ./
+COPY docs ./docs
 RUN npm install && npm run docs:build
 
 FROM nginx:alpine as prod
