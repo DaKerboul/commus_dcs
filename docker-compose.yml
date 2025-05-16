@@ -10,7 +10,7 @@ services:
     restart: unless-stopped
     working_dir: /app
     volumes:
-      - ../:/app
+      - ./:/app
     command: ["npm", "run", "docs:build"]
     # Le build se fait au démarrage, puis on sert le dossier dist
     depends_on:
@@ -29,7 +29,7 @@ services:
     restart: unless-stopped
     working_dir: /app
     volumes:
-      - ../:/app
+      - ./:/app
     environment:
       - GITHUB_SECRET=${COMMUS_SECRET}
     ports:
