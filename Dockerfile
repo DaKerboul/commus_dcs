@@ -13,7 +13,7 @@ RUN npm install --no-audit --no-fund --quiet
 COPY . .
 
 # Construire le site avec une option plus silencieuse
-RUN npm run docs:build-silent || (echo "Build failed. Trying with reduced memory usage..." && NODE_OPTIONS="--max-old-space-size=256" npm run docs:build-silent)
+RUN npm run docs:build-silent
 
 # Étape de production avec Nginx
 FROM nginx:stable-alpine as production-stage
