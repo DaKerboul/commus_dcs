@@ -9,14 +9,14 @@ git fetch origin
 git reset --hard origin/main
 
 echo "🔄 Redémarrage des conteneurs avec docker-compose..."
-docker-compose down
+docker compose down
 
 # Construction avec des options pour limiter la mémoire et optimiser le build
 echo "🔨 Construction des conteneurs..."
-DOCKER_BUILDKIT=1 docker-compose build --progress=plain
+DOCKER_BUILDKIT=1 docker compose build --progress=plain
 
 echo "🚀 Démarrage des conteneurs..."
-docker-compose up -d
+docker compose up -d
 
 echo "✅ Déploiement terminé avec succès!"
 echo "Le site est maintenant accessible."
