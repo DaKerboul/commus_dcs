@@ -3,7 +3,9 @@ version: '3.8'
 
 services:
   frontend:
-    build: ./docker/frontend
+    build:
+      context: .
+      dockerfile: docker/frontend/Dockerfile
     container_name: vitepress_frontend
     restart: unless-stopped
     working_dir: /app
@@ -20,7 +22,9 @@ services:
       - "4173:4173" # Port par défaut vitepress preview
 
   webhook:
-    build: ./docker/webhook
+    build:
+      context: .
+      dockerfile: docker/webhook/Dockerfile
     container_name: vitepress_webhook
     restart: unless-stopped
     working_dir: /app
