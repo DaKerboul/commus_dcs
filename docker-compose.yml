@@ -1,5 +1,4 @@
 # Docker Compose pour VitePress frontend + Webhook Flask
-version: '3.8'
 
 services:
   frontend:
