@@ -2,15 +2,18 @@
 FROM node:18-alpine as build-stage
 WORKDIR /app
 
+# Augmenter la mémoire disponible pour Node.js
+ENV NODE_OPTIONS="--max-old-space-size=512"
+
 # Copier package.json et package-lock.json (si existant)
 COPY package*.json ./
-RUN npm install
+RUN npm install --no-audit --no-fund --quiet
 
 # Copier les sources
 COPY . .
 
-# Construire le site
-RUN npm run docs:build
+# Construire le site avec une option plus silencieuse
+RUN npm run docs:build-silent || (echo "Build failed. Trying with reduced memory usage..." && NODE_OPTIONS="--max-old-space-size=256" npm run docs:build-silent)
 
 # Étape de production avec Nginx
 FROM nginx:stable-alpine as production-stage
