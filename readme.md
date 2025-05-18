@@ -1,7 +1,5 @@
 # Communautés DCS World Francophones
 
-[![Déploiement](https://github.com/username/commus_dcs/actions/workflows/deploy.yml/badge.svg)](https://github.com/username/commus_dcs/actions/workflows/deploy.yml)
-
 Ce projet est un site web répertoriant les communautés francophones de DCS World (Digital Combat Simulator), permettant aux pilotes virtuels de découvrir et rejoindre des escadrons, escadrilles et groupes de vol.
 
 ## 🌐 À propos du projet
