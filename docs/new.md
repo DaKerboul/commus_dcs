@@ -14,10 +14,6 @@ Vous pourrez y trouver des informations sur les différentes communautés, des l
 
 Ce site a été créé pour permettre aux joueurs francophones de DCS World de trouver facilement des communautés actives, et de les rejoindre pour des vols en escadrille, des missions en coopération, des événements, des formations, et bien plus encore !
 
-Il remplace l'ancien site [(Version Notion)](https://tinyurl.com/KerboulistanCommunautes), qui manque d'une fonctionnalité très spécifique :
-
-**La capacité des communautés à pouvoir ajouter/modifier leur propre fiche.**
-
 ## Comment ajouter/modifier une communauté ?
 
 Ce site est basé sur un système de fichiers Markdown, qui permet à n'importe qui de proposer des modifications, ou d'ajouter une nouvelle communauté.

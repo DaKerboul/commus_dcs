@@ -30,10 +30,6 @@ features:
   Ce site est continuellement en cours de développement. Si vous avez des suggestions, des idées, ou des modifications à proposer, n'hésitez pas à contribuer sur GitHub !
 :::
 
-::: danger NOUVEAU !
-  Arrivée d'un serveur Vietnam dans la commu FR ! [Plus d'infos](https://commus.kerboul.me/commus/vietnam.html)
-:::
-
 <img src="/bck1.png" alt="Communautés DCS World Francophones" width="1200" style="display: block; margin-left: auto; margin-right: auto;"/>
 
 ---
