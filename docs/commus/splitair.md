@@ -12,27 +12,27 @@ title: Split Air
 
 ## Présentation du groupe
 
-La team Split Air présente ses patrouilles et ses mods sur les meetings aériens virtuels. Descendante de la team « WolfDelta », la Split-Air à de l’ambition et souhaite bien développer ses patrouilles virtuelles une fois les mods en cours de développement terminés. Les mods RAF, Mirage 2000N/D et OV-10A Bronco sont déjà disponibles au téléchargement sur le site et le discord de la Split Air.
+La Split-Air est une équipe orientée voltige aérienne qui présente ses patrouilles et ses mods sur des évènements virtuels. Descendante de la team « WolfDelta », elle a le souhait de développer au mieux ses mods qui serviront ensuite dans les patrouilles. La plupart des mods sont publics, le RAF, Mirage 2000N/D et OV-10A Bronco sont disponibles au téléchargement sur le site de la Split-Air. L'Alphajet est toujours en développement et devrait voir le jour prochainement.
 
 ## Informations Complémentaires
 
-- **Nom du Groupe** : Split Air
+- **Nom du Groupe** : Split-Air
 - **Taille** : Hubs de la Communauté (+300 Membres)
 - **Type** : Escadron Semi-Ouvert (partie publique + partie interne)
 - **Fondateur** : Tom
 - **Contact Principal** : tom83400 (discord)
 - **Recrutement** : Oui - Ouvert
-- **Lien Principal** : [Discord](https://discord.gg/cRh9PFMwWP)
+- **Lien Principal** : [linktr.ee/splitair](https://linktr.ee/splitair)
 - **Période Historique** : Aucune Période Particulière
-- **Liste détaillée des Modules** : Tous les Modules Avions, Tous les Modules Hélicoptères
+- **Liste détaillée des Modules** : Tous les Modules Avions, Tous les Modules Hélicoptères + mods
 - **Fréquence des évènements** : Hebdomadaire (1 chaque semaine)
 - **Expériences Proposées** :
-  - Aerobatics
+  - Serveur Aerobatic dédié 24/7 avec de nombreux mods de la communauté
   - Meetings Aériens Virtuels
   - Missions Arcade/Fun
 
-- **Objectif du Groupe** : La Split Air développe des mods pour la communauté DCS comme le RAF, le Bronco ou encore l'Alphajet ! En plus de ça, la Split Air est présente sur les meetings aériens virtuels du monde entier pour y effectuer des présentations acrobatiques de tous types.
+- **Objectif du Groupe** : Représenter le savoir-faire français en matière de voltige aérienne. La Split-Air développe des mods pour la communauté DCS, forme des pilotes qui veulent goûter aux plaisirs de la voltige afin de participer aux airshows comme le VIAF. Elle envoie chaque année ses meilleures équipes (Voltige Victor, Couteau Delta...).
 
-- **Conditions d'Entrée** : On vous attend en vocal :)
+- **Conditions d'Entrée** : Aucune ! On vous attend en vocal et en vol. 😃
 
 - **Recherché par la Commu** : Tous les Modules Avions, Tous les Modules Hélicoptères
