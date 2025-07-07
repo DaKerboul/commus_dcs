@@ -9,9 +9,5 @@ title: FOX 3
 [Accéder à la chaîne Youtube](https://www.youtube.com/c/Fox3DCS_Squadron)<br>
 [Accéder à l'Instagram](https://www.instagram.com/fox3.dcs/)<br>
 <img src="/commus_img/fox3.jpg" alt="logo de l'escadron FOX 3" width="500" style="display: block; margin-left: auto; margin-right: auto;"/>
----
 
-## Présentation du groupe
-
-
-## Informations Complémentaires
+Aucune description (si vous êtes le responsable de cette communauté, contacter le gestionnaire pour en ajouter une).
