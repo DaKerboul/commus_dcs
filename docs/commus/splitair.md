@@ -36,3 +36,11 @@ La Split-Air est une équipe orientée voltige aérienne qui présente ses patro
 - **Conditions d'Entrée** : Aucune ! On vous attend en vocal et en vol. 😃
 
 - **Recherché par la Commu** : Tous les Modules Avions, Tous les Modules Hélicoptères
+
+## En images :
+
+<img src="/commus_img/splitair/split1.png" alt="drawing" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
+<img src="/commus_img/splitair/split2.png" alt="drawing" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
+<img src="/commus_img/splitair/split3.png" alt="drawing" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
+<img src="/commus_img/splitair/split4.png" alt="drawing" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
+<img src="/commus_img/splitair/split5.png" alt="drawing" width="800" style="display: block; margin-left: auto; margin-right: auto;"/>
