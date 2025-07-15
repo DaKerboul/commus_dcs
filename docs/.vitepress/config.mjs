@@ -34,7 +34,6 @@ export default defineConfig({
           { text: 'AAE Esport/Gaming', link: '/commus/aaeeg'},
           { text: 'Ashayar', link: '/commus/ashayar' },
           { text: 'ATAC', link: '/commus/atac' },
-          { text: 'Boarder Airlines', link: '/commus/boarder' },
           { text: 'BOLT', link: '/commus/bolt' },
           { text: 'Bullseye Francophone', link: '/commus/bfr' },
           { text: 'Canards Volants', link: '/commus/canard'},
