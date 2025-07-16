@@ -22,6 +22,10 @@ title: Liens Officiels
 - [PCGamingWiki – page DCS World](https://www.pcgamingwiki.com/wiki/DCS_World)
 - [Fandom – DCS World wiki](https://dcs-world.fandom.com/wiki/Digital_Combat_Simulator_World)
 
+## Wiki DCS Francophone
+
+Retrouvez ici un site dédié à la communauté Francophone : [Wiki DCS FR](https://wiki.kerboul.me)
+
 ---
 
 ## Développeurs tiers & modules
