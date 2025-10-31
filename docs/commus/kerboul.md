@@ -5,7 +5,7 @@ title: Kerboulistan (Opés de Kerboul)
 
 # Kerboulistan (Opés de Kerboul)
 
-[Accéder au Discord](https://discord.gg/NdvQEY2D93)
+[Accéder au Discord](https://discord.gg/YqJhmGgxNp)
 
 ---
 <img src="/commus_img/kerboul.png" alt="drawing" width="450" style="display: block; margin-left: auto; margin-right: auto;"/>
@@ -22,7 +22,7 @@ Le Kerboulistan, également connu sous le nom d'Opés de Kerboul, sert de centre
 - **Fondateur** : Kerboul (Lead)
 - **Contact Principal** : Kerboul
 - **Recrutement** : Aucun
-- **Lien Principal** : [Discord](https://discord.gg/NdvQEY2D93)
+- **Lien Principal** : [Discord](https://discord.gg/YqJhmGgxNp)
 - **Période Historique** : Aucune Période Particulière
 - **Liste détaillée des Modules** :
   - Combined Arms, Tous les Modules Avions, Tous les Modules Hélicoptères
