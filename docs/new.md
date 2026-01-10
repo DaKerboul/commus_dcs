@@ -6,7 +6,7 @@ editLink: false
 
 # Bienvenue sur le site des Communautés DCS World Francophones !
 
-Vous êtes ici sur le site des Communautés DCS World Francophones, qui a pour but de référencer toutes les communautés francophones de DCS World. 
+Vous êtes ici sur le site des Communautés DCS World Francophones, qui a pour but de référencer le maximum de communautés francophones de DCS World. 
 
 Vous pourrez y trouver des informations sur les différentes communautés, des liens pour les rejoindre, et des informations sur les événements, les formations, et bien plus encore !
 
