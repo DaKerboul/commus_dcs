@@ -1,40 +1,35 @@
-# Build output
-docs/.vitepress/dist
-dist/
-build/
+# Nuxt dev/build outputs
+.output
+.nuxt
+.data
+dist
 
-# Dependencies
-node_modules/
+# Node
+node_modules
 
-# Cache directories
-.cache/
-.temp/
-docs/.vitepress/cache/
-.npm/
-.yarn/
-.pnpm-store/
+# Logs
+logs
+*.log
 
-# IDE specific
-.vscode/
-.idea/
-*.sublime-*
-*.swp
-*.swo
+# Env
+.env
+.env.*
+!.env.example
 
-# OS files
+# System
 .DS_Store
 Thumbs.db
 
-# Logs
-logs/
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# IDE
+.idea
+.vscode
+*.sw?
 
-# Environment variables
-.env
-.env.local
+# Archive of old VitePress site
+.archive
+
+# Temp
+.temp
 
 # SSH et secrets
 *.pem
