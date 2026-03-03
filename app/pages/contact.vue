@@ -11,7 +11,7 @@
         <p class="text-gray-500 dark:text-gray-400 mb-4">
           Le moyen le plus rapide pour nous contacter est via Discord. Rejoignez le serveur du Kerboulistan :
         </p>
-        <UButton to="https://discord.gg/kerboulistan" target="_blank" icon="i-simple-icons-discord" color="primary">
+        <UButton to="https://discord.gg/s3wAh2KuC9" target="_blank" icon="i-simple-icons-discord" color="primary">
           Rejoindre le Discord
         </UButton>
       </div>
