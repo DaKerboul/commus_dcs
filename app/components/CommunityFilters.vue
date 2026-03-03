@@ -239,6 +239,7 @@ const sortOptions = [
   { value: 'size', label: 'Taille' },
   { value: 'updated', label: 'Mis à jour' },
   { value: 'created', label: 'Ajouté' },
+  { value: 'votes', label: 'Votes' },
 ]
 
 const filteredModules = computed(() => {
@@ -305,7 +306,7 @@ function setSort(value: string) {
     filters.value.sortDir = filters.value.sortDir === 'asc' ? 'desc' : 'asc'
   } else {
     filters.value.sort = value as any
-    filters.value.sortDir = 'asc'
+    filters.value.sortDir = value === 'votes' ? 'desc' : 'asc'
   }
   emitFilters()
 }
