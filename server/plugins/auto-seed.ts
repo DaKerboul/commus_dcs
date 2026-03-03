@@ -9,6 +9,26 @@ import fs from 'fs'
 import path from 'path'
 import postgres from 'postgres'
 
+/**
+ * Run schema migrations for columns/tables added after initial deployment.
+ * Each migration is idempotent (IF NOT EXISTS / ADD COLUMN IF NOT EXISTS).
+ */
+async function runMigrations(client: ReturnType<typeof postgres>) {
+  const migrations = [
+    // v2: Add votes column to communities
+    `ALTER TABLE communities ADD COLUMN IF NOT EXISTS votes INTEGER DEFAULT 0`,
+  ]
+
+  for (const sql of migrations) {
+    try {
+      await client.unsafe(sql)
+    } catch (err) {
+      console.warn(`[auto-seed] Migration warning:`, err)
+    }
+  }
+  console.log(`[auto-seed] ✅ ${migrations.length} migration(s) checked`)
+}
+
 export default defineNitroPlugin(async () => {
   const config = useRuntimeConfig()
   const dbUrl = config.databaseUrl || process.env.DATABASE_URL
@@ -32,10 +52,13 @@ export default defineNitroPlugin(async () => {
     `
 
     if (tableCheck[0]?.table_exists) {
+      // Run pending migrations on existing DB
+      await runMigrations(client)
+
       const countCheck = await client`SELECT COUNT(*) as cnt FROM communities`
       const count = Number(countCheck[0]?.cnt ?? 0)
       if (count > 0) {
-        console.log(`[auto-seed] Database already has ${count} communities — skipping`)
+        console.log(`[auto-seed] Database already has ${count} communities — skipping seed`)
         await client.end()
         return
       }

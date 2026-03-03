@@ -52,9 +52,13 @@ CREATE TABLE IF NOT EXISTS communities (
   other_links JSONB,
   featured BOOLEAN DEFAULT false,
   published BOOLEAN DEFAULT true,
+  votes INTEGER DEFAULT 0,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
+
+-- Migration: add votes column if upgrading from older schema
+ALTER TABLE communities ADD COLUMN IF NOT EXISTS votes INTEGER DEFAULT 0;
 
 CREATE TABLE IF NOT EXISTS modules (
   id SERIAL PRIMARY KEY,
