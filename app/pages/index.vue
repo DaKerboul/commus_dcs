@@ -26,7 +26,7 @@
     </section>
 
     <!-- Stats -->
-    <section v-if="stats" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 -mt-8">
+    <section v-if="stats" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
       <StatsGrid :stats="heroStats" />
     </section>
 
@@ -78,6 +78,47 @@
           <span class="absolute bottom-2 left-2 text-xs font-medium text-white opacity-0 group-hover:opacity-100 transition-opacity">
             {{ img.alt }}
           </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Backed by Kerboulistan -->
+    <section class="relative overflow-hidden border-t border-gray-800">
+      <div class="absolute inset-0 bg-linear-to-r from-emerald-950/20 via-transparent to-emerald-950/20" />
+      <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14">
+        <div class="flex flex-col md:flex-row items-center gap-8">
+          <div class="shrink-0 flex flex-col items-center gap-3">
+            <div class="h-20 w-20 rounded-full bg-emerald-900/50 border-2 border-emerald-500/30 flex items-center justify-center">
+              <UIcon name="i-heroicons-shield-check" class="text-4xl text-emerald-400" />
+            </div>
+            <span class="text-xs font-mono uppercase tracking-widest text-emerald-500">Initiative officielle</span>
+          </div>
+          <div class="text-center md:text-left">
+            <p class="text-sm font-mono uppercase tracking-wider text-emerald-400/80 mb-2">Approuvé par la RLPDK — Décret n°2024-DCS-42</p>
+            <h2 class="text-2xl font-bold text-white">
+              Initiative soutenue par le
+              <a href="https://gov.kerboul.me" target="_blank" class="text-emerald-400 hover:text-emerald-300 underline decoration-emerald-500/30 underline-offset-4 transition-colors">
+                Gouvernement du Kerboulistan
+              </a>
+            </h2>
+            <p class="mt-3 text-gray-400 max-w-2xl">
+              Conformément à l'article 42 du Code Mémétique de la RLPDK, ce registre des communautés DCS francophones
+              est reconnu comme service d'utilité publique par la République Libre Populaire Démocratique du Kerboulistan.
+            </p>
+            <div class="mt-4 flex flex-wrap items-center gap-3 justify-center md:justify-start">
+              <UButton
+                to="https://gov.kerboul.me"
+                target="_blank"
+                size="sm"
+                color="emerald"
+                variant="soft"
+                icon="i-heroicons-globe-alt"
+              >
+                Portail Gouvernemental
+              </UButton>
+              <span class="text-xs text-gray-600">© 2026 RLPDK — Tous droits mémétiquement réservés</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>

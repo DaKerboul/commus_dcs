@@ -22,6 +22,9 @@
               <UButton to="/soumettre" variant="ghost" color="neutral" size="sm">
                 Soumettre
               </UButton>
+              <UButton to="/a-propos" variant="ghost" color="neutral" size="sm">
+                À propos
+              </UButton>
             </div>
           </div>
           <div class="flex items-center gap-2">
@@ -58,6 +61,9 @@
           <UButton to="/soumettre" variant="ghost" color="neutral" block @click="mobileOpen = false">
             Soumettre
           </UButton>
+          <UButton to="/a-propos" variant="ghost" color="neutral" block @click="mobileOpen = false">
+            À propos
+          </UButton>
         </div>
       </nav>
     </header>
@@ -76,6 +82,7 @@
             <span>Commus DCS FR — Annuaire des communautés francophones DCS World</span>
           </div>
           <div class="flex items-center gap-4 text-sm text-gray-500">
+            <NuxtLink to="/a-propos" class="hover:text-gray-300 transition-colors">À propos</NuxtLink>
             <NuxtLink to="/contact" class="hover:text-gray-300 transition-colors">Contact</NuxtLink>
             <a href="https://github.com/DaKerboul/commus_dcs" target="_blank" class="hover:text-gray-300 transition-colors">GitHub</a>
             <span>© {{ new Date().getFullYear() }} Kerboulistan</span>
