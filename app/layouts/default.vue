@@ -1,5 +1,13 @@
 <template>
-  <div class="min-h-screen flex flex-col bg-gray-950 text-gray-100">
+  <div :class="['min-h-screen flex flex-col bg-gray-950 text-gray-100', { 'rlpdk-theme': isRlpdk }]">
+    <!-- RLPDK Banner -->
+    <div v-if="isRlpdk" class="rlpdk-banner hidden items-center justify-center gap-3 bg-emerald-900 border-b border-emerald-700 py-1.5 px-4 text-center">
+      <span class="text-[11px] font-mono text-emerald-300 tracking-widest uppercase">
+        ★ République Libre et Populaire du Kerboulistan — Registre Officiel des Communautés Aériennes ★
+      </span>
+      <button class="text-emerald-500 hover:text-emerald-300 text-xs ml-2" @click="disableRlpdk">✕</button>
+    </div>
+
     <!-- Navbar -->
     <header class="sticky top-0 z-50 border-b border-gray-800 bg-gray-950/80 backdrop-blur-lg">
       <nav class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -7,7 +15,8 @@
           <div class="flex items-center gap-6">
             <NuxtLink to="/" class="flex items-center gap-2">
               <img src="/logo.png" alt="Commus DCS FR" class="h-8 w-8" />
-              <span class="text-lg font-bold text-white">Commus DCS</span>
+              <span v-if="!isRlpdk" class="text-lg font-bold text-white">Commus DCS</span>
+              <span v-else class="text-lg font-bold text-emerald-300 font-serif tracking-wide">ROCA-DK</span>
             </NuxtLink>
             <div class="hidden md:flex items-center gap-1">
               <UButton to="/communautes" variant="ghost" color="neutral" size="sm">
@@ -28,6 +37,13 @@
             </div>
           </div>
           <div class="flex items-center gap-2">
+            <UButton
+              :icon="colorMode.value === 'dark' ? 'i-heroicons-sun' : 'i-heroicons-moon'"
+              variant="ghost"
+              color="neutral"
+              size="sm"
+              @click="toggleColorMode"
+            />
             <UButton
               to="https://github.com/DaKerboul/commus_dcs"
               target="_blank"
@@ -79,13 +95,18 @@
         <div class="flex flex-col md:flex-row items-center justify-between gap-4">
           <div class="flex items-center gap-2 text-sm text-gray-400">
             <img src="/logo.png" alt="" class="h-5 w-5" />
-            <span>Commus DCS FR — Annuaire des communautés francophones DCS World</span>
+            <span v-if="!isRlpdk">Commus DCS FR — Annuaire des communautés francophones DCS World</span>
+            <span v-else class="font-serif tracking-wide">ROCA-DK — Registre Officiel des Communautés Aériennes du Kerboulistan</span>
           </div>
           <div class="flex items-center gap-4 text-sm text-gray-500">
             <NuxtLink to="/a-propos" class="hover:text-gray-300 transition-colors">À propos</NuxtLink>
             <NuxtLink to="/contact" class="hover:text-gray-300 transition-colors">Contact</NuxtLink>
+            <NuxtLink to="/changelog" class="hover:text-gray-300 transition-colors">Changelog</NuxtLink>
+            <NuxtLink to="/api-docs" class="hover:text-gray-300 transition-colors">API</NuxtLink>
+            <a href="/api/rss.xml" class="hover:text-gray-300 transition-colors">RSS</a>
             <a href="https://github.com/DaKerboul/commus_dcs" target="_blank" class="hover:text-gray-300 transition-colors">GitHub</a>
-            <span>© {{ new Date().getFullYear() }} Kerboulistan</span>
+            <span v-if="!isRlpdk">© {{ new Date().getFullYear() }} Kerboulistan</span>
+            <span v-else class="font-serif text-emerald-400">© République du Kerboulistan — Tous droits réservés par décret</span>
           </div>
         </div>
       </div>
@@ -95,6 +116,12 @@
 
 <script setup lang="ts">
 const mobileOpen = ref(false)
+const colorMode = useColorMode()
+const { isRlpdk, disableRlpdk } = useRlpdkTheme()
+
+function toggleColorMode() {
+  colorMode.value = colorMode.value === 'dark' ? 'light' : 'dark'
+}
 
 const route = useRoute()
 watch(() => route.path, () => {

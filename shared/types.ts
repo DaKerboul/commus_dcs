@@ -12,6 +12,7 @@ export interface CommunityCard {
   eventFrequency: string
   discordUrl: string | null
   websiteUrl: string | null
+  votes: number
   moduleNames: string[]
   experienceNames: string[]
   historicalPeriods: string[]
@@ -33,6 +34,7 @@ export interface CommunityDetail extends CommunityCard {
   images: { url: string; alt: string | null }[]
   soughtModuleNames: string[]
   featured: boolean
+  votes: number
   createdAt: string
   updatedAt: string
 }
@@ -46,7 +48,7 @@ export interface FilterOptions {
   eventFrequency?: string[]
   historicalPeriods?: string[]
   experiences?: string[]
-  sort?: 'name' | 'size' | 'updated' | 'created'
+  sort?: 'name' | 'size' | 'updated' | 'created' | 'votes'
   sortDir?: 'asc' | 'desc'
   page?: number
   limit?: number

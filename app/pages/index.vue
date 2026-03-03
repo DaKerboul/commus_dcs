@@ -8,18 +8,35 @@
         <div class="absolute inset-0 bg-linear-to-b from-gray-950/30 via-transparent to-gray-950" />
       </div>
       <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24 sm:py-40 text-center">
-        <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white drop-shadow-lg">
-          Communautés <span class="text-blue-400">DCS World</span> Francophones
-        </h1>
-        <p class="mt-6 text-lg sm:text-xl text-gray-200 max-w-2xl mx-auto drop-shadow">
-          Trouvez votre escadron, rejoignez des pilotes passionnés et vivez DCS World en français.
-        </p>
+        <template v-if="!isRlpdk">
+          <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white drop-shadow-lg">
+            Communautés <span class="text-blue-400">DCS World</span> Francophones
+          </h1>
+          <p class="mt-6 text-lg sm:text-xl text-gray-200 max-w-2xl mx-auto drop-shadow">
+            Trouvez votre escadron, rejoignez des pilotes passionnés et vivez DCS World en français.
+          </p>
+        </template>
+        <template v-else>
+          <div class="rlpdk-seal inline-block mb-4">★ REGISTRE OFFICIEL ★</div>
+          <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white drop-shadow-lg font-serif">
+            Registre des <span class="text-emerald-400">Communautés Aériennes</span>
+          </h1>
+          <p class="mt-4 text-sm font-mono text-emerald-300/80 tracking-wider uppercase">
+            Décret n°{{ decreeNumber }} — Ministère de l'Aviation Virtuelle
+          </p>
+          <p class="mt-4 text-lg sm:text-xl text-gray-200 max-w-2xl mx-auto drop-shadow font-serif">
+            Par décret du Grand Chancelier, toute communauté DCS francophone doit être enregistrée auprès du Bureau Central des Escadrons.
+          </p>
+        </template>
         <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
           <UButton to="/communautes" size="xl" color="primary" icon="i-heroicons-magnifying-glass">
             Explorer les communautés
           </UButton>
           <UButton to="/trouver" size="xl" variant="outline" color="white" icon="i-heroicons-sparkles">
             Trouver ma commu
+          </UButton>
+          <UButton size="xl" variant="ghost" color="white" icon="i-heroicons-bolt" @click="goRandom">
+            J'ai de la chance
           </UButton>
         </div>
       </div>
@@ -143,10 +160,17 @@ useHead({
   title: 'Commus DCS FR — Annuaire des communautés francophones DCS World',
 })
 
+const { isRlpdk, decreeNumber } = useRlpdkTheme()
+
 const { data: stats } = await useFetch<StatsData>('/api/stats')
 const { data: featured } = await useFetch<{ data: CommunityCard[] }>('/api/communities', {
   query: { limit: 6, sort: 'updated', sortDir: 'desc' },
 })
+
+async function goRandom() {
+  const { data } = await useFetch<{ slug: string }>('/api/communities/random')
+  if (data.value?.slug) navigateTo(`/communautes/${data.value.slug}`)
+}
 
 const heroStats = computed(() => {
   if (!stats.value) return []

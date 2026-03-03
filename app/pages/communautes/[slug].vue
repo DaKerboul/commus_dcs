@@ -209,7 +209,7 @@
             <div>
               <div class="text-sm text-gray-400">Périodes historiques</div>
               <div class="text-sm text-white">
-                {{ community.historicalPeriods.map(p => PERIOD_LABELS[p] || p).join(', ') }}
+                {{ community.historicalPeriods.map((p: string) => PERIOD_LABELS[p] || p).join(', ') }}
               </div>
             </div>
           </div>
@@ -251,14 +251,61 @@
         >
           Rejoindre le Discord
         </UButton>
+
+        <!-- Share -->
+        <div class="rounded-xl border border-gray-800 bg-gray-900/50 p-5">
+          <h3 class="font-semibold text-white mb-3">Partager</h3>
+          <div class="flex flex-col gap-2">
+            <UButton icon="i-heroicons-link" variant="outline" color="neutral" size="sm" block @click="copyLink">
+              {{ copied ? 'Lien copié !' : 'Copier le lien' }}
+            </UButton>
+            <UButton
+              icon="i-simple-icons-discord"
+              variant="outline"
+              color="neutral"
+              size="sm"
+              block
+              @click="shareDiscord"
+            >
+              Partager sur Discord
+            </UButton>
+          </div>
+        </div>
+
+        <!-- Upvote -->
+        <div class="rounded-xl border border-gray-800 bg-gray-900/50 p-5">
+          <h3 class="font-semibold text-white mb-3">Soutenir</h3>
+          <UButton
+            :icon="hasVoted ? 'i-heroicons-heart-solid' : 'i-heroicons-heart'"
+            :color="hasVoted ? 'error' : 'neutral'"
+            :variant="hasVoted ? 'soft' : 'outline'"
+            size="sm"
+            block
+            :disabled="hasVoted"
+            @click="vote"
+          >
+            {{ hasVoted ? 'Déjà voté !' : "J'aime cette commu" }}
+            <template #trailing>
+              <span class="text-xs font-mono">{{ voteCount }}</span>
+            </template>
+          </UButton>
+        </div>
       </div>
     </div>
+
+    <!-- Similar communities -->
+    <section v-if="similar?.data?.length" class="mt-12">
+      <h2 class="text-xl font-semibold text-white mb-4">Communautés similaires</h2>
+      <div class="grid gap-4 md:grid-cols-3">
+        <CommunityCard v-for="c in similar.data" :key="c.id" :community="c" />
+      </div>
+    </section>
   </div>
 </template>
 
 <script setup lang="ts">
 import { SIZE_LABELS, TYPE_LABELS, FREQUENCY_LABELS, RECRUITMENT_LABELS, PERIOD_LABELS, RECRUITMENT_COLORS } from '#shared/types'
-import type { CommunityDetail } from '#shared/types'
+import type { CommunityDetail, CommunityCard } from '#shared/types'
 
 const route = useRoute()
 const slug = route.params.slug as string
@@ -273,10 +320,56 @@ useHead({
   title: `${community.value.name} — Commus DCS FR`,
   meta: [
     { name: 'description', content: community.value.shortDescription || community.value.description?.slice(0, 160) || '' },
+    { property: 'og:title', content: `${community.value.name} — Commus DCS FR` },
+    { property: 'og:description', content: community.value.shortDescription || '' },
+    { property: 'og:image', content: `/api/og/${slug}` },
+    { property: 'og:type', content: 'website' },
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:image', content: `/api/og/${slug}` },
   ],
 })
 
 const recruitmentColor = computed(() => {
   return (RECRUITMENT_COLORS[community.value!.recruitmentStatus] || 'neutral') as any
+})
+
+// Share
+const copied = ref(false)
+function copyLink() {
+  navigator.clipboard.writeText(window.location.href)
+  copied.value = true
+  setTimeout(() => { copied.value = false }, 2000)
+}
+function shareDiscord() {
+  const text = `Découvrez ${community.value!.name} sur Commus DCS FR : ${window.location.href}`
+  navigator.clipboard.writeText(text)
+  copied.value = true
+  setTimeout(() => { copied.value = false }, 2000)
+}
+
+// Upvote
+const voteCount = ref(community.value?.votes || 0)
+const hasVoted = ref(false)
+
+onMounted(() => {
+  const votedSlugs = JSON.parse(localStorage.getItem('commus_votes') || '[]')
+  hasVoted.value = votedSlugs.includes(slug)
+})
+
+async function vote() {
+  if (hasVoted.value) return
+  try {
+    const result = await $fetch<{ votes: number }>(`/api/communities/${slug}/vote`, { method: 'POST' })
+    voteCount.value = result.votes
+    hasVoted.value = true
+    const votedSlugs = JSON.parse(localStorage.getItem('commus_votes') || '[]')
+    votedSlugs.push(slug)
+    localStorage.setItem('commus_votes', JSON.stringify(votedSlugs))
+  } catch { /* ignore */ }
+}
+
+// Similar communities
+const { data: similar } = await useFetch<{ data: CommunityCard[] }>('/api/communities/similar', {
+  query: { slug },
 })
 </script>

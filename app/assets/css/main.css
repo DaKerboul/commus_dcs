@@ -18,3 +18,59 @@ html {
 .community-card:hover {
   transform: translateY(-2px);
 }
+
+/* ── RLPDK Easter Egg Theme ──────────────────── */
+.rlpdk-theme {
+  --color-primary: #059669;
+  font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+.rlpdk-theme .rlpdk-banner {
+  display: flex !important;
+}
+
+.rlpdk-theme header {
+  border-bottom-color: #065f46 !important;
+  background: linear-gradient(180deg, #064e3b 0%, #022c22 100%) !important;
+}
+
+.rlpdk-theme header span,
+.rlpdk-theme header a,
+.rlpdk-theme header button {
+  font-family: 'Georgia', serif;
+}
+
+.rlpdk-theme footer {
+  border-top-color: #065f46 !important;
+  background: linear-gradient(0deg, #064e3b 0%, #022c22 100%) !important;
+}
+
+.rlpdk-theme .community-card {
+  border-color: #065f46 !important;
+  background: rgba(6, 78, 59, 0.15) !important;
+}
+
+.rlpdk-theme .community-card:hover {
+  border-color: #d4a017 !important;
+  box-shadow: 0 0 12px rgba(212, 160, 23, 0.2);
+}
+
+.rlpdk-theme h1,
+.rlpdk-theme h2,
+.rlpdk-theme h3 {
+  font-family: 'Georgia', serif;
+  letter-spacing: 0.02em;
+}
+
+/* Gold accent for RLPDK badges */
+.rlpdk-theme .rlpdk-seal {
+  border: 2px solid #d4a017;
+  background: linear-gradient(135deg, #064e3b 0%, #022c22 100%);
+  color: #d4a017;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-family: 'Georgia', serif;
+}

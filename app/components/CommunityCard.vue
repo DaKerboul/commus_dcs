@@ -27,6 +27,16 @@
           >
             {{ RECRUITMENT_LABELS[community.recruitmentStatus] || 'N/A' }}
           </UBadge>
+          <UBadge v-if="isNew" color="warning" variant="subtle" size="xs">
+            Nouveau
+          </UBadge>
+          <UBadge v-if="isLarge" color="info" variant="subtle" size="xs">
+            Grande commu
+          </UBadge>
+          <span v-if="props.community.votes > 0" class="inline-flex items-center gap-0.5 text-xs text-red-400">
+            <UIcon name="i-heroicons-heart-solid" class="text-xs" />
+            {{ props.community.votes }}
+          </span>
         </div>
         <p v-if="community.shortDescription" class="mt-1 text-sm text-gray-400 line-clamp-2">
           {{ community.shortDescription }}
@@ -74,5 +84,17 @@ const props = defineProps<{
 
 const recruitmentColor = computed(() => {
   return (RECRUITMENT_COLORS[props.community.recruitmentStatus] || 'neutral') as any
+})
+
+const isNew = computed(() => {
+  if (!(props.community as any).createdAt) return false
+  const created = new Date((props.community as any).createdAt)
+  const thirtyDaysAgo = new Date()
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+  return created > thirtyDaysAgo
+})
+
+const isLarge = computed(() => {
+  return ['hub_300_plus', 'very_large_150_plus', 'large_50_plus'].includes(props.community.sizeCategory)
 })
 </script>
