@@ -74,3 +74,20 @@ html {
   text-transform: uppercase;
   font-family: 'Georgia', serif;
 }
+
+/* ── "J'ai de la chance" button hover animation ── */
+.lucky-btn {
+  transition: transform 0.2s ease, filter 0.3s ease;
+}
+.lucky-btn:hover {
+  animation: lucky-wiggle 0.5s ease;
+  filter: drop-shadow(0 0 8px rgba(250, 204, 21, 0.5));
+}
+@keyframes lucky-wiggle {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  15% { transform: rotate(-6deg) scale(1.05); }
+  30% { transform: rotate(5deg) scale(1.08); }
+  45% { transform: rotate(-4deg) scale(1.05); }
+  60% { transform: rotate(3deg) scale(1.03); }
+  75% { transform: rotate(-1deg) scale(1.01); }
+}

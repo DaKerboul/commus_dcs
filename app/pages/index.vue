@@ -12,7 +12,7 @@
           <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-gray-900 dark:text-white drop-shadow-lg">
             Communautés <span class="text-blue-400">DCS World</span> Francophones
           </h1>
-          <p class="mt-6 text-lg sm:text-xl text-gray-700 dark:text-gray-200 max-w-2xl mx-auto drop-shadow">
+          <p class="mt-6 text-lg sm:text-xl text-gray-700 dark:text-gray-200 max-w-2xl mx-auto ">
             Trouvez votre escadron, rejoignez des pilotes passionnés et vivez DCS World en français.
           </p>
         </template>
@@ -24,7 +24,7 @@
           <p class="mt-4 text-sm font-mono text-emerald-300/80 tracking-wider uppercase">
             Décret n°{{ decreeNumber }} — Ministère de l'Aviation Virtuelle
           </p>
-          <p class="mt-4 text-lg sm:text-xl text-gray-700 dark:text-gray-200 max-w-2xl mx-auto drop-shadow font-serif">
+          <p class="mt-4 text-lg sm:text-xl text-gray-700 dark:text-gray-200 max-w-2xl mx-auto font-serif">
             Par décret du Grand Chancelier, toute communauté DCS francophone doit être enregistrée auprès du Bureau Central des Escadrons.
           </p>
         </template>
@@ -35,7 +35,7 @@
           <UButton to="/trouver" size="xl" variant="outline" color="white" icon="i-heroicons-sparkles">
             Trouver ma commu
           </UButton>
-          <UButton size="xl" variant="ghost" color="white" icon="i-heroicons-bolt" @click="goRandom">
+          <UButton size="xl" variant="ghost" color="white" icon="i-heroicons-bolt" class="lucky-btn" @click="goRandom">
             J'ai de la chance
           </UButton>
         </div>
