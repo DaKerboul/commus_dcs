@@ -61,7 +61,7 @@
       <!-- Pagination -->
       <div v-if="communities && communities.totalPages > 1" class="mt-8 flex justify-center">
         <UPagination
-          v-model="currentPage"
+          v-model:page="currentPage"
           :total="communities.total"
           :items-per-page="filters.limit || 50"
         />
