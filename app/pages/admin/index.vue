@@ -1,23 +1,23 @@
 <template>
   <div>
-    <h1 class="text-2xl font-bold text-white mb-6">Dashboard Admin</h1>
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Dashboard Admin</h1>
 
     <div v-if="stats" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-      <div class="rounded-xl border border-gray-800 bg-gray-900/50 p-4">
-        <div class="text-2xl font-bold text-white">{{ stats.totalCommunities }}</div>
-        <div class="text-sm text-gray-400">Communautés</div>
+      <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-4">
+        <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ stats.totalCommunities }}</div>
+        <div class="text-sm text-gray-500 dark:text-gray-400">Communautés</div>
       </div>
-      <div class="rounded-xl border border-gray-800 bg-gray-900/50 p-4">
-        <div class="text-2xl font-bold text-white">{{ stats.openRecruitment }}</div>
-        <div class="text-sm text-gray-400">Recrutement ouvert</div>
+      <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-4">
+        <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ stats.openRecruitment }}</div>
+        <div class="text-sm text-gray-500 dark:text-gray-400">Recrutement ouvert</div>
       </div>
-      <div class="rounded-xl border border-gray-800 bg-gray-900/50 p-4">
-        <div class="text-2xl font-bold text-white">{{ stats.totalModules }}</div>
-        <div class="text-sm text-gray-400">Modules</div>
+      <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-4">
+        <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ stats.totalModules }}</div>
+        <div class="text-sm text-gray-500 dark:text-gray-400">Modules</div>
       </div>
-      <div class="rounded-xl border border-gray-800 bg-gray-900/50 p-4">
-        <div class="text-2xl font-bold text-white">{{ pendingSubmissions }}</div>
-        <div class="text-sm text-gray-400">Soumissions en attente</div>
+      <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-4">
+        <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ pendingSubmissions }}</div>
+        <div class="text-sm text-gray-500 dark:text-gray-400">Soumissions en attente</div>
       </div>
     </div>
 

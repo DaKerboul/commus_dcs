@@ -1,14 +1,14 @@
 <template>
   <div class="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 py-8">
-    <h1 class="text-3xl font-bold text-white mb-2">Soumettre une communauté</h1>
-    <p class="text-gray-400 mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Soumettre une communauté</h1>
+    <p class="text-gray-500 dark:text-gray-400 mb-8">
       Votre communauté DCS francophone n'est pas encore listée ? Remplissez ce formulaire et nous l'ajouterons après vérification.
     </p>
 
     <div v-if="submitted" class="rounded-xl border border-green-500/30 bg-green-500/10 p-6 text-center">
       <UIcon name="i-heroicons-check-circle" class="text-green-400 text-4xl" />
-      <h2 class="mt-3 text-xl font-semibold text-white">Soumission envoyée !</h2>
-      <p class="mt-2 text-gray-400">Nous examinerons votre demande dans les meilleurs délais.</p>
+      <h2 class="mt-3 text-xl font-semibold text-gray-900 dark:text-white">Soumission envoyée !</h2>
+      <p class="mt-2 text-gray-500 dark:text-gray-400">Nous examinerons votre demande dans les meilleurs délais.</p>
       <UButton to="/" variant="ghost" color="neutral" class="mt-4">
         Retour à l'accueil
       </UButton>

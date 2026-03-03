@@ -1,30 +1,30 @@
 <template>
   <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-white">Changelog</h1>
-      <p class="mt-2 text-gray-400">Dernières mises à jour de l'annuaire.</p>
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Changelog</h1>
+      <p class="mt-2 text-gray-500 dark:text-gray-400">Dernières mises à jour de l'annuaire.</p>
     </div>
 
     <div v-if="entries?.length" class="relative">
       <!-- Timeline line -->
-      <div class="absolute left-4 top-0 bottom-0 w-px bg-gray-800" />
+      <div class="absolute left-4 top-0 bottom-0 w-px bg-gray-200 dark:bg-gray-800" />
 
       <div v-for="entry in entries" :key="entry.slug" class="relative pl-12 pb-8">
         <!-- Dot -->
-        <div class="absolute left-2.5 top-1.5 h-3 w-3 rounded-full border-2 border-blue-500 bg-gray-950" />
+        <div class="absolute left-2.5 top-1.5 h-3 w-3 rounded-full border-2 border-blue-500 bg-white dark:bg-gray-950" />
 
-        <div class="rounded-lg border border-gray-800 bg-gray-900/50 p-4">
+        <div class="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-4">
           <div class="flex items-center gap-3 mb-2">
-            <div class="h-8 w-8 rounded-md bg-gray-800 flex items-center justify-center overflow-hidden shrink-0">
+            <div class="h-8 w-8 rounded-md bg-gray-200 dark:bg-gray-800 flex items-center justify-center overflow-hidden shrink-0">
               <img v-if="entry.logoUrl" :src="entry.logoUrl" :alt="entry.name" class="h-full w-full object-cover" />
               <UIcon v-else name="i-heroicons-user-group" class="text-gray-500" />
             </div>
-            <NuxtLink :to="`/communautes/${entry.slug}`" class="text-white font-medium hover:text-blue-400 transition-colors">
+            <NuxtLink :to="`/communautes/${entry.slug}`" class="text-gray-900 dark:text-white font-medium hover:text-blue-400 transition-colors">
               {{ entry.name }}
             </NuxtLink>
             <UBadge v-if="isNew(entry)" color="warning" variant="subtle" size="xs">Nouveau</UBadge>
           </div>
-          <p v-if="entry.shortDescription" class="text-sm text-gray-400 line-clamp-2">
+          <p v-if="entry.shortDescription" class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
             {{ entry.shortDescription }}
           </p>
           <div class="mt-2 text-xs text-gray-600">
@@ -37,7 +37,7 @@
 
     <div v-else class="text-center py-16">
       <UIcon name="i-heroicons-clock" class="text-5xl text-gray-600" />
-      <p class="mt-4 text-gray-400">Aucune mise à jour récente.</p>
+      <p class="mt-4 text-gray-500 dark:text-gray-400">Aucune mise à jour récente.</p>
     </div>
   </div>
 </template>

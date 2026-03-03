@@ -1,7 +1,7 @@
 <template>
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-    <h1 class="text-3xl font-bold text-white mb-2">Statistiques</h1>
-    <p class="text-gray-400 mb-8">Vue d'ensemble de l'écosystème DCS francophone.</p>
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Statistiques</h1>
+    <p class="text-gray-500 dark:text-gray-400 mb-8">Vue d'ensemble de l'écosystème DCS francophone.</p>
 
     <div v-if="stats" class="space-y-12">
       <!-- Overview -->
@@ -9,14 +9,14 @@
 
       <!-- By type -->
       <section>
-        <h2 class="text-xl font-semibold text-white mb-4">Par type de communauté</h2>
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Par type de communauté</h2>
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <div
             v-for="item in stats.communityByType"
             :key="item.type"
-            class="rounded-lg border border-gray-800 bg-gray-900/50 p-4 flex items-center justify-between"
+            class="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-4 flex items-center justify-between"
           >
-            <span class="text-sm text-gray-300">{{ TYPE_LABELS[item.type] || item.type }}</span>
+            <span class="text-sm text-gray-600 dark:text-gray-300">{{ TYPE_LABELS[item.type] || item.type }}</span>
             <UBadge variant="subtle" color="primary">{{ item.count }}</UBadge>
           </div>
         </div>
@@ -24,28 +24,28 @@
 
       <!-- By size -->
       <section>
-        <h2 class="text-xl font-semibold text-white mb-4">Par taille</h2>
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Par taille</h2>
         <div class="space-y-2">
           <div
             v-for="item in stats.communityBySize"
             :key="item.size"
             class="flex items-center gap-4"
           >
-            <span class="w-48 text-sm text-gray-400 text-right shrink-0">{{ SIZE_LABELS[item.size] || item.size }}</span>
-            <div class="flex-1 h-6 rounded bg-gray-800 overflow-hidden">
+            <span class="w-48 text-sm text-gray-500 dark:text-gray-400 text-right shrink-0">{{ SIZE_LABELS[item.size] || item.size }}</span>
+            <div class="flex-1 h-6 rounded bg-gray-200 dark:bg-gray-800 overflow-hidden">
               <div
                 class="h-full bg-blue-500/60 rounded transition-all duration-500"
                 :style="{ width: `${(item.count / maxSize) * 100}%` }"
               />
             </div>
-            <span class="text-sm font-medium text-white w-8">{{ item.count }}</span>
+            <span class="text-sm font-medium text-gray-900 dark:text-white w-8">{{ item.count }}</span>
           </div>
         </div>
       </section>
 
       <!-- Top modules -->
       <section>
-        <h2 class="text-xl font-semibold text-white mb-4">Modules les plus populaires</h2>
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Modules les plus populaires</h2>
         <div class="space-y-2">
           <div
             v-for="(mod, i) in stats.topModules"
@@ -59,20 +59,20 @@
             >
               {{ mod.name }}
             </NuxtLink>
-            <div class="flex-1 h-6 rounded bg-gray-800 overflow-hidden">
+            <div class="flex-1 h-6 rounded bg-gray-200 dark:bg-gray-800 overflow-hidden">
               <div
                 class="h-full bg-green-500/60 rounded transition-all duration-500"
                 :style="{ width: `${(mod.count / maxModule) * 100}%` }"
               />
             </div>
-            <span class="text-sm font-medium text-white w-12">{{ mod.count }} commu{{ mod.count > 1 ? 's' : '' }}</span>
+            <span class="text-sm font-medium text-gray-900 dark:text-white w-12">{{ mod.count }} commu{{ mod.count > 1 ? 's' : '' }}</span>
           </div>
         </div>
       </section>
 
       <!-- Top experiences -->
       <section>
-        <h2 class="text-xl font-semibold text-white mb-4">Expériences les plus proposées</h2>
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Expériences les plus proposées</h2>
         <div class="space-y-2">
           <div
             v-for="(exp, i) in stats.topExperiences"
@@ -80,14 +80,14 @@
             class="flex items-center gap-4"
           >
             <span class="w-8 text-sm text-gray-600 text-right">{{ i + 1 }}.</span>
-            <span class="w-64 text-sm text-gray-300 shrink-0 truncate">{{ exp.name }}</span>
-            <div class="flex-1 h-6 rounded bg-gray-800 overflow-hidden">
+            <span class="w-64 text-sm text-gray-600 dark:text-gray-300 shrink-0 truncate">{{ exp.name }}</span>
+            <div class="flex-1 h-6 rounded bg-gray-200 dark:bg-gray-800 overflow-hidden">
               <div
                 class="h-full bg-purple-500/60 rounded transition-all duration-500"
                 :style="{ width: `${(exp.count / maxExperience) * 100}%` }"
               />
             </div>
-            <span class="text-sm font-medium text-white w-8">{{ exp.count }}</span>
+            <span class="text-sm font-medium text-gray-900 dark:text-white w-8">{{ exp.count }}</span>
           </div>
         </div>
       </section>

@@ -1,7 +1,7 @@
 <template>
   <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-8">
-    <h1 class="text-3xl font-bold text-white mb-2">Trouver ma communauté</h1>
-    <p class="text-gray-400 mb-8">Répondez à quelques questions pour trouver la communauté DCS francophone qui vous correspond.</p>
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Trouver ma communauté</h1>
+    <p class="text-gray-500 dark:text-gray-400 mb-8">Répondez à quelques questions pour trouver la communauté DCS francophone qui vous correspond.</p>
 
     <!-- Progress -->
     <div class="mb-8">
@@ -9,15 +9,15 @@
         <span>Étape {{ step }} / {{ totalSteps }}</span>
         <span>{{ Math.round((step / totalSteps) * 100) }}%</span>
       </div>
-      <div class="h-2 rounded-full bg-gray-800 overflow-hidden">
+      <div class="h-2 rounded-full bg-gray-200 dark:bg-gray-800 overflow-hidden">
         <div class="h-full bg-blue-500 rounded-full transition-all duration-300" :style="{ width: `${(step / totalSteps) * 100}%` }" />
       </div>
     </div>
 
     <!-- Step 1: Modules -->
     <div v-if="step === 1" class="space-y-4">
-      <h2 class="text-xl font-semibold text-white">Quels modules volez-vous ?</h2>
-      <p class="text-sm text-gray-400">Sélectionnez un ou plusieurs modules (optionnel)</p>
+      <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Quels modules volez-vous ?</h2>
+      <p class="text-sm text-gray-500 dark:text-gray-400">Sélectionnez un ou plusieurs modules (optionnel)</p>
       <UInput v-model="moduleSearch" placeholder="Filtrer les modules..." icon="i-heroicons-magnifying-glass" />
       <div class="flex flex-wrap gap-2 max-h-64 overflow-y-auto">
         <UButton
@@ -35,41 +35,41 @@
 
     <!-- Step 2: Style -->
     <div v-if="step === 2" class="space-y-4">
-      <h2 class="text-xl font-semibold text-white">Quel style de communauté recherchez-vous ?</h2>
+      <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Quel style de communauté recherchez-vous ?</h2>
       <div class="grid gap-3 sm:grid-cols-2">
         <button
           v-for="opt in styleOptions"
           :key="opt.value"
           class="rounded-xl border p-4 text-left transition-colors"
-          :class="answers.types.includes(opt.value) ? 'border-blue-500 bg-blue-500/10' : 'border-gray-800 bg-gray-900/50 hover:border-gray-700'"
+          :class="answers.types.includes(opt.value) ? 'border-blue-500 bg-blue-500/10' : 'border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 hover:border-gray-300 dark:hover:border-gray-700'"
           @click="toggleAnswer('types', opt.value)"
         >
-          <div class="font-medium text-white">{{ opt.label }}</div>
-          <div class="text-sm text-gray-400 mt-1">{{ opt.desc }}</div>
+          <div class="font-medium text-gray-900 dark:text-white">{{ opt.label }}</div>
+          <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ opt.desc }}</div>
         </button>
       </div>
     </div>
 
     <!-- Step 3: Size -->
     <div v-if="step === 3" class="space-y-4">
-      <h2 class="text-xl font-semibold text-white">Quelle taille de groupe préférez-vous ?</h2>
+      <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Quelle taille de groupe préférez-vous ?</h2>
       <div class="grid gap-3 sm:grid-cols-2">
         <button
           v-for="opt in sizeOptions"
           :key="opt.value"
           class="rounded-xl border p-4 text-left transition-colors"
-          :class="answers.sizes.includes(opt.value) ? 'border-blue-500 bg-blue-500/10' : 'border-gray-800 bg-gray-900/50 hover:border-gray-700'"
+          :class="answers.sizes.includes(opt.value) ? 'border-blue-500 bg-blue-500/10' : 'border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 hover:border-gray-300 dark:hover:border-gray-700'"
           @click="toggleAnswer('sizes', opt.value)"
         >
-          <div class="font-medium text-white">{{ opt.label }}</div>
-          <div class="text-sm text-gray-400 mt-1">{{ opt.desc }}</div>
+          <div class="font-medium text-gray-900 dark:text-white">{{ opt.label }}</div>
+          <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ opt.desc }}</div>
         </button>
       </div>
     </div>
 
     <!-- Step 4: Experiences -->
     <div v-if="step === 4" class="space-y-4">
-      <h2 class="text-xl font-semibold text-white">Quelles expériences vous intéressent ?</h2>
+      <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Quelles expériences vous intéressent ?</h2>
       <div class="flex flex-wrap gap-2">
         <UButton
           v-for="exp in experiencesList"
@@ -86,37 +86,37 @@
 
     <!-- Step 5: Recruitment -->
     <div v-if="step === 5" class="space-y-4">
-      <h2 class="text-xl font-semibold text-white">Souhaitez-vous rejoindre un escadron ?</h2>
+      <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Souhaitez-vous rejoindre un escadron ?</h2>
       <div class="grid gap-3 sm:grid-cols-2">
         <button
           class="rounded-xl border p-4 text-left transition-colors"
-          :class="answers.recruitmentOnly ? 'border-blue-500 bg-blue-500/10' : 'border-gray-800 bg-gray-900/50 hover:border-gray-700'"
+          :class="answers.recruitmentOnly ? 'border-blue-500 bg-blue-500/10' : 'border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 hover:border-gray-300 dark:hover:border-gray-700'"
           @click="answers.recruitmentOnly = true"
         >
-          <div class="font-medium text-white">Oui, qui recrutent</div>
-          <div class="text-sm text-gray-400 mt-1">Afficher uniquement les communautés qui recrutent activement</div>
+          <div class="font-medium text-gray-900 dark:text-white">Oui, qui recrutent</div>
+          <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">Afficher uniquement les communautés qui recrutent activement</div>
         </button>
         <button
           class="rounded-xl border p-4 text-left transition-colors"
-          :class="!answers.recruitmentOnly ? 'border-blue-500 bg-blue-500/10' : 'border-gray-800 bg-gray-900/50 hover:border-gray-700'"
+          :class="!answers.recruitmentOnly ? 'border-blue-500 bg-blue-500/10' : 'border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 hover:border-gray-300 dark:hover:border-gray-700'"
           @click="answers.recruitmentOnly = false"
         >
-          <div class="font-medium text-white">Peu importe</div>
-          <div class="text-sm text-gray-400 mt-1">Afficher toutes les communautés correspondantes</div>
+          <div class="font-medium text-gray-900 dark:text-white">Peu importe</div>
+          <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">Afficher toutes les communautés correspondantes</div>
         </button>
       </div>
     </div>
 
     <!-- Results -->
     <div v-if="step === totalSteps + 1" class="space-y-6">
-      <h2 class="text-xl font-semibold text-white">
+      <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
         {{ results?.data?.length ? `${results.data.length} communauté(s) trouvée(s)` : 'Aucun résultat' }}
       </h2>
       <div v-if="results?.data?.length" class="grid gap-4">
         <CommunityCard v-for="c in results.data" :key="c.id" :community="c" />
       </div>
       <div v-else class="text-center py-8">
-        <p class="text-gray-400">Aucune communauté ne correspond exactement à vos critères.</p>
+        <p class="text-gray-500 dark:text-gray-400">Aucune communauté ne correspond exactement à vos critères.</p>
         <UButton to="/communautes" variant="outline" color="neutral" class="mt-4">
           Voir toutes les communautés
         </UButton>

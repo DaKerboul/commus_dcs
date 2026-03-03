@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-bold text-white">Communautés</h1>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Communautés</h1>
       <UButton icon="i-heroicons-plus" @click="showCreate = true">
         Ajouter
       </UButton>
@@ -12,15 +12,15 @@
       <div
         v-for="c in communities"
         :key="c.id"
-        class="flex items-center justify-between gap-4 rounded-lg border border-gray-800 bg-gray-900/50 p-4"
+        class="flex items-center justify-between gap-4 rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-4"
       >
         <div class="flex items-center gap-3 min-w-0">
-          <div class="h-10 w-10 rounded-lg bg-gray-800 flex items-center justify-center overflow-hidden shrink-0">
+          <div class="h-10 w-10 rounded-lg bg-gray-200 dark:bg-gray-800 flex items-center justify-center overflow-hidden shrink-0">
             <img v-if="c.logoUrl" :src="c.logoUrl" :alt="c.name" class="h-full w-full object-cover" />
             <UIcon v-else name="i-heroicons-user-group" class="text-gray-500" />
           </div>
           <div class="min-w-0">
-            <div class="font-medium text-white truncate">{{ c.name }}</div>
+            <div class="font-medium text-gray-900 dark:text-white truncate">{{ c.name }}</div>
             <div class="text-xs text-gray-500">{{ c.slug }} · {{ c.published ? 'Publié' : 'Brouillon' }}</div>
           </div>
         </div>
@@ -55,7 +55,7 @@
     <UModal v-model:open="showModal">
       <template #content>
         <div class="p-6 max-h-[80vh] overflow-y-auto">
-          <h2 class="text-xl font-bold text-white mb-4">
+          <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">
             {{ editingId ? 'Modifier' : 'Nouvelle' }} communauté
           </h2>
           <form class="space-y-4" @submit.prevent="saveCommunity">
@@ -119,7 +119,7 @@
               <UTextarea v-model="form.entryConditions" :rows="2" />
             </UFormField>
 
-            <h3 class="text-lg font-semibold text-white pt-2">Liens</h3>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white pt-2">Liens</h3>
             <div class="grid gap-4 sm:grid-cols-2">
               <UFormField label="Discord">
                 <UInput v-model="form.discordUrl" />
@@ -145,11 +145,11 @@
             </div>
 
             <div class="flex items-center gap-4 pt-2">
-              <label class="flex items-center gap-2 text-sm text-gray-300">
+              <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                 <input v-model="form.published" type="checkbox" class="rounded" />
                 Publié
               </label>
-              <label class="flex items-center gap-2 text-sm text-gray-300">
+              <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                 <input v-model="form.featured" type="checkbox" class="rounded" />
                 À la une
               </label>

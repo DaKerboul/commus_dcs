@@ -1,10 +1,10 @@
 <template>
-  <div class="flex min-h-screen items-center justify-center bg-gray-950 px-4">
+  <div class="flex min-h-screen items-center justify-center bg-white dark:bg-gray-950 px-4">
     <div class="w-full max-w-sm">
       <div class="text-center mb-8">
         <img src="/logo.png" alt="" class="h-12 w-12 mx-auto mb-4" />
-        <h1 class="text-2xl font-bold text-white">Administration</h1>
-        <p class="text-sm text-gray-400 mt-1">Commus DCS FR</p>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Administration</h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Commus DCS FR</p>
       </div>
       <form class="space-y-4" @submit.prevent="login">
         <UFormField label="Mot de passe">

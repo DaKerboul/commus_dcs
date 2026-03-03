@@ -7,13 +7,13 @@
 
     <!-- Header -->
     <div class="flex flex-col sm:flex-row items-start gap-6 mb-8">
-      <div class="shrink-0 h-24 w-24 rounded-xl bg-gray-800 flex items-center justify-center overflow-hidden">
+      <div class="shrink-0 h-24 w-24 rounded-xl bg-gray-200 dark:bg-gray-800 flex items-center justify-center overflow-hidden">
         <img v-if="community.logoUrl" :src="community.logoUrl" :alt="community.name" class="h-full w-full object-cover" />
         <UIcon v-else name="i-heroicons-user-group" class="text-gray-500 text-4xl" />
       </div>
       <div class="flex-1">
         <div class="flex items-center gap-3 flex-wrap">
-          <h1 class="text-3xl font-bold text-white">{{ community.name }}</h1>
+          <h1 class="text-3xl font-bold text-gray-900 dark:text-white">{{ community.name }}</h1>
           <UBadge :color="recruitmentColor" variant="subtle">
             {{ RECRUITMENT_LABELS[community.recruitmentStatus] }}
           </UBadge>
@@ -21,7 +21,7 @@
             {{ TYPE_LABELS[community.communityType] }}
           </UBadge>
         </div>
-        <p v-if="community.shortDescription" class="mt-2 text-gray-400 text-lg">
+        <p v-if="community.shortDescription" class="mt-2 text-gray-500 dark:text-gray-400 text-lg">
           {{ community.shortDescription }}
         </p>
         <!-- Social links -->
@@ -101,23 +101,23 @@
       <div class="lg:col-span-2 space-y-8">
         <!-- Description -->
         <section v-if="community.description">
-          <h2 class="text-xl font-semibold text-white mb-3">Présentation</h2>
-          <div class="prose prose-invert max-w-none text-gray-300 whitespace-pre-line">
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Présentation</h2>
+          <div class="prose prose-invert max-w-none text-gray-600 dark:text-gray-300 whitespace-pre-line">
             {{ community.description }}
           </div>
         </section>
 
         <!-- Objectives -->
         <section v-if="community.objectives">
-          <h2 class="text-xl font-semibold text-white mb-3">Objectifs</h2>
-          <div class="prose prose-invert max-w-none text-gray-300 whitespace-pre-line">
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Objectifs</h2>
+          <div class="prose prose-invert max-w-none text-gray-600 dark:text-gray-300 whitespace-pre-line">
             {{ community.objectives }}
           </div>
         </section>
 
         <!-- Modules -->
         <section v-if="community.moduleNames?.length">
-          <h2 class="text-xl font-semibold text-white mb-3">Modules DCS</h2>
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Modules DCS</h2>
           <div class="flex flex-wrap gap-2">
             <NuxtLink
               v-for="mod in community.moduleNames"
@@ -131,7 +131,7 @@
 
         <!-- Sought modules -->
         <section v-if="community.soughtModuleNames?.length">
-          <h2 class="text-xl font-semibold text-white mb-3">Modules recherchés</h2>
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Modules recherchés</h2>
           <p class="text-sm text-gray-500 mb-2">La communauté recherche activement des pilotes sur ces modules :</p>
           <div class="flex flex-wrap gap-2">
             <UBadge v-for="mod in community.soughtModuleNames" :key="mod" variant="outline" color="warning" size="md">
@@ -142,7 +142,7 @@
 
         <!-- Experiences -->
         <section v-if="community.experienceNames?.length">
-          <h2 class="text-xl font-semibold text-white mb-3">Expériences proposées</h2>
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Expériences proposées</h2>
           <div class="flex flex-wrap gap-2">
             <UBadge v-for="exp in community.experienceNames" :key="exp" variant="subtle" color="neutral" size="md">
               {{ exp }}
@@ -152,12 +152,12 @@
 
         <!-- Images gallery -->
         <section v-if="community.images?.length">
-          <h2 class="text-xl font-semibold text-white mb-3">Galerie</h2>
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Galerie</h2>
           <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
             <div
               v-for="(img, i) in community.images"
               :key="i"
-              class="rounded-lg overflow-hidden border border-gray-800"
+              class="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-800"
             >
               <img :src="img.url" :alt="img.alt || community.name" class="w-full h-48 object-cover" />
             </div>
@@ -166,7 +166,7 @@
 
         <!-- Other links -->
         <section v-if="community.otherLinks?.length">
-          <h2 class="text-xl font-semibold text-white mb-3">Liens</h2>
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Liens</h2>
           <div class="space-y-2">
             <a
               v-for="link in community.otherLinks"
@@ -185,30 +185,30 @@
       <!-- Sidebar (1/3) -->
       <div class="space-y-4">
         <!-- Info card -->
-        <div class="rounded-xl border border-gray-800 bg-gray-900/50 p-5 space-y-4">
-          <h3 class="font-semibold text-white">Informations</h3>
+        <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5 space-y-4">
+          <h3 class="font-semibold text-gray-900 dark:text-white">Informations</h3>
 
           <div v-if="community.sizeText || community.sizeCategory !== 'unknown'" class="flex items-start gap-3">
             <UIcon name="i-heroicons-users" class="text-gray-500 mt-0.5" />
             <div>
-              <div class="text-sm text-gray-400">Taille</div>
-              <div class="text-sm text-white">{{ community.sizeText || SIZE_LABELS[community.sizeCategory] }}</div>
+              <div class="text-sm text-gray-500 dark:text-gray-400">Taille</div>
+              <div class="text-sm text-gray-900 dark:text-white">{{ community.sizeText || SIZE_LABELS[community.sizeCategory] }}</div>
             </div>
           </div>
 
           <div v-if="community.eventFrequency !== 'unknown'" class="flex items-start gap-3">
             <UIcon name="i-heroicons-calendar" class="text-gray-500 mt-0.5" />
             <div>
-              <div class="text-sm text-gray-400">Fréquence des événements</div>
-              <div class="text-sm text-white">{{ FREQUENCY_LABELS[community.eventFrequency] }}</div>
+              <div class="text-sm text-gray-500 dark:text-gray-400">Fréquence des événements</div>
+              <div class="text-sm text-gray-900 dark:text-white">{{ FREQUENCY_LABELS[community.eventFrequency] }}</div>
             </div>
           </div>
 
           <div v-if="community.historicalPeriods?.length" class="flex items-start gap-3">
             <UIcon name="i-heroicons-clock" class="text-gray-500 mt-0.5" />
             <div>
-              <div class="text-sm text-gray-400">Périodes historiques</div>
-              <div class="text-sm text-white">
+              <div class="text-sm text-gray-500 dark:text-gray-400">Périodes historiques</div>
+              <div class="text-sm text-gray-900 dark:text-white">
                 {{ community.historicalPeriods.map((p: string) => PERIOD_LABELS[p] || p).join(', ') }}
               </div>
             </div>
@@ -217,24 +217,24 @@
           <div v-if="community.founder" class="flex items-start gap-3">
             <UIcon name="i-heroicons-user" class="text-gray-500 mt-0.5" />
             <div>
-              <div class="text-sm text-gray-400">Fondateur</div>
-              <div class="text-sm text-white">{{ community.founder }}</div>
+              <div class="text-sm text-gray-500 dark:text-gray-400">Fondateur</div>
+              <div class="text-sm text-gray-900 dark:text-white">{{ community.founder }}</div>
             </div>
           </div>
 
           <div v-if="community.contact" class="flex items-start gap-3">
             <UIcon name="i-heroicons-chat-bubble-left-right" class="text-gray-500 mt-0.5" />
             <div>
-              <div class="text-sm text-gray-400">Contact</div>
-              <div class="text-sm text-white">{{ community.contact }}</div>
+              <div class="text-sm text-gray-500 dark:text-gray-400">Contact</div>
+              <div class="text-sm text-gray-900 dark:text-white">{{ community.contact }}</div>
             </div>
           </div>
 
           <div v-if="community.entryConditions" class="flex items-start gap-3">
             <UIcon name="i-heroicons-clipboard-document-check" class="text-gray-500 mt-0.5" />
             <div>
-              <div class="text-sm text-gray-400">Conditions d'entrée</div>
-              <div class="text-sm text-white whitespace-pre-line">{{ community.entryConditions }}</div>
+              <div class="text-sm text-gray-500 dark:text-gray-400">Conditions d'entrée</div>
+              <div class="text-sm text-gray-900 dark:text-white whitespace-pre-line">{{ community.entryConditions }}</div>
             </div>
           </div>
         </div>
@@ -253,8 +253,8 @@
         </UButton>
 
         <!-- Share -->
-        <div class="rounded-xl border border-gray-800 bg-gray-900/50 p-5">
-          <h3 class="font-semibold text-white mb-3">Partager</h3>
+        <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5">
+          <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Partager</h3>
           <div class="flex flex-col gap-2">
             <UButton icon="i-heroicons-link" variant="outline" color="neutral" size="sm" block @click="copyLink">
               {{ copied ? 'Lien copié !' : 'Copier le lien' }}
@@ -273,8 +273,8 @@
         </div>
 
         <!-- Upvote -->
-        <div class="rounded-xl border border-gray-800 bg-gray-900/50 p-5">
-          <h3 class="font-semibold text-white mb-3">Soutenir</h3>
+        <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5">
+          <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Soutenir</h3>
           <UButton
             :icon="hasVoted ? 'i-heroicons-heart-solid' : 'i-heroicons-heart'"
             :color="hasVoted ? 'error' : 'neutral'"
@@ -295,7 +295,7 @@
 
     <!-- Similar communities -->
     <section v-if="similar?.data?.length" class="mt-12">
-      <h2 class="text-xl font-semibold text-white mb-4">Communautés similaires</h2>
+      <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Communautés similaires</h2>
       <div class="grid gap-4 md:grid-cols-3">
         <CommunityCard v-for="c in similar.data" :key="c.id" :community="c" />
       </div>

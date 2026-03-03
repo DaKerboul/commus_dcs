@@ -37,10 +37,10 @@
     </div>
 
     <!-- Expandable filter sections -->
-    <div v-if="openSections.length" class="space-y-3 rounded-lg border border-gray-800 bg-gray-900/30 p-4">
+    <div v-if="openSections.length" class="space-y-3 rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/30 p-4">
       <!-- Recruitment -->
       <div v-if="openSections.includes('recruitment')">
-        <div class="text-xs font-medium text-gray-400 mb-2">Recrutement</div>
+        <div class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Recrutement</div>
         <div class="flex flex-wrap gap-2">
           <UButton
             v-for="opt in recruitmentOptions"
@@ -57,7 +57,7 @@
 
       <!-- Type -->
       <div v-if="openSections.includes('type')">
-        <div class="text-xs font-medium text-gray-400 mb-2">Type de communauté</div>
+        <div class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Type de communauté</div>
         <div class="flex flex-wrap gap-2">
           <UButton
             v-for="opt in typeOptions"
@@ -74,7 +74,7 @@
 
       <!-- Size -->
       <div v-if="openSections.includes('size')">
-        <div class="text-xs font-medium text-gray-400 mb-2">Taille</div>
+        <div class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Taille</div>
         <div class="flex flex-wrap gap-2">
           <UButton
             v-for="opt in sizeOptions"
@@ -91,7 +91,7 @@
 
       <!-- Frequency -->
       <div v-if="openSections.includes('frequency')">
-        <div class="text-xs font-medium text-gray-400 mb-2">Fréquence des événements</div>
+        <div class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Fréquence des événements</div>
         <div class="flex flex-wrap gap-2">
           <UButton
             v-for="opt in frequencyOptions"
@@ -108,7 +108,7 @@
 
       <!-- Periods -->
       <div v-if="openSections.includes('period')">
-        <div class="text-xs font-medium text-gray-400 mb-2">Période historique</div>
+        <div class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Période historique</div>
         <div class="flex flex-wrap gap-2">
           <UButton
             v-for="opt in periodOptions"
@@ -125,7 +125,7 @@
 
       <!-- Modules -->
       <div v-if="openSections.includes('modules')">
-        <div class="text-xs font-medium text-gray-400 mb-2">Modules DCS</div>
+        <div class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Modules DCS</div>
         <UInput
           v-model="moduleSearch"
           placeholder="Filtrer les modules..."
@@ -148,7 +148,7 @@
 
       <!-- Experiences -->
       <div v-if="openSections.includes('experiences')">
-        <div class="text-xs font-medium text-gray-400 mb-2">Expériences proposées</div>
+        <div class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Expériences proposées</div>
         <div class="flex flex-wrap gap-1 max-h-40 overflow-y-auto">
           <UButton
             v-for="exp in experiencesList"

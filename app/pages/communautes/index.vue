@@ -3,8 +3,8 @@
     <div class="mb-8">
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 class="text-3xl font-bold text-white">Communautés</h1>
-          <p class="mt-2 text-gray-400">
+          <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Communautés</h1>
+          <p class="mt-2 text-gray-500 dark:text-gray-400">
             {{ total }} communauté{{ total > 1 ? 's' : '' }} francophone{{ total > 1 ? 's' : '' }} DCS World
           </p>
         </div>
@@ -45,7 +45,7 @@
       </div>
       <div v-else-if="!communities?.data?.length" class="text-center py-12">
         <UIcon name="i-heroicons-face-frown" class="text-4xl text-gray-600" />
-        <p class="mt-3 text-gray-400">Aucune communauté trouvée avec ces filtres.</p>
+        <p class="mt-3 text-gray-500 dark:text-gray-400">Aucune communauté trouvée avec ces filtres.</p>
         <UButton variant="ghost" color="neutral" class="mt-2" @click="resetFilters">
           Réinitialiser les filtres
         </UButton>

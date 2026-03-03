@@ -1,8 +1,8 @@
 <template>
   <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-white">API Publique</h1>
-      <p class="mt-2 text-gray-400">
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">API Publique</h1>
+      <p class="mt-2 text-gray-500 dark:text-gray-400">
         L'API de Commus DCS FR est ouverte et gratuite. Utilisez-la dans vos projets DCS francophones.
       </p>
       <p class="mt-1 text-sm text-gray-500">
@@ -11,15 +11,15 @@
     </div>
 
     <div class="space-y-6">
-      <div v-for="endpoint in endpoints" :key="endpoint.path" class="rounded-xl border border-gray-800 bg-gray-900/50 overflow-hidden">
-        <div class="flex items-center gap-3 p-4 border-b border-gray-800">
+      <div v-for="endpoint in endpoints" :key="endpoint.path" class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 overflow-hidden">
+        <div class="flex items-center gap-3 p-4 border-b border-gray-200 dark:border-gray-800">
           <UBadge :color="methodColor(endpoint.method)" variant="subtle" size="sm" class="font-mono">
             {{ endpoint.method }}
           </UBadge>
-          <code class="text-sm text-white font-mono">{{ endpoint.path }}</code>
+          <code class="text-sm text-gray-900 dark:text-white font-mono">{{ endpoint.path }}</code>
         </div>
         <div class="p-4">
-          <p class="text-sm text-gray-300">{{ endpoint.description }}</p>
+          <p class="text-sm text-gray-600 dark:text-gray-300">{{ endpoint.description }}</p>
 
           <div v-if="endpoint.params?.length" class="mt-3">
             <p class="text-xs font-medium text-gray-500 uppercase mb-2">Paramètres</p>
@@ -27,14 +27,14 @@
               <div v-for="param in endpoint.params" :key="param.name" class="flex items-start gap-2 text-sm">
                 <code class="text-blue-400 shrink-0">{{ param.name }}</code>
                 <span class="text-gray-500">{{ param.type }}</span>
-                <span class="text-gray-400">— {{ param.desc }}</span>
+                <span class="text-gray-500 dark:text-gray-400">— {{ param.desc }}</span>
               </div>
             </div>
           </div>
 
           <div v-if="endpoint.example" class="mt-3">
             <p class="text-xs font-medium text-gray-500 uppercase mb-2">Exemple</p>
-            <div class="bg-gray-950 rounded-lg p-3 overflow-x-auto">
+            <div class="bg-white dark:bg-gray-950 rounded-lg p-3 overflow-x-auto">
               <code class="text-xs text-green-400 whitespace-pre">{{ endpoint.example }}</code>
             </div>
           </div>

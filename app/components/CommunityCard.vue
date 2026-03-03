@@ -1,11 +1,11 @@
 <template>
   <NuxtLink
     :to="`/communautes/${community.slug}`"
-    class="community-card group block rounded-xl border border-gray-800 bg-gray-900/50 p-5 hover:border-blue-500/50 hover:bg-gray-900"
+    class="community-card group block rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5 hover:border-blue-500/50 hover:bg-gray-100 dark:hover:bg-gray-900"
   >
     <div class="flex items-start gap-4">
       <!-- Logo -->
-      <div class="shrink-0 h-14 w-14 rounded-lg bg-gray-800 flex items-center justify-center overflow-hidden">
+      <div class="shrink-0 h-14 w-14 rounded-lg bg-gray-200 dark:bg-gray-800 flex items-center justify-center overflow-hidden">
         <img
           v-if="community.logoUrl"
           :src="community.logoUrl"
@@ -17,7 +17,7 @@
       <!-- Content -->
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-2 flex-wrap">
-          <h3 class="text-base font-semibold text-white group-hover:text-blue-400 transition-colors truncate">
+          <h3 class="text-base font-semibold text-gray-900 dark:text-white group-hover:text-blue-400 transition-colors truncate">
             {{ community.name }}
           </h3>
           <UBadge
@@ -38,7 +38,7 @@
             {{ props.community.votes }}
           </span>
         </div>
-        <p v-if="community.shortDescription" class="mt-1 text-sm text-gray-400 line-clamp-2">
+        <p v-if="community.shortDescription" class="mt-1 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
           {{ community.shortDescription }}
         </p>
         <div class="mt-3 flex items-center gap-3 flex-wrap">

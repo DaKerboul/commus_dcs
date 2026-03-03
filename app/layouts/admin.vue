@@ -1,11 +1,11 @@
 <template>
   <div class="min-h-screen flex">
     <!-- Sidebar -->
-    <aside class="hidden lg:flex w-64 flex-col border-r border-gray-800 bg-gray-950">
-      <div class="p-4 border-b border-gray-800">
+    <aside class="hidden lg:flex w-64 flex-col border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
+      <div class="p-4 border-b border-gray-200 dark:border-gray-800">
         <NuxtLink to="/" class="flex items-center gap-2">
           <img src="/logo.png" alt="Commus DCS FR" class="h-8 w-8" />
-          <span class="text-lg font-bold text-white">Admin</span>
+          <span class="text-lg font-bold text-gray-900 dark:text-white">Admin</span>
         </NuxtLink>
       </div>
       <nav class="flex-1 p-4 space-y-1">
@@ -19,7 +19,7 @@
           Soumissions
         </UButton>
       </nav>
-      <div class="p-4 border-t border-gray-800">
+      <div class="p-4 border-t border-gray-200 dark:border-gray-800">
         <UButton variant="ghost" color="error" block icon="i-heroicons-arrow-right-on-rectangle" @click="logout">
           Déconnexion
         </UButton>
@@ -27,13 +27,13 @@
     </aside>
 
     <!-- Main -->
-    <div class="flex-1 flex flex-col bg-gray-950 text-gray-100">
+    <div class="flex-1 flex flex-col bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-100">
       <!-- Mobile header -->
-      <header class="lg:hidden sticky top-0 z-50 border-b border-gray-800 bg-gray-950/80 backdrop-blur-lg">
+      <header class="lg:hidden sticky top-0 z-50 border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-950/80 backdrop-blur-lg">
         <div class="flex h-14 items-center justify-between px-4">
           <NuxtLink to="/admin" class="flex items-center gap-2">
             <img src="/logo.png" alt="" class="h-6 w-6" />
-            <span class="font-bold text-white">Admin</span>
+            <span class="font-bold text-gray-900 dark:text-white">Admin</span>
           </NuxtLink>
           <UButton icon="i-heroicons-arrow-right-on-rectangle" variant="ghost" color="error" size="sm" @click="logout" />
         </div>
