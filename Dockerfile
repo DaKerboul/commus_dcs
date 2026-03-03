@@ -6,8 +6,8 @@ WORKDIR /app
 # Copy package files and .npmrc (registry config)
 COPY package.json .npmrc ./
 
-# Install dependencies
-RUN npm install
+# Install dependencies (verbose for debugging)
+RUN cat .npmrc && npm install --loglevel verbose 2>&1
 
 # Copy source
 COPY . .
