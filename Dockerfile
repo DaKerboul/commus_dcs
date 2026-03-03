@@ -1,25 +1,36 @@
-# Étape de build
-FROM node:18-alpine as build-stage
+# Multi-stage build for Nuxt 3
+FROM node:20-alpine AS builder
+
 WORKDIR /app
 
-# Augmenter la mémoire disponible pour Node.js
-ENV NODE_OPTIONS="--max-old-space-size=512"
+# Copy package files
+COPY package.json package-lock.json ./
 
-# Copier package.json et package-lock.json (si existant)
-COPY package*.json ./
-RUN npm install --no-audit --no-fund --quiet
+# Install dependencies
+RUN npm ci
 
-# Copier les sources
+# Copy source
 COPY . .
 
-# Construire le site avec une option plus silencieuse
-RUN npm run docs:build-silent
+# Build Nuxt
+RUN npm run build
 
-# Étape de production avec Nginx
-FROM nginx:stable-alpine as production-stage
-COPY --from=build-stage /app/docs/.vitepress/dist /usr/share/nginx/html
-# Configuration Nginx par défaut
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# ── Production stage ─────────────────────────────────
+FROM node:20-alpine AS runner
 
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+WORKDIR /app
+
+# Copy built output
+COPY --from=builder /app/.output .output
+COPY --from=builder /app/package.json .
+# Include seed.sql for auto-seed on first boot
+COPY --from=builder /app/scripts/seed.sql seed.sql
+
+# Expose port 3000 (Nuxt default)
+EXPOSE 3000
+
+ENV NODE_ENV=production
+ENV HOST=0.0.0.0
+ENV PORT=3000
+
+CMD ["node", ".output/server/index.mjs"]

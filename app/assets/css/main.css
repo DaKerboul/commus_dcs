@@ -1,0 +1,20 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+/* Custom DCS theme overrides */
+:root {
+  --color-primary: #3b82f6;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom card hover animation */
+.community-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.community-card:hover {
+  transform: translateY(-2px);
+}

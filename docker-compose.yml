@@ -1,15 +1,16 @@
+# Local development docker-compose
+# For Coolify deployment, configure services directly in the Coolify dashboard.
 services:
-  web:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: commus-site
-    restart: always
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: commus
+      POSTGRES_PASSWORD: commus
+      POSTGRES_DB: commus_dcs
     ports:
-      - "80:80"
+      - "5432:5432"
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - pgdata:/var/lib/postgresql/data
 
-networks:
-  default:
-    driver: bridge
+volumes:
+  pgdata:

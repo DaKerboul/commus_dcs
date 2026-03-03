@@ -1,137 +1,140 @@
 # Communautés DCS World Francophones
 
-Ce projet est un site web répertoriant les communautés francophones de DCS World (Digital Combat Simulator), permettant aux pilotes virtuels de découvrir et rejoindre des escadrons, escadrilles et groupes de vol.
+Annuaire web des communautés francophones de DCS World. Nuxt 3 full-stack avec PostgreSQL, filtres avancés, panel admin et formulaire de soumission.
 
-## 🌐 À propos du projet
+## Stack technique
 
-Ce site est construit avec [VitePress](https://vitepress.dev/), déployé via Docker, et maintenu par la communauté. Il permet aux joueurs de DCS World de trouver facilement des communautés francophones avec lesquelles voler, partager des connaissances et participer à des événements.
+- **Frontend** : Nuxt 3 (Vue 3) + Nuxt UI v3 (Tailwind CSS v4)
+- **Backend** : Nitro (API routes intégrées à Nuxt)
+- **Base de données** : PostgreSQL 16 + Drizzle ORM
+- **Auth** : nuxt-auth-utils (session cookie, mot de passe admin unique)
+- **Déploiement** : Docker (Coolify)
 
-Chaque communauté dispose d'une page dédiée présentant :
-- Sa description et son identité
-- Les appareils sur lesquels elle se spécialise
-- Les liens vers ses plateformes de communication (Discord, site web, etc.)
-- D'autres informations utiles (recrutement, événements, etc.)
-
-## 🚀 Comment ajouter ou modifier une communauté
+## Développement local
 
 ### Prérequis
 
-- Un compte [GitHub](https://github.com/)
-- Connaissances de base en Markdown (ou simplement suivre le modèle existant)
-- Des informations précises sur la communauté à ajouter
+- Node.js 20+
+- PostgreSQL 16 (ou Docker)
 
-### Option 1 : Pour les débutants GitHub (méthode recommandée)
-
-1. **Naviguez** vers le dossier `docs/commus/` dans le repository GitHub
-2. **Créez un nouveau fichier** en cliquant sur "Add file" > "Create new file"
-3. **Nommez votre fichier** selon le nom court de votre communauté (ex: `nomcourt.md`)
-4. **Copiez le contenu** du fichier `_template.md` et adaptez-le avec les informations de votre communauté
-5. **Proposez vos modifications** en créant une "Pull Request"
-
-### Option 2 : Pour ceux familiers avec Git
-
-1. **Forkez** ce repository
-2. **Clonez** votre fork localement
-   ```bash
-   git clone https://github.com/votre-username/commus_dcs.git
-   cd commus_dcs
-   ```
-3. **Créez une branche** pour vos modifications
-   ```bash
-   git checkout -b ajout-communaute-xyz
-   ```
-4. **Copiez le fichier template** et modifiez-le pour votre communauté
-   ```bash
-   cp docs/commus/_template.md docs/commus/votre-communaute.md
-   ```
-5. **Ajoutez votre image de communauté** dans `docs/public/commus_img/` (format recommandé : PNG/JPEG, taille optimisée pour le web)
-6. **Testez localement** vos modifications (facultatif)
-   ```bash
-   npm install
-   npm run docs:dev
-   ```
-7. **Commitez** vos modifications
-   ```bash
-   git add .
-   git commit -m "Ajout de la communauté XYZ"
-   git push origin ajout-communaute-xyz
-   ```
-8. **Créez une Pull Request** depuis votre fork vers le repository principal
-
-## 📝 Structure du fichier Markdown pour une communauté
-
-```markdown
----
-layout: doc
-title: Nom de votre Communauté
----
-
-# [NOM DE L'ESCADRON]
-
-![Logo de votre communauté](/commus_img/votre-logo.png)
-
-## Description
-
-Décrivez ici votre communauté, son histoire, ses valeurs et sa philosophie de vol.
-
-## Informations
-
-- **Discord**: [Lien vers votre Discord](https://discord.gg/votre-invitation)
-- **Site web**: [Nom de votre site](https://votre-site.com)
-- **Type de vols**: Serious, Fun, Training, etc.
-- **Appareils**: F/A-18C, F-16C, AH-64D, etc.
-- **Mods obligatoires**: SRS, Tacview, etc.
-
-## Recrutement
-
-Précisez vos conditions de recrutement, vos attentes et la procédure pour rejoindre votre communauté.
-
-## Screenshots
-
-![Screenshot 1](/commus_img/votre-communaute/screenshot1.png)
-```
-
-## 🛠️ Installation locale pour le développement
-
-Pour travailler localement sur ce projet :
+### Installation
 
 ```bash
-# Cloner le repository
-git clone https://github.com/username/commus_dcs.git
-cd commus_dcs
-
-# Installer les dépendances
 npm install
-
-# Lancer le serveur de développement
-npm run docs:dev
-
-# Construire le site pour production
-npm run docs:build
-
-# Prévisualiser la build de production
-npm run docs:preview
 ```
 
-## 🐳 Déploiement avec Docker
+### Base de données
 
-Le projet est configuré pour être déployé facilement avec Docker :
+Option A — Docker Compose (si Docker disponible) :
+```bash
+docker compose up -d          # Lance PostgreSQL sur le port 5432
+```
+
+Option B — PostgreSQL existant :
+```bash
+# Créer la DB manuellement
+createdb commus_dcs
+```
+
+Dans les deux cas :
+```bash
+cp .env.example .env          # Adapter DATABASE_URL si besoin
+npm run db:push               # Applique le schéma (sans migrations)
+npm run db:seed               # Importe les 54 communautés depuis .archive/
+```
+
+### Lancer le serveur
 
 ```bash
-# Construire et démarrer les conteneurs
-docker compose up -d
-
-# Arrêter les conteneurs
-docker compose down
-
-# Reconstruire et redémarrer (après des modifications)
-docker compose up -d --build
+npm run dev
 ```
 
-## 📞 Contact
+Le site est accessible sur http://localhost:3000 et l'admin sur http://localhost:3000/admin/login.
 
-Si vous avez des questions ou des suggestions d'amélioration, n'hésitez pas à ouvrir une issue sur GitHub ou à contacter les mainteneurs du projet.
+### Commandes DB utiles
 
----
+| Commande | Description |
+|---|---|
+| `npm run db:push` | Applique le schéma sans fichier de migration |
+| `npm run db:generate` | Génère un fichier de migration |
+| `npm run db:migrate` | Exécute les migrations |
+| `npm run db:seed` | Importe les données depuis les MD archivés |
+| `npm run db:studio` | Lance Drizzle Studio (GUI DB) |
 
-*Ce projet est maintenu par la communauté des pilotes virtuels francophones de DCS World. Merci à tous les contributeurs !*
+## Pages
+
+| Route | Description |
+|---|---|
+| `/` | Page d'accueil avec stats et communautés featured |
+| `/communautes` | Annuaire avec filtres, recherche et pagination |
+| `/communautes/:slug` | Fiche détaillée d'une communauté |
+| `/trouver` | Assistant de recherche en 5 étapes |
+| `/stats` | Statistiques et distributions |
+| `/soumettre` | Formulaire public pour proposer une communauté |
+| `/contact` | Liens de contact |
+| `/admin/login` | Connexion admin |
+| `/admin` | Dashboard admin |
+| `/admin/communautes` | CRUD des communautés |
+| `/admin/submissions` | Modération des soumissions |
+
+## API
+
+| Endpoint | Méthode | Description |
+|---|---|---|
+| `/api/communities` | GET | Liste filtrée + paginée |
+| `/api/communities/:slug` | GET | Détail d'une communauté |
+| `/api/modules` | GET | Liste des modules DCS |
+| `/api/experiences` | GET | Liste des types d'expérience |
+| `/api/stats` | GET | Statistiques agrégées |
+| `/api/submissions` | POST | Soumettre une communauté |
+| `/api/admin/*` | * | Endpoints admin (auth requise) |
+
+## Déploiement Coolify
+
+### 1. Créer un service PostgreSQL
+
+Dans Coolify (https://coolify.kerboul.me) :
+1. **New Resource** → **Database** → **PostgreSQL**
+2. Configurer :
+   - Database name : `commus_dcs`
+   - Username : `commus`
+   - Password : (générer un mot de passe fort)
+3. Noter l'URL interne (ex: `postgresql://commus:PASSWORD@postgresql-xxx:5432/commus_dcs`)
+
+### 2. Créer l'application Nuxt
+
+1. **New Resource** → **Application** → **Dockerfile**
+2. Source : connecter le repo Git `DaKerboul/commus_dcs`
+3. Build Pack : **Dockerfile** (le `Dockerfile` à la racine sera utilisé)
+4. Port : `3000`
+5. Variables d'environnement :
+   ```
+   DATABASE_URL=postgresql://commus:PASSWORD@postgresql-xxx:5432/commus_dcs
+   NUXT_SESSION_SECRET=<générer avec openssl rand -hex 32>
+   NUXT_ADMIN_PASSWORD=<mot de passe admin>
+   NUXT_PUBLIC_SITE_URL=https://commus-dcs.kerboul.me
+   ```
+6. Health Check : `GET /` sur le port 3000
+
+### 3. Première migration
+
+Après le premier déploiement, se connecter au conteneur via Coolify (terminal) et exécuter :
+```bash
+# Le schéma est appliqué automatiquement si vous ajoutez un script de démarrage,
+# ou manuellement via le terminal Coolify :
+node -e "
+const postgres = require('postgres');
+// Le push se fait via drizzle-kit en local, puis l'app utilise le schéma existant
+"
+```
+
+**Méthode recommandée** : exécuter `npm run db:push` et `npm run db:seed` en local avec la `DATABASE_URL` de production (tunnel SSH vers Coolify ou exposer temporairement le port PostgreSQL).
+
+## Variables d'environnement
+
+| Variable | Description | Défaut |
+|---|---|---|
+| `DATABASE_URL` | URL de connexion PostgreSQL | `postgresql://commus:commus@localhost:5432/commus_dcs` |
+| `NUXT_SESSION_SECRET` | Secret pour les sessions cookie | (obligatoire en prod) |
+| `NUXT_ADMIN_PASSWORD` | Mot de passe du panel admin | (obligatoire en prod) |
+| `NUXT_PUBLIC_SITE_URL` | URL publique du site | `http://localhost:3000` |
