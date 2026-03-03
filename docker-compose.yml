@@ -1,16 +1,44 @@
-# Local development docker-compose
-# For Coolify deployment, configure services directly in the Coolify dashboard.
+# Docker Compose for self-hosted / Coolify deployment
 services:
+
+  # ─── Application Nuxt ──────────────────────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: commus-dcs
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://commus:${DB_PASSWORD:-commus}@db:5432/commus_dcs
+      - NUXT_DATABASE_URL=postgresql://commus:${DB_PASSWORD:-commus}@db:5432/commus_dcs
+      - NUXT_SESSION_PASSWORD=${NUXT_SESSION_PASSWORD:-change-me-to-a-32-char-secret!!}
+      - NUXT_ADMIN_PASSWORD=${NUXT_ADMIN_PASSWORD:-admin}
+      - NUXT_PUBLIC_SITE_URL=${NUXT_PUBLIC_SITE_URL:-http://localhost:3050}
+    ports:
+      - "${PORT:-3050}:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # ─── PostgreSQL ─────────────────────────────────────────────────────────────
   db:
     image: postgres:16-alpine
+    container_name: commus-dcs-db
+    restart: unless-stopped
     environment:
       POSTGRES_USER: commus
-      POSTGRES_PASSWORD: commus
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-commus}
       POSTGRES_DB: commus_dcs
-    ports:
-      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U commus -d commus_dcs"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
 volumes:
   pgdata:
+    driver: local
