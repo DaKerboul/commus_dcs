@@ -361,4 +361,18 @@ async function vote() {
 const { data: similar } = await useFetch<{ data: CommunityCard[] }>('/api/communities/similar', {
   query: { slug },
 })
+
+// Pilot profile visit tracking
+const { recordVisit } = usePilotProfile()
+onMounted(() => {
+  if (community.value) {
+    recordVisit({
+      slug: community.value.slug,
+      name: community.value.name,
+      moduleNames: community.value.moduleNames || [],
+      experienceNames: community.value.experienceNames || [],
+      communityType: community.value.communityType,
+    })
+  }
+})
 </script>

@@ -1,7 +1,9 @@
 <template>
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Comparer des communautés</h1>
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+        <span class="text-blue-400">VS</span> Comparateur
+      </h1>
       <p class="mt-2 text-gray-500 dark:text-gray-400">Sélectionnez 2 à 3 communautés pour les comparer côte à côte.</p>
     </div>
 
@@ -157,6 +159,55 @@
           </UBadge>
         </div>
       </div>
+
+      <!-- VS Mode: Radar + Similarity -->
+      <div class="mt-8 grid gap-6 lg:grid-cols-2">
+        <!-- Radar chart -->
+        <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-6">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+            <UIcon name="i-heroicons-chart-bar" class="text-blue-400" />
+            Radar comparatif
+          </h3>
+          <div class="max-w-sm mx-auto">
+            <RadarChart :axes="vsRadarAxes" :series-data="vsRadarSeries" :size="320" />
+          </div>
+          <div class="mt-3 flex justify-center gap-4">
+            <div v-for="(c, i) in comparedCommunities" :key="c.slug" class="flex items-center gap-1.5 text-xs">
+              <span class="w-3 h-3 rounded-full" :style="{ background: vsColors[i] }" />
+              {{ c.name }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Similarity score -->
+        <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-6">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+            <UIcon name="i-heroicons-scale" class="text-purple-400" />
+            Score de similarité
+          </h3>
+          <div v-for="pair in similarityPairs" :key="pair.key" class="mb-4">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-sm text-gray-600 dark:text-gray-300">{{ pair.a }} vs {{ pair.b }}</span>
+              <span class="text-lg font-bold" :class="pair.score > 60 ? 'text-green-400' : pair.score > 30 ? 'text-yellow-400' : 'text-red-400'">
+                {{ pair.score }}%
+              </span>
+            </div>
+            <div class="h-3 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
+              <div
+                class="h-full rounded-full transition-all duration-700"
+                :class="pair.score > 60 ? 'bg-green-500' : pair.score > 30 ? 'bg-yellow-500' : 'bg-red-500'"
+                :style="{ width: `${pair.score}%` }"
+              />
+            </div>
+            <div class="mt-1 text-xs text-gray-500">
+              {{ pair.sharedModules }} modules communs • {{ pair.sharedExperiences }} expériences communes
+            </div>
+          </div>
+          <div class="mt-4 text-xs text-gray-500 italic">
+            Le score est calculé à partir des modules, expériences et périodes en commun.
+          </div>
+        </div>
+      </div>
     </div>
 
     <div v-else class="text-center py-16">
@@ -226,5 +277,104 @@ const sharedExperiences = computed(() => {
 // Max votes for trophy indicator
 const maxVotes = computed(() => {
   return Math.max(0, ...comparedCommunities.value.map(c => c.votes || 0))
+})
+
+// ── VS Mode ──────────────────────────────────
+
+const vsColors = ['#3b82f6', '#ef4444', '#22c55e']
+
+const SIZE_SCORES: Record<string, number> = {
+  hub_300_plus: 6,
+  very_large_150_plus: 5,
+  large_50_plus: 4,
+  medium_30_plus: 3,
+  medium_under_30: 2,
+  small: 1,
+  unknown: 0,
+}
+
+const FREQ_SCORES: Record<string, number> = {
+  very_active: 6,
+  very_frequent: 5,
+  weekly: 4,
+  biweekly: 3,
+  monthly: 2,
+  occasional: 1,
+  unknown: 0,
+}
+
+const vsRadarAxes = computed(() => {
+  const maxMod = Math.max(...comparedCommunities.value.map(c => c.moduleNames?.length || 0), 1)
+  const maxExp = Math.max(...comparedCommunities.value.map(c => c.experienceNames?.length || 0), 1)
+  const maxV = Math.max(...comparedCommunities.value.map(c => c.votes || 0), 1)
+  return [
+    { label: 'Modules', max: maxMod },
+    { label: 'Expériences', max: maxExp },
+    { label: 'Taille', max: 6 },
+    { label: 'Événements', max: 6 },
+    { label: 'Votes', max: maxV },
+  ]
+})
+
+const vsRadarSeries = computed(() => {
+  return comparedCommunities.value.map((c, i) => ({
+    label: c.name,
+    values: [
+      c.moduleNames?.length || 0,
+      c.experienceNames?.length || 0,
+      SIZE_SCORES[c.sizeCategory] || 0,
+      FREQ_SCORES[c.eventFrequency] || 0,
+      c.votes || 0,
+    ],
+    color: vsColors[i],
+  }))
+})
+
+// Pairwise similarity scores
+const similarityPairs = computed(() => {
+  const comms = comparedCommunities.value
+  const pairs: { key: string; a: string; b: string; score: number; sharedModules: number; sharedExperiences: number }[] = []
+
+  for (let i = 0; i < comms.length; i++) {
+    for (let j = i + 1; j < comms.length; j++) {
+      const a = comms[i]
+      const b = comms[j]
+      const aModules = new Set(a.moduleNames || [])
+      const bModules = new Set(b.moduleNames || [])
+      const sharedMods = [...aModules].filter(m => bModules.has(m)).length
+      const totalMods = new Set([...aModules, ...bModules]).size || 1
+
+      const aExps = new Set(a.experienceNames || [])
+      const bExps = new Set(b.experienceNames || [])
+      const sharedExps = [...aExps].filter(e => bExps.has(e)).length
+      const totalExps = new Set([...aExps, ...bExps]).size || 1
+
+      const aPeriods = new Set(a.historicalPeriods || [])
+      const bPeriods = new Set(b.historicalPeriods || [])
+      const sharedPer = [...aPeriods].filter(p => bPeriods.has(p)).length
+      const totalPer = new Set([...aPeriods, ...bPeriods]).size || 1
+
+      const sameType = a.communityType === b.communityType ? 1 : 0
+      const sameSize = a.sizeCategory === b.sizeCategory ? 1 : 0
+
+      const score = Math.round(
+        (sharedMods / totalMods * 40) +
+        (sharedExps / totalExps * 25) +
+        (sharedPer / totalPer * 15) +
+        (sameType * 10) +
+        (sameSize * 10),
+      )
+
+      pairs.push({
+        key: `${a.slug}-${b.slug}`,
+        a: a.name,
+        b: b.name,
+        score,
+        sharedModules: sharedMods,
+        sharedExperiences: sharedExps,
+      })
+    }
+  }
+  return pairs
 })
 </script>

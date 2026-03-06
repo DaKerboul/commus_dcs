@@ -91,3 +91,20 @@ html {
   60% { transform: rotate(3deg) scale(1.03); }
   75% { transform: rotate(-1deg) scale(1.01); }
 }
+
+/* ── Discover cards ──────────────────── */
+.discover-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(128, 128, 128, 0.2);
+  transition: all 0.2s ease;
+}
+.discover-card:hover {
+  border-color: rgba(59, 130, 246, 0.4);
+  background: rgba(59, 130, 246, 0.05);
+  transform: translateY(-2px);
+}

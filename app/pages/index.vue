@@ -176,6 +176,44 @@
       </div>
     </section>
 
+    <!-- Discover features -->
+    <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-16">
+      <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Découvrir l'écosystème</h2>
+      <p class="text-gray-500 dark:text-gray-400 mb-6">Des outils visuels pour explorer la scène DCS francophone.</p>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <NuxtLink to="/graphe" class="discover-card group">
+          <UIcon name="i-heroicons-share" class="text-2xl text-blue-400 mb-2 group-hover:scale-110 transition-transform" />
+          <span class="text-sm font-medium text-gray-900 dark:text-white">Graphe</span>
+          <span class="text-[11px] text-gray-500">Liens entre communautés</span>
+        </NuxtLink>
+        <NuxtLink to="/infographie" class="discover-card group">
+          <UIcon name="i-heroicons-chart-pie" class="text-2xl text-green-400 mb-2 group-hover:scale-110 transition-transform" />
+          <span class="text-sm font-medium text-gray-900 dark:text-white">Infographie</span>
+          <span class="text-[11px] text-gray-500">DCS en chiffres</span>
+        </NuxtLink>
+        <NuxtLink to="/modules" class="discover-card group">
+          <UIcon name="i-heroicons-table-cells" class="text-2xl text-purple-400 mb-2 group-hover:scale-110 transition-transform" />
+          <span class="text-sm font-medium text-gray-900 dark:text-white">Modules</span>
+          <span class="text-[11px] text-gray-500">Tableau périodique</span>
+        </NuxtLink>
+        <NuxtLink to="/timeline" class="discover-card group">
+          <UIcon name="i-heroicons-clock" class="text-2xl text-amber-400 mb-2 group-hover:scale-110 transition-transform" />
+          <span class="text-sm font-medium text-gray-900 dark:text-white">Timeline</span>
+          <span class="text-[11px] text-gray-500">Histoire DCS FR</span>
+        </NuxtLink>
+        <NuxtLink to="/pulse" class="discover-card group">
+          <UIcon name="i-heroicons-signal" class="text-2xl text-red-400 mb-2 group-hover:scale-110 transition-transform" />
+          <span class="text-sm font-medium text-gray-900 dark:text-white">Pulse</span>
+          <span class="text-[11px] text-gray-500">Activité en direct</span>
+        </NuxtLink>
+        <NuxtLink to="/mon-profil" class="discover-card group">
+          <UIcon name="i-heroicons-user-circle" class="text-2xl text-cyan-400 mb-2 group-hover:scale-110 transition-transform" />
+          <span class="text-sm font-medium text-gray-900 dark:text-white">Profil</span>
+          <span class="text-[11px] text-gray-500">Mon profil pilote</span>
+        </NuxtLink>
+      </div>
+    </section>
+
     <!-- CTA -->
     <section class="border-t border-gray-200 dark:border-gray-800">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 text-center">
