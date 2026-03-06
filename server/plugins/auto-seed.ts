@@ -59,6 +59,48 @@ async function runMigrations(client: ReturnType<typeof postgres>) {
       created_at TIMESTAMP DEFAULT NOW()
     )`,
     `CREATE UNIQUE INDEX IF NOT EXISTS idx_streamer_dcs_days_unique ON streamer_dcs_days(streamer_id, date)`,
+    // v6: Add founded_date column to communities
+    `ALTER TABLE communities ADD COLUMN IF NOT EXISTS founded_date VARCHAR(50)`,
+    // v6: Populate known founded dates
+    `UPDATE communities SET founded_date = CASE slug
+      WHEN 'cellulesrapaces' THEN '2004-03-25'
+      WHEN '3rdwing' THEN '2004-06-01'
+      WHEN 'veaf' THEN '2004-01-01'
+      WHEN 'c6' THEN '2003-01-01'
+      WHEN '2ffs' THEN '2006-01-01'
+      WHEN 'ectrfv' THEN '2013-11-01'
+      WHEN 'irre' THEN '2013-01-01'
+      WHEN 'jtff' THEN '2020-02-01'
+      WHEN 'bfr' THEN '2020-07-01'
+      WHEN 'splitair' THEN '2019-01-01'
+      WHEN 'couteau' THEN '2021-06-01'
+      WHEN 'noez' THEN '2021-01-01'
+      WHEN 'bolt' THEN '2022-01-01'
+      WHEN 'kas' THEN '2021-09-01'
+      WHEN 'eraf' THEN '2023-01-01'
+      WHEN 'vbaf' THEN '2020-01-01'
+      WHEN 'veaw' THEN '2021-01-01'
+      WHEN 'ea11' THEN '2021-06-01'
+      WHEN 'egff' THEN '2021-01-01'
+      WHEN 'saf' THEN '2021-01-01'
+      WHEN 'wolfa' THEN '2022-06-01'
+      WHEN 'djs' THEN '2022-01-01'
+      WHEN 'massilia' THEN '2022-01-01'
+      WHEN 'cirrus' THEN '2022-01-01'
+      WHEN 'skyhaven' THEN '2022-01-01'
+      WHEN 'lde' THEN '2022-01-01'
+      WHEN 'l16' THEN '2022-01-01'
+      WHEN 'raybirds' THEN '2021-01-01'
+      WHEN 'vap' THEN '2021-01-01'
+      WHEN '1roc' THEN '2023-01-01'
+      WHEN 'esca' THEN '2022-01-01'
+      WHEN 'kerboul' THEN '2024-01-01'
+      WHEN '06mhr' THEN '2022-01-01'
+      WHEN 'gameplan' THEN '2023-01-01'
+      WHEN 'gc22' THEN '2022-01-01'
+      WHEN 'aaeeg' THEN '2022-01-01'
+      ELSE NULL END
+    WHERE founded_date IS NULL`,
   ]
 
   for (const sql of migrations) {

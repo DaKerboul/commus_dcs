@@ -82,7 +82,11 @@
           <div class="mt-3 flex items-center gap-4 text-xs text-gray-500">
             <span class="flex items-center gap-1">
               <UIcon name="i-heroicons-calendar" />
-              {{ formatDate(entry.createdAt) }}
+              {{ entry.dateLabel }}
+            </span>
+            <span v-if="entry.foundedDate" class="flex items-center gap-1 text-blue-400">
+              <UIcon name="i-heroicons-flag" />
+              Fondée
             </span>
             <span v-if="entry.votes" class="flex items-center gap-1">
               <UIcon name="i-heroicons-heart" />
@@ -116,29 +120,37 @@ useSeoMeta({
 
 interface TimelineCommunity extends CommunityCard {
   createdAt: string
+  foundedDate?: string | null
   sizeText?: string | null
   year: string
+  dateLabel: string
 }
 
-const { data: rawData } = await useFetch<{ data: CommunityCard[] }>('/api/communities', {
-  query: { limit: 100, sort: 'created', sortDir: 'asc' },
+const { data: rawData } = await useFetch<{ data: (CommunityCard & { foundedDate?: string | null; createdAt: string })[] }>('/api/communities', {
+  query: { limit: 100, sort: 'founded', sortDir: 'asc' },
 })
 
 const timelineCommunities = computed<TimelineCommunity[]>(() => {
   if (!rawData.value?.data) return []
-  return rawData.value.data.map((c: any) => ({
-    ...c,
-    year: c.createdAt ? new Date(c.createdAt).getFullYear().toString() : '?',
-  }))
+  return rawData.value.data
+    .map((c: any) => {
+      const founded = c.foundedDate
+      const created = c.createdAt
+      const dateStr = founded || created
+      const year = dateStr ? new Date(dateStr).getFullYear().toString() : '?'
+      let dateLabel = '—'
+      if (founded) {
+        // founded_date is YYYY-MM-DD or YYYY-MM or YYYY
+        const d = new Date(founded)
+        dateLabel = d.toLocaleDateString('fr-FR', { year: 'numeric', month: 'long' })
+        if (founded.length === 4) dateLabel = founded // just year
+      } else if (created) {
+        dateLabel = new Date(created).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long' }) + ' (ajout)'
+      }
+      return { ...c, year, dateLabel, sortKey: dateStr || '9999' }
+    })
+    .sort((a: any, b: any) => a.sortKey.localeCompare(b.sortKey))
 })
-
-function formatDate(dateStr: string): string {
-  if (!dateStr) return '—'
-  return new Date(dateStr).toLocaleDateString('fr-FR', {
-    year: 'numeric',
-    month: 'long',
-  })
-}
 
 // Intersection Observer for scroll-triggered animations
 const entryRefs = ref<HTMLElement[]>([])

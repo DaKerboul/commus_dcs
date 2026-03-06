@@ -90,6 +90,7 @@ export default defineEventHandler(async (event) => {
   const sortColumn = sort === 'size' ? communities.sizeCategory
     : sort === 'updated' ? communities.updatedAt
     : sort === 'created' ? communities.createdAt
+    : sort === 'founded' ? communities.foundedDate
     : sort === 'votes' ? communities.votes
     : communities.name
   const sortFn = sortDir === 'desc' ? desc : asc
@@ -179,6 +180,7 @@ export default defineEventHandler(async (event) => {
     votes: c.votes || 0,
     createdAt: c.createdAt,
     updatedAt: c.updatedAt,
+    foundedDate: c.foundedDate || null,
     moduleNames: modMap.get(c.id) || [],
     experienceNames: expMap.get(c.id) || [],
     historicalPeriods: periodMap.get(c.id) || [],

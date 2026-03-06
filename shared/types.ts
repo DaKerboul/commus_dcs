@@ -70,6 +70,11 @@ export interface StatsData {
   communityBySize: { size: string; count: number }[]
   topModules: { name: string; count: number }[]
   topExperiences: { name: string; count: number }[]
+  // Streamer stats
+  totalStreamers: number
+  liveStreamers: number
+  totalStreamDays: number
+  topStreamers: { displayName: string; twitchLogin: string; daysCount: number; profileImageUrl: string | null }[]
 }
 
 // Label mappings for enums

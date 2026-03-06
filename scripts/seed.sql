@@ -53,6 +53,7 @@ CREATE TABLE IF NOT EXISTS communities (
   featured BOOLEAN DEFAULT false,
   published BOOLEAN DEFAULT true,
   votes INTEGER DEFAULT 0,
+  founded_date VARCHAR(50),
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );

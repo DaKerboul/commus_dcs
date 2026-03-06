@@ -5,6 +5,8 @@ import {
   communityExperiences,
   modules,
   experiences,
+  streamers,
+  streamerDcsDays,
 } from '#server/db/schema'
 
 export default defineEventHandler(async () => {
@@ -49,6 +51,47 @@ export default defineEventHandler(async () => {
       .limit(10),
   ])
 
+  // Streamer stats — resilient to missing tables
+  let totalStreamers = 0
+  let liveStreamers = 0
+  let totalStreamDays = 0
+  let topStreamers: { displayName: string; twitchLogin: string; daysCount: number; profileImageUrl: string | null }[] = []
+
+  try {
+    const [
+      [{ totalS }],
+      [{ liveS }],
+      [{ totalD }],
+      topS,
+    ] = await Promise.all([
+      db.select({ totalS: count() }).from(streamers).where(eq(streamers.isActive, true)),
+      db.select({ liveS: count() }).from(streamers).where(eq(streamers.isLive, true)),
+      db.select({ totalD: count() }).from(streamerDcsDays),
+      db.select({
+        displayName: streamers.displayName,
+        twitchLogin: streamers.twitchLogin,
+        profileImageUrl: streamers.profileImageUrl,
+        daysCount: count(),
+      })
+        .from(streamerDcsDays)
+        .innerJoin(streamers, eq(streamerDcsDays.streamerId, streamers.id))
+        .groupBy(streamers.displayName, streamers.twitchLogin, streamers.profileImageUrl)
+        .orderBy(sql`count(*) DESC`)
+        .limit(5),
+    ])
+    totalStreamers = Number(totalS)
+    liveStreamers = Number(liveS)
+    totalStreamDays = Number(totalD)
+    topStreamers = topS.map(s => ({
+      displayName: s.displayName,
+      twitchLogin: s.twitchLogin,
+      daysCount: Number(s.daysCount),
+      profileImageUrl: s.profileImageUrl,
+    }))
+  } catch {
+    // Tables may not exist yet
+  }
+
   return {
     totalCommunities: Number(totalCommunities),
     totalModules: Number(totalModules),
@@ -57,5 +100,9 @@ export default defineEventHandler(async () => {
     communityBySize: communityBySizeRows.map(r => ({ size: r.size, count: Number(r.count) })),
     topModules: topModulesRows.map(r => ({ name: r.name, count: Number(r.count) })),
     topExperiences: topExperiencesRows.map(r => ({ name: r.name, count: Number(r.count) })),
+    totalStreamers,
+    liveStreamers,
+    totalStreamDays,
+    topStreamers,
   }
 })

@@ -42,9 +42,6 @@
                 </UButton>
                 <template #content>
                   <div class="p-2 space-y-0.5 w-52">
-                    <UButton to="/graphe" variant="ghost" color="neutral" size="sm" block class="justify-start" icon="i-heroicons-share">
-                      Graphe d'affinité
-                    </UButton>
                     <UButton to="/infographie" variant="ghost" color="neutral" size="sm" block class="justify-start" icon="i-heroicons-chart-pie">
                       DCS en chiffres
                     </UButton>
@@ -119,9 +116,6 @@
           </UButton>
           <UButton to="/stats" variant="ghost" color="neutral" block @click="mobileOpen = false">
             Statistiques
-          </UButton>
-          <UButton to="/graphe" variant="ghost" color="neutral" block @click="mobileOpen = false">
-            Graphe d'affinité
           </UButton>
           <UButton to="/infographie" variant="ghost" color="neutral" block @click="mobileOpen = false">
             DCS en chiffres

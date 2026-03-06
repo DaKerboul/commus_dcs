@@ -107,6 +107,7 @@ export const communities = pgTable('communities', {
   featured: boolean('featured').default(false),
   published: boolean('published').default(true),
   votes: integer('votes').default(0),
+  foundedDate: varchar('founded_date', { length: 50 }),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 })
