@@ -194,7 +194,7 @@
 import {
   TYPE_LABELS, SIZE_LABELS, RECRUITMENT_LABELS, RECRUITMENT_COLORS,
   FREQUENCY_LABELS, PERIOD_LABELS,
-} from '~/../../shared/types'
+} from '#shared/types'
 
 definePageMeta({ layout: 'admin' })
 useHead({ title: 'Admin Soumissions — Commus DCS FR' })
