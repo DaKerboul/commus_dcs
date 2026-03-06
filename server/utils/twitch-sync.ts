@@ -175,6 +175,7 @@ export async function backfillStreamerVods(streamerId: number): Promise<number> 
   if (!streamer) return 0
 
   const vods = await fetchUserVods(streamer.twitchId)
+  console.log(`[twitch-sync] 📼 ${streamer.twitchLogin}: fetched ${vods.length} VOD(s) from Twitch`)
   let imported = 0
 
   for (const vod of vods) {
@@ -242,9 +243,12 @@ export async function backfillAllVods(): Promise<number> {
   const allStreamers = await db.select().from(streamers).where(eq(streamers.isActive, true))
   let total = 0
 
+  console.log(`[twitch-sync] 📼 Backfilling VODs for ${allStreamers.length} active streamer(s)...`)
   for (const streamer of allStreamers) {
     try {
-      total += await backfillStreamerVods(streamer.id)
+      const count = await backfillStreamerVods(streamer.id)
+      total += count
+      console.log(`[twitch-sync] 📼 ${streamer.twitchLogin}: imported ${count} new VOD(s)`)
       // Rate limit: 1 second between streamers
       await new Promise(r => setTimeout(r, 1000))
     } catch (e) {

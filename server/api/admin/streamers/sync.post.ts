@@ -35,6 +35,7 @@ export default defineEventHandler(async (event) => {
       success: true,
       added,
       ...result,
+      _v: 2,
     }
   } catch (err: any) {
     throw createError({
