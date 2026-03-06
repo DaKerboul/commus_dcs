@@ -21,15 +21,6 @@ export default defineNitroPlugin(async () => {
     }
   }, 15 * 60 * 1000)
 
-  // Backfill VODs every 6 hours
-  setInterval(async () => {
-    try {
-      await backfillAllVods()
-    } catch (e) {
-      console.error('[twitch-cron] VOD backfill error:', e)
-    }
-  }, 6 * 60 * 60 * 1000)
-
   // Refresh streamer profiles once a day
   setInterval(async () => {
     try {

@@ -30,9 +30,9 @@
             :style="{
               width: `${cellSize - 2}px`,
               height: `${cellSize - 2}px`,
-              backgroundColor: cell ? getColor(cell.hours) : 'transparent',
+              backgroundColor: cell ? getColor(cell.active) : 'transparent',
             }"
-            :title="cell ? `${cell.date} — ${cell.hours}h de stream` : ''"
+            :title="cell ? `${cell.date}${cell.active ? ' — Actif sur DCS' : ''}` : ''"
           />
         </div>
       </div>
@@ -40,25 +40,23 @@
 
     <!-- Legend -->
     <div class="flex items-center gap-2 mt-3 ml-10">
-      <span class="text-[10px] text-gray-400">Moins</span>
       <div
-        v-for="level in 5"
-        :key="level"
         class="rounded-sm"
-        :style="{
-          width: `${cellSize - 2}px`,
-          height: `${cellSize - 2}px`,
-          backgroundColor: levelColors[level - 1],
-        }"
+        :style="{ width: `${cellSize - 2}px`, height: `${cellSize - 2}px`, backgroundColor: inactiveColor }"
       />
-      <span class="text-[10px] text-gray-400">Plus</span>
+      <span class="text-[10px] text-gray-400">Inactif</span>
+      <div
+        class="rounded-sm"
+        :style="{ width: `${cellSize - 2}px`, height: `${cellSize - 2}px`, backgroundColor: activeColor }"
+      />
+      <span class="text-[10px] text-gray-400">Actif sur DCS</span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 const props = defineProps<{
-  data: { date: string; hours: number }[]
+  data: { date: string; active: boolean }[]
   months?: number
 }>()
 
@@ -68,40 +66,26 @@ const numMonths = props.months ?? 3
 
 const dayLabels = ['Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa', 'Di']
 
-// Build data map
-const dataMap = computed(() => {
-  const map = new Map<string, number>()
+// Build data set of active dates
+const activeDates = computed(() => {
+  const set = new Set<string>()
   for (const d of props.data) {
-    map.set(d.date, d.hours)
+    if (d.active) set.add(d.date)
   }
-  return map
+  return set
 })
 
-// Compute max for color scaling
-const maxHours = computed(() => {
-  if (props.data.length === 0) return 4
-  return Math.max(4, ...props.data.map(d => d.hours))
-})
+const activeColor = computed(() => colorMode.value === 'dark' ? '#34d399' : '#059669')
+const inactiveColor = computed(() => colorMode.value === 'dark' ? '#1f2937' : '#f3f4f6')
 
-// Color levels
-const levelColors = computed(() => {
-  const dark = colorMode.value === 'dark'
-  return dark
-    ? ['#0e2a1f', '#065f46', '#059669', '#34d399', '#6ee7b7']
-    : ['#d1fae5', '#a7f3d0', '#6ee7b7', '#34d399', '#059669']
-})
-
-function getColor(hours: number): string {
-  if (hours <= 0) return colorMode.value === 'dark' ? '#1f2937' : '#f3f4f6'
-  const ratio = hours / maxHours.value
-  const level = Math.min(4, Math.floor(ratio * 5))
-  return levelColors.value[level]
+function getColor(active: boolean): string {
+  return active ? activeColor.value : inactiveColor.value
 }
 
 // Build grid: weeks × 7 days
 interface Cell {
   date: string
-  hours: number
+  active: boolean
 }
 
 const grid = computed(() => {
@@ -123,8 +107,7 @@ const grid = computed(() => {
         week.push(null)
       } else {
         const dateStr = formatDate(current)
-        const hours = dataMap.value.get(dateStr) || 0
-        week.push({ date: dateStr, hours })
+        week.push({ date: dateStr, active: activeDates.value.has(dateStr) })
       }
       current.setDate(current.getDate() + 1)
     }

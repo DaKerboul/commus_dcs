@@ -142,9 +142,7 @@ export interface StreamerCard {
   currentViewers: number
   lastStreamTitle: string | null
   lastStreamStartedAt: string | null
-  totalStreamHours: number
-  totalSessions: number
-  avgViewers: number
+  dcsDays: number
   communityName?: string | null
   communitySlug?: string | null
 }
@@ -152,17 +150,14 @@ export interface StreamerCard {
 export interface StreamerDetail extends StreamerCard {
   description: string | null
   twitchId: string
-  calendarHeatmap: { date: string; hours: number }[]
-  weeklyHeatmap: number[][] // [dayOfWeek 0=Mon..6=Sun][hour 0-23] = count of sessions
-  recentSessions: StreamSession[]
+  calendarHeatmap: { date: string; active: boolean }[]
 }
 
-export interface StreamSession {
-  id: number
-  title: string | null
-  startedAt: string
-  endedAt: string | null
-  durationSeconds: number | null
-  maxViewers: number | null
-  thumbnailUrl: string | null
+export interface LiveStreamer {
+  twitchLogin: string
+  displayName: string
+  profileImageUrl: string | null
+  currentViewers: number | null
+  lastStreamTitle: string | null
+  lastStreamStartedAt: string | null
 }

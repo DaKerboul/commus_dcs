@@ -196,29 +196,4 @@ export async function fetchTwitchUsersByIds(ids: string[]): Promise<TwitchUser[]
   return allUsers
 }
 
-/**
- * Fetch VODs (archives) for a user. Returns up to `limit` VODs.
- */
-export async function fetchUserVods(userId: string, limit = 100): Promise<TwitchVideo[]> {
-  const allVods: TwitchVideo[] = []
-  let cursor: string | undefined
 
-  do {
-    const params: Record<string, string> = {
-      user_id: userId,
-      type: 'archive',
-      first: String(Math.min(limit - allVods.length, 100)),
-    }
-    if (cursor) params.after = cursor
-
-    const data = await twitchApi<{ data: TwitchVideo[]; pagination: { cursor?: string } }>(
-      'videos',
-      params,
-    )
-    allVods.push(...data.data)
-    cursor = data.pagination?.cursor
-    if (allVods.length >= limit) break
-  } while (cursor)
-
-  return allVods
-}

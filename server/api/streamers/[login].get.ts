@@ -1,36 +1,8 @@
 /**
- * GET /api/streamers/:login — Streamer detail with heatmap data.
+ * GET /api/streamers/:login — Streamer detail with DCS activity calendar.
  */
-import { eq, and, gte, desc, sql } from 'drizzle-orm'
-import { streamers, streamSessions, communities } from '#server/db/schema'
-
-// ── Paris timezone helpers ─────────────────────────────
-
-function getParisDateTime(utcDate: Date) {
-  const formatter = new Intl.DateTimeFormat('fr-FR', {
-    timeZone: 'Europe/Paris',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    weekday: 'long',
-    hour12: false,
-  })
-
-  const parts = formatter.formatToParts(utcDate)
-  const get = (type: string) => parts.find(p => p.type === type)?.value || ''
-
-  const dayMap: Record<string, number> = {
-    lundi: 0, mardi: 1, mercredi: 2, jeudi: 3,
-    vendredi: 4, samedi: 5, dimanche: 6,
-  }
-
-  return {
-    dayOfWeek: dayMap[get('weekday')] ?? 0,
-    hour: parseInt(get('hour')) || 0,
-    dateStr: `${get('year')}-${get('month')}-${get('day')}`,
-  }
-}
+import { eq, and, gte, sql } from 'drizzle-orm'
+import { streamers, streamerDcsDays, communities } from '#server/db/schema'
 
 export default defineEventHandler(async (event) => {
   const login = getRouterParam(event, 'login')
@@ -60,73 +32,30 @@ export default defineEventHandler(async (event) => {
     if (comm) communityInfo = comm
   }
 
-  // Fetch all sessions (last 6 months)
+  // Fetch DCS days (last 6 months)
   const sixMonthsAgo = new Date()
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6)
+  const sixMonthsStr = sixMonthsAgo.toLocaleDateString('fr-CA', { timeZone: 'Europe/Paris' })
 
-  const sessions = await db
-    .select()
-    .from(streamSessions)
+  const dcsDays = await db
+    .select({ date: streamerDcsDays.date })
+    .from(streamerDcsDays)
     .where(
       and(
-        eq(streamSessions.streamerId, streamer.id),
-        gte(streamSessions.startedAt, sixMonthsAgo),
+        eq(streamerDcsDays.streamerId, streamer.id),
+        gte(streamerDcsDays.date, sixMonthsStr),
       ),
     )
-    .orderBy(desc(streamSessions.startedAt))
+    .orderBy(streamerDcsDays.date)
 
-  // ── Aggregate stats ────────────────────────────────
-  const totalSessions = sessions.length
-  const totalStreamSeconds = sessions.reduce((sum, s) => sum + (s.durationSeconds || 0), 0)
-  const avgViewers = totalSessions > 0
-    ? Math.round(sessions.reduce((sum, s) => sum + (s.maxViewers || s.avgViewers || 0), 0) / totalSessions)
-    : 0
+  // Total DCS days (all time)
+  const [totalCount] = await db
+    .select({ count: sql<number>`COUNT(*)::int` })
+    .from(streamerDcsDays)
+    .where(eq(streamerDcsDays.streamerId, streamer.id))
 
-  // ── Calendar Heatmap ───────────────────────────────
-  // Group streams by date (Paris tz), sum hours per day
-  const dailyMap = new Map<string, number>()
-
-  for (const session of sessions) {
-    if (!session.durationSeconds) continue
-
-    const paris = getParisDateTime(session.startedAt)
-    const hours = session.durationSeconds / 3600
-    dailyMap.set(paris.dateStr, (dailyMap.get(paris.dateStr) || 0) + hours)
-  }
-
-  const calendarHeatmap = Array.from(dailyMap.entries())
-    .map(([date, hours]) => ({ date, hours: Math.round(hours * 10) / 10 }))
-    .sort((a, b) => a.date.localeCompare(b.date))
-
-  // ── Weekly Habits Heatmap ──────────────────────────
-  // 7 days (0=Mon..6=Sun) × 24 hours = count of sessions active at that slot
-  const weeklyHeatmap: number[][] = Array.from({ length: 7 }, () => Array(24).fill(0))
-
-  for (const session of sessions) {
-    if (!session.durationSeconds) continue
-
-    const startParis = getParisDateTime(session.startedAt)
-    const durationHours = Math.ceil(session.durationSeconds / 3600)
-
-    // Expand session into hourly slots
-    for (let h = 0; h < durationHours; h++) {
-      const slotDate = new Date(session.startedAt.getTime() + h * 3600 * 1000)
-      const slot = getParisDateTime(slotDate)
-      const row = weeklyHeatmap[slot.dayOfWeek]
-      if (row && slot.hour >= 0 && slot.hour < 24) row[slot.hour] = (row[slot.hour] ?? 0) + 1
-    }
-  }
-
-  // ── Recent Sessions (last 20) ──────────────────────
-  const recentSessions = sessions.slice(0, 20).map(s => ({
-    id: s.id,
-    title: s.title,
-    startedAt: s.startedAt.toISOString(),
-    endedAt: s.endedAt?.toISOString() ?? null,
-    durationSeconds: s.durationSeconds,
-    maxViewers: s.maxViewers,
-    thumbnailUrl: s.thumbnailUrl,
-  }))
+  // Calendar heatmap: list of dates where streamer was active on DCS
+  const calendarHeatmap = dcsDays.map(d => ({ date: d.date, active: true }))
 
   return {
     id: streamer.id,
@@ -139,13 +68,9 @@ export default defineEventHandler(async (event) => {
     currentViewers: streamer.currentViewers ?? 0,
     lastStreamTitle: streamer.lastStreamTitle,
     lastStreamStartedAt: streamer.lastStreamStartedAt?.toISOString() ?? null,
-    totalStreamHours: Math.round((totalStreamSeconds / 3600) * 10) / 10,
-    totalSessions,
-    avgViewers,
+    dcsDays: totalCount?.count ?? 0,
     communityName: communityInfo?.name ?? null,
     communitySlug: communityInfo?.slug ?? null,
     calendarHeatmap,
-    weeklyHeatmap,
-    recentSessions,
   }
 })

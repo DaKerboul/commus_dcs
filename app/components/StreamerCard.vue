@@ -52,16 +52,8 @@
             {{ streamer.currentViewers }} spectateur{{ streamer.currentViewers > 1 ? 's' : '' }}
           </span>
           <span class="inline-flex items-center gap-1">
-            <UIcon name="i-heroicons-clock" class="text-xs" />
-            {{ streamer.totalStreamHours }}h de stream
-          </span>
-          <span class="inline-flex items-center gap-1">
-            <UIcon name="i-heroicons-play" class="text-xs" />
-            {{ streamer.totalSessions }} session{{ streamer.totalSessions > 1 ? 's' : '' }}
-          </span>
-          <span v-if="streamer.avgViewers > 0" class="inline-flex items-center gap-1">
-            <UIcon name="i-heroicons-users" class="text-xs" />
-            ~{{ streamer.avgViewers }} spectateurs moy.
+            <UIcon name="i-heroicons-calendar-days" class="text-xs" />
+            {{ streamer.dcsDays }} jour{{ streamer.dcsDays > 1 ? 's' : '' }} DCS
           </span>
         </div>
       </div>

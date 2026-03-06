@@ -20,7 +20,7 @@
     </div>
 
     <!-- Stats bar -->
-    <div v-if="streamersData" class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+    <div v-if="streamersData" class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
       <div class="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-4 text-center">
         <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ streamersData.total }}</div>
         <div class="text-xs text-gray-500">Streameurs</div>
@@ -30,12 +30,8 @@
         <div class="text-xs text-gray-500">En direct</div>
       </div>
       <div class="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-4 text-center">
-        <div class="text-2xl font-bold text-purple-400">{{ totalHours }}h</div>
-        <div class="text-xs text-gray-500">Total streamé</div>
-      </div>
-      <div class="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-4 text-center">
-        <div class="text-2xl font-bold text-blue-400">{{ totalSessions }}</div>
-        <div class="text-xs text-gray-500">Sessions</div>
+        <div class="text-2xl font-bold text-purple-400">{{ totalDcsDays }}</div>
+        <div class="text-xs text-gray-500">Jours DCS détectés</div>
       </div>
     </div>
 
@@ -97,9 +93,7 @@ const sort = ref('live')
 
 const sortOptions = [
   { value: 'live', label: 'En direct' },
-  { value: 'hours', label: 'Heures de stream' },
-  { value: 'sessions', label: 'Sessions' },
-  { value: 'viewers', label: 'Spectateurs' },
+  { value: 'days', label: 'Jours DCS' },
   { value: 'name', label: 'Nom' },
 ]
 
@@ -118,10 +112,7 @@ const filteredStreamers = computed(() => {
 })
 
 const liveCount = computed(() => filteredStreamers.value.filter(s => s.isLive).length)
-const totalHours = computed(() =>
-  Math.round(filteredStreamers.value.reduce((sum, s) => sum + s.totalStreamHours, 0)),
-)
-const totalSessions = computed(() =>
-  filteredStreamers.value.reduce((sum, s) => sum + s.totalSessions, 0),
+const totalDcsDays = computed(() =>
+  filteredStreamers.value.reduce((sum, s) => sum + s.dcsDays, 0),
 )
 </script>

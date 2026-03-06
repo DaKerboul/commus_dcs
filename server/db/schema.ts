@@ -161,9 +161,44 @@ export const submissions = pgTable('submissions', {
   id: serial('id').primaryKey(),
   communityName: varchar('community_name', { length: 255 }).notNull(),
   contactName: varchar('contact_name', { length: 255 }).notNull(),
+
+  // Core info
+  shortDescription: text('short_description'),
+  description: text('description'),
+  objectives: text('objectives'),
+  logoUrl: text('logo_url'),
+
+  // Enums (stored as text to avoid enum constraint issues - validated in code)
+  communityType: text('submission_community_type'),
+  sizeCategory: text('submission_size_category'),
+  recruitmentStatus: text('submission_recruitment_status'),
+  eventFrequency: text('submission_event_frequency'),
+
+  // Structured fields
+  founder: varchar('founder', { length: 255 }),
+  entryConditions: text('entry_conditions'),
+  sizeText: varchar('size_text', { length: 255 }),
+
+  // Links
   discordUrl: text('discord_url'),
   websiteUrl: text('website_url'),
-  description: text('description'),
+  youtubeUrl: text('youtube_url'),
+  instagramUrl: text('instagram_url'),
+  facebookUrl: text('facebook_url'),
+  twitchUrl: text('twitch_url'),
+  twitterUrl: text('twitter_url'),
+  otherLinks: jsonb('submission_other_links').$type<{ label: string; url: string }[]>(),
+
+  // Modules & experiences (stored as JSON arrays of names)
+  moduleNames: jsonb('submission_module_names').$type<string[]>(),
+  soughtModuleNames: jsonb('submission_sought_module_names').$type<string[]>(),
+  experienceNames: jsonb('submission_experience_names').$type<string[]>(),
+  historicalPeriods: jsonb('submission_historical_periods').$type<string[]>(),
+
+  // Images (stored as JSON)
+  images: jsonb('submission_images').$type<{ url: string; alt: string | null }[]>(),
+
+  // Admin workflow
   status: submissionStatusEnum('status').default('pending'),
   adminNotes: text('admin_notes'),
   createdAt: timestamp('created_at').defaultNow(),
@@ -231,17 +266,10 @@ export const streamers = pgTable('streamers', {
   updatedAt: timestamp('updated_at').defaultNow(),
 })
 
-export const streamSessions = pgTable('stream_sessions', {
+export const streamerDcsDays = pgTable('streamer_dcs_days', {
   id: serial('id').primaryKey(),
   streamerId: integer('streamer_id').notNull().references(() => streamers.id, { onDelete: 'cascade' }),
-  twitchVideoId: text('twitch_video_id'),
-  title: text('title'),
-  startedAt: timestamp('started_at').notNull(),
-  endedAt: timestamp('ended_at'),
-  durationSeconds: integer('duration_seconds'),
-  maxViewers: integer('max_viewers'),
-  avgViewers: integer('avg_viewers'),
-  thumbnailUrl: text('thumbnail_url'),
+  date: varchar('date', { length: 10 }).notNull(), // YYYY-MM-DD in Paris tz
   createdAt: timestamp('created_at').defaultNow(),
 })
 
@@ -249,9 +277,9 @@ export const streamSessions = pgTable('stream_sessions', {
 
 export const streamersRelations = relations(streamers, ({ one, many }) => ({
   community: one(communities, { fields: [streamers.communityId], references: [communities.id] }),
-  sessions: many(streamSessions),
+  dcsDays: many(streamerDcsDays),
 }))
 
-export const streamSessionsRelations = relations(streamSessions, ({ one }) => ({
-  streamer: one(streamers, { fields: [streamSessions.streamerId], references: [streamers.id] }),
+export const streamerDcsDaysRelations = relations(streamerDcsDays, ({ one }) => ({
+  streamer: one(streamers, { fields: [streamerDcsDays.streamerId], references: [streamers.id] }),
 }))

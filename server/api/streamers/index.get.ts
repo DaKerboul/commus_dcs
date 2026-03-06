@@ -1,8 +1,8 @@
 /**
- * GET /api/streamers — List all known DCS FR streamers with aggregate stats.
+ * GET /api/streamers — List all known DCS FR streamers with DCS activity stats.
  */
 import { eq, sql } from 'drizzle-orm'
-import { streamers, streamSessions, communities } from '#server/db/schema'
+import { streamers, streamerDcsDays, communities } from '#server/db/schema'
 
 export default defineEventHandler(async (event) => {
   const db = useDB()
@@ -17,18 +17,16 @@ export default defineEventHandler(async (event) => {
     .from(streamers)
     .where(eq(streamers.isActive, true))
 
-  // 2. Aggregate session stats per streamer in a single query
-  const statsRows = await db
+  // 2. Aggregate DCS days per streamer
+  const daysRows = await db
     .select({
-      streamerId: streamSessions.streamerId,
-      totalSessions: sql<number>`COUNT(*)::int`,
-      totalStreamSeconds: sql<number>`COALESCE(SUM(${streamSessions.durationSeconds}), 0)::int`,
-      avgViewers: sql<number>`COALESCE(AVG(COALESCE(${streamSessions.maxViewers}, ${streamSessions.avgViewers}, 0)), 0)::int`,
+      streamerId: streamerDcsDays.streamerId,
+      dcsDays: sql<number>`COUNT(*)::int`,
     })
-    .from(streamSessions)
-    .groupBy(streamSessions.streamerId)
+    .from(streamerDcsDays)
+    .groupBy(streamerDcsDays.streamerId)
 
-  const statsMap = new Map(statsRows.map(r => [r.streamerId, r]))
+  const daysMap = new Map(daysRows.map(r => [r.streamerId, r.dcsDays]))
 
   // Get community names for linked streamers
   const communityIds = rawStreamers
@@ -47,7 +45,6 @@ export default defineEventHandler(async (event) => {
   // Map to response
   let result = rawStreamers.map(s => {
     const comm = s.communityId ? communityMap.get(s.communityId) : null
-    const stats = statsMap.get(s.id)
     return {
       id: s.id,
       twitchLogin: s.twitchLogin,
@@ -57,9 +54,7 @@ export default defineEventHandler(async (event) => {
       currentViewers: s.currentViewers ?? 0,
       lastStreamTitle: s.lastStreamTitle,
       lastStreamStartedAt: s.lastStreamStartedAt?.toISOString() ?? null,
-      totalStreamHours: stats ? Math.round((stats.totalStreamSeconds / 3600) * 10) / 10 : 0,
-      totalSessions: stats?.totalSessions ?? 0,
-      avgViewers: stats?.avgViewers ?? 0,
+      dcsDays: daysMap.get(s.id) ?? 0,
       communityName: comm?.name ?? null,
       communitySlug: comm?.slug ?? null,
     }
@@ -77,25 +72,19 @@ export default defineEventHandler(async (event) => {
 
   // Sort
   switch (sort) {
-    case 'hours':
-      result.sort((a, b) => b.totalStreamHours - a.totalStreamHours)
-      break
-    case 'sessions':
-      result.sort((a, b) => b.totalSessions - a.totalSessions)
-      break
-    case 'viewers':
-      result.sort((a, b) => b.avgViewers - a.avgViewers)
+    case 'days':
+      result.sort((a, b) => b.dcsDays - a.dcsDays)
       break
     case 'name':
       result.sort((a, b) => a.displayName.localeCompare(b.displayName))
       break
     case 'live':
     default:
-      // Live first, then by total hours
+      // Live first, then by DCS days
       result.sort((a, b) => {
         if (a.isLive !== b.isLive) return a.isLive ? -1 : 1
         if (a.isLive && b.isLive) return b.currentViewers - a.currentViewers
-        return b.totalStreamHours - a.totalStreamHours
+        return b.dcsDays - a.dcsDays
       })
   }
 
