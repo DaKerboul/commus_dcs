@@ -1,6 +1,7 @@
 /**
  * Twitch Sync Logic — Discovers streamers, polls live status, backfills VODs.
- * Only imports DCS-related content (game_id filter for live, title regex for VODs).
+ * Streamers are discovered via DCS live polling (game_id filter), so all their
+ * VODs are imported without additional title filtering.
  */
 import { eq, and, isNull, sql, desc } from 'drizzle-orm'
 import { streamers, streamSessions, communities } from '#server/db/schema'
@@ -10,15 +11,6 @@ import {
   fetchTwitchUsersByIds,
   fetchUserVods,
 } from './twitch'
-
-// ── DCS Title Filter ───────────────────────────────────
-// Used for VOD backfill — live streams are already filtered by game_id
-
-const DCS_TITLE_REGEX = /\bDCS\b|Digital Combat Sim/i
-
-function isDcsRelated(title: string): boolean {
-  return DCS_TITLE_REGEX.test(title)
-}
 
 // ── Duration Parser ────────────────────────────────────
 
@@ -174,7 +166,7 @@ export async function discoverAndSyncStreamers(): Promise<{ discovered: number; 
 // ── VOD Backfill ───────────────────────────────────────
 
 /**
- * Backfill DCS VODs for a single streamer. Only imports VODs with DCS in the title.
+ * Backfill VODs for a single streamer (discovered via DCS live polling).
  */
 export async function backfillStreamerVods(streamerId: number): Promise<number> {
   const db = useDB()
@@ -186,9 +178,6 @@ export async function backfillStreamerVods(streamerId: number): Promise<number> 
   let imported = 0
 
   for (const vod of vods) {
-    // Only import DCS-related VODs
-    if (!isDcsRelated(vod.title)) continue
-
     // Skip already imported (by video ID)
     const existingByVod = await db.select({ id: streamSessions.id })
       .from(streamSessions)
