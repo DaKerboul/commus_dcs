@@ -199,7 +199,7 @@ export async function backfillStreamerVods(streamerId: number): Promise<number> 
       .where(
         and(
           eq(streamSessions.streamerId, streamerId),
-          sql`ABS(EXTRACT(EPOCH FROM (${streamSessions.startedAt} - ${startedAt}::timestamp))) < 300`,
+          sql`ABS(EXTRACT(EPOCH FROM (${streamSessions.startedAt} - ${startedAt.toISOString()}::timestamp))) < 300`,
         ),
       )
       .limit(1)
