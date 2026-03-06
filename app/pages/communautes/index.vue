@@ -73,15 +73,6 @@
 <script setup lang="ts">
 import type { FilterOptions, CommunityCard, PaginatedResponse } from '#shared/types'
 
-useSeoMeta({
-  title: 'Communautés — Commus DCS FR',
-  ogTitle: 'Communautés francophones DCS World',
-  description: `Parcourez ${total.value || ''} communautés francophones DCS World. Filtrez par module, type, taille, recrutement et plus encore.`,
-  ogDescription: 'Annuaire complet des communautés francophones DCS World. Filtrez, triez et comparez les escadrons et groupes de pilotage.',
-  ogType: 'website',
-  twitterCard: 'summary_large_image',
-})
-
 const route = useRoute()
 
 const filters = ref<FilterOptions>({
@@ -128,7 +119,15 @@ const { data: experiencesList } = await useFetch<{ id: number; name: string; slu
 
 const total = computed(() => communities.value?.total || 0)
 
-// Reset page when filters change
+// SEO — must come AFTER total is defined
+useSeoMeta({
+  title: 'Communautés — Commus DCS FR',
+  ogTitle: 'Communautés francophones DCS World',
+  description: computed(() => `Parcourez ${total.value || ''} communautés francophones DCS World. Filtrez par module, type, taille, recrutement et plus encore.`),
+  ogDescription: 'Annuaire complet des communautés francophones DCS World. Filtrez, triez et comparez les escadrons et groupes de pilotage.',
+  ogType: 'website',
+  twitterCard: 'summary_large_image',
+})
 watch(filters, () => {
   currentPage.value = 1
 }, { deep: true })
