@@ -185,12 +185,12 @@ const tooltipLinks = computed(() => {
 
 let simulation: ReturnType<typeof forceSimulation<GraphNode>> | null = null
 
-onMounted(() => {
-  if (!graphData.value || !svgRef.value) return
+function initGraph() {
+  if (!graphData.value?.nodes?.length || !svgRef.value) return
 
   const rect = svgRef.value.getBoundingClientRect()
-  const width = rect.width
-  const height = rect.height
+  const width = rect.width || 800
+  const height = rect.height || 600
 
   pan.value = { x: width / 2, y: height / 2 }
 
@@ -206,6 +206,17 @@ onMounted(() => {
       renderedNodes.value = [...nodes]
       renderedLinks.value = [...links]
     })
+}
+
+// ClientOnly delays rendering, so svgRef is null during onMounted.
+// Use a watch to init when both data and DOM are ready.
+watch(svgRef, (svg) => {
+  if (svg && graphData.value) initGraph()
+})
+
+onMounted(async () => {
+  await nextTick()
+  initGraph()
 })
 
 onUnmounted(() => {

@@ -132,6 +132,8 @@ const CATEGORY_LABELS: Record<string, string> = {
 let charts: any[] = []
 
 onMounted(async () => {
+  // ClientOnly delays rendering, so chart refs aren't available until nextTick
+  await nextTick()
   if (!data.value) return
 
   // Dynamic import of echarts for client-only

@@ -11,20 +11,15 @@ import {
 export default defineEventHandler(async () => {
   const db = useDB()
 
+  // Core queries that always work
   const [
     [{ totalCommunities }],
-    liveStreamersResult,
     recentlyUpdated,
     [{ totalVotes }],
     topModulesNow,
-    [{ totalStreamDays }],
-    [{ pendingSubmissions }],
   ] = await Promise.all([
     db.select({ totalCommunities: count() })
       .from(communities).where(eq(communities.published, true)),
-
-    db.select({ count: count() })
-      .from(streamers).where(eq(streamers.isLive, true)),
 
     db.select({
       slug: communities.slug,
@@ -47,20 +42,35 @@ export default defineEventHandler(async () => {
       .groupBy(modules.name)
       .orderBy(sql`count(*) DESC`)
       .limit(10),
-
-    db.select({ totalStreamDays: count() }).from(streamerDcsDays),
-
-    db.select({ pendingSubmissions: count() })
-      .from(submissions)
-      .where(eq(submissions.status, 'pending')),
   ])
+
+  // Streamer queries — may fail if tables don't exist yet
+  let liveStreamers = 0
+  let totalStreamDays = 0
+  let pendingSubmissions = 0
+
+  try {
+    const [liveResult, daysResult, pendingResult] = await Promise.all([
+      db.select({ count: count() })
+        .from(streamers).where(eq(streamers.isLive, true)),
+      db.select({ totalStreamDays: count() }).from(streamerDcsDays),
+      db.select({ pendingSubmissions: count() })
+        .from(submissions)
+        .where(eq(submissions.status, 'pending')),
+    ])
+    liveStreamers = Number(liveResult[0]?.count || 0)
+    totalStreamDays = Number(daysResult[0]?.totalStreamDays || 0)
+    pendingSubmissions = Number(pendingResult[0]?.pendingSubmissions || 0)
+  } catch {
+    // Tables may not exist yet — return defaults
+  }
 
   return {
     totalCommunities: Number(totalCommunities),
-    liveStreamers: Number(liveStreamersResult[0]?.count || 0),
+    liveStreamers,
     totalVotes: Number(totalVotes),
-    totalStreamDays: Number(totalStreamDays),
-    pendingSubmissions: Number(pendingSubmissions),
+    totalStreamDays,
+    pendingSubmissions,
     recentlyUpdated: recentlyUpdated.map(c => ({
       ...c,
       updatedAt: c.updatedAt?.toISOString() || null,

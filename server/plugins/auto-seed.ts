@@ -51,6 +51,14 @@ async function runMigrations(client: ReturnType<typeof postgres>) {
     )`,
     `CREATE INDEX IF NOT EXISTS idx_stream_sessions_streamer ON stream_sessions(streamer_id)`,
     `CREATE INDEX IF NOT EXISTS idx_stream_sessions_started ON stream_sessions(started_at)`,
+    // v5: Create streamer_dcs_days table (replaces stream_sessions for simplified tracking)
+    `CREATE TABLE IF NOT EXISTS streamer_dcs_days (
+      id SERIAL PRIMARY KEY,
+      streamer_id INTEGER NOT NULL REFERENCES streamers(id) ON DELETE CASCADE,
+      date VARCHAR(10) NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW()
+    )`,
+    `CREATE UNIQUE INDEX IF NOT EXISTS idx_streamer_dcs_days_unique ON streamer_dcs_days(streamer_id, date)`,
   ]
 
   for (const sql of migrations) {
