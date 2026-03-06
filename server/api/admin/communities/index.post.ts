@@ -89,5 +89,15 @@ export default defineEventHandler(async (event) => {
     await db.insert(communityHistoricalPeriods).values(periodValues)
   }
 
+  if (body.images?.length) {
+    const imageValues = body.images.map((img: { url: string; alt?: string }, i: number) => ({
+      communityId: community.id,
+      url: img.url,
+      alt: img.alt || null,
+      sortOrder: i,
+    }))
+    await db.insert(communityImages).values(imageValues)
+  }
+
   return community
 })

@@ -5,6 +5,7 @@ import {
   communitySoughtModules,
   communityExperiences,
   communityHistoricalPeriods,
+  communityImages,
   modules,
   experiences,
 } from '#server/db/schema'
@@ -65,6 +66,7 @@ export default defineEventHandler(async (event) => {
     db.delete(communitySoughtModules).where(eq(communitySoughtModules.communityId, id)),
     db.delete(communityExperiences).where(eq(communityExperiences.communityId, id)),
     db.delete(communityHistoricalPeriods).where(eq(communityHistoricalPeriods.communityId, id)),
+    db.delete(communityImages).where(eq(communityImages.communityId, id)),
   ])
 
   if (body.moduleNames?.length) {
@@ -100,6 +102,16 @@ export default defineEventHandler(async (event) => {
       period: p,
     }))
     await db.insert(communityHistoricalPeriods).values(periodValues)
+  }
+
+  if (body.images?.length) {
+    const imageValues = body.images.map((img: { url: string; alt?: string }, i: number) => ({
+      communityId: id,
+      url: img.url,
+      alt: img.alt || null,
+      sortOrder: i,
+    }))
+    await db.insert(communityImages).values(imageValues)
   }
 
   return community
