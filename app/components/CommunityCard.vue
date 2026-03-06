@@ -6,10 +6,13 @@
     <div class="flex items-start gap-4">
       <!-- Logo -->
       <div class="relative shrink-0 h-14 w-14 rounded-lg bg-gray-200 dark:bg-gray-800 flex items-center justify-center overflow-hidden">
-        <img
+        <NuxtImg
           v-if="community.logoUrl"
           :src="community.logoUrl"
           :alt="community.name"
+          width="56"
+          height="56"
+          loading="lazy"
           class="h-full w-full object-cover"
         />
         <UIcon v-else name="i-heroicons-user-group" class="text-gray-500 text-2xl" />

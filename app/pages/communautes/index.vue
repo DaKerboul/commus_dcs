@@ -40,9 +40,7 @@
 
     <!-- Results -->
     <div class="mt-6">
-      <div v-if="pending" class="flex justify-center py-12">
-        <UIcon name="i-heroicons-arrow-path" class="text-3xl text-gray-500 animate-spin" />
-      </div>
+      <CommunitySkeleton v-if="pending" :count="6" />
       <div v-else-if="!communities?.data?.length" class="text-center py-12">
         <UIcon name="i-heroicons-face-frown" class="text-4xl text-gray-600" />
         <p class="mt-3 text-gray-500 dark:text-gray-400">Aucune communauté trouvée avec ces filtres.</p>

@@ -47,6 +47,42 @@
       <StatsGrid :stats="heroStats" />
     </section>
 
+    <!-- Live streamers widget -->
+    <section v-if="liveStreamers?.length" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-10">
+      <div class="rounded-xl border border-red-500/30 bg-red-950/10 dark:bg-red-950/20 p-5">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <span class="relative flex h-3 w-3">
+              <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
+              <span class="relative inline-flex h-3 w-3 rounded-full bg-red-500" />
+            </span>
+            <h2 class="text-lg font-bold text-gray-900 dark:text-white">En ce moment sur DCS</h2>
+          </div>
+          <UButton to="/streamers" variant="ghost" color="neutral" trailing-icon="i-heroicons-arrow-right" size="xs">
+            Tous les streameurs
+          </UButton>
+        </div>
+        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <NuxtLink
+            v-for="s in liveStreamers.slice(0, 3)"
+            :key="s.twitchLogin"
+            :to="`https://twitch.tv/${s.twitchLogin}`"
+            target="_blank"
+            class="flex items-center gap-3 rounded-lg bg-white/60 dark:bg-gray-900/60 p-3 hover:bg-white dark:hover:bg-gray-900 transition-colors"
+          >
+            <img v-if="s.profileImageUrl" :src="s.profileImageUrl" :alt="s.displayName" class="h-10 w-10 rounded-full object-cover" />
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-2">
+                <span class="font-semibold text-sm text-gray-900 dark:text-white truncate">{{ s.displayName }}</span>
+                <span class="text-xs text-red-400 font-medium">{{ s.currentViewers }} viewers</span>
+              </div>
+              <p class="text-xs text-gray-500 truncate">{{ s.lastStreamTitle || 'DCS World' }}</p>
+            </div>
+          </NuxtLink>
+        </div>
+      </div>
+    </section>
+
     <!-- Featured communities -->
     <section v-if="featured?.data?.length" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
       <div class="flex items-center justify-between mb-8">
@@ -154,7 +190,7 @@
 </template>
 
 <script setup lang="ts">
-import type { StatsData, CommunityCard } from '#shared/types'
+import type { StatsData, CommunityCard, LiveStreamer } from '#shared/types'
 
 useSeoMeta({
   title: 'Commus DCS FR — Annuaire des communautés francophones DCS World',
@@ -165,12 +201,34 @@ useSeoMeta({
   twitterCard: 'summary_large_image',
 })
 
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: 'Commus DCS FR',
+        url: 'https://commus.kerboul.me',
+        description: 'Annuaire des communautés francophones DCS World',
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: 'https://commus.kerboul.me/communautes?search={search_term_string}',
+          'query-input': 'required name=search_term_string',
+        },
+      }),
+    },
+  ],
+})
+
 const { isRlpdk, decreeNumber } = useRlpdkTheme()
 
 const { data: stats } = await useFetch<StatsData>('/api/stats')
 const { data: featured } = await useFetch<{ data: CommunityCard[] }>('/api/communities', {
   query: { limit: 6, sort: 'updated', sortDir: 'desc' },
 })
+const { data: liveData } = await useFetch<{ count: number; data: LiveStreamer[] }>('/api/streamers/live')
+const liveStreamers = computed(() => liveData.value?.data || [])
 
 async function goRandom() {
   const { data } = await useFetch<{ slug: string }>('/api/communities/random')

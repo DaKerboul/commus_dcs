@@ -37,6 +37,7 @@ export default defineNuxtConfig({
       ],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'alternate', type: 'application/rss+xml', title: 'Commus DCS FR RSS', href: '/api/rss.xml' },
       ],
     },
   },
@@ -59,6 +60,8 @@ export default defineNuxtConfig({
       '/api/og/**': { swr: 3600 },            // 1 hour SWR for OG images
       '/api/streamers': { swr: 60 },             // 1 min SWR
       '/api/streamers/live': { swr: 60 },        // 1 min SWR
+      '/api/sitemap.xml': { swr: 3600 },          // 1 hour SWR
+      '/api/rss.xml': { swr: 600 },               // 10 min SWR
     },
   },
 

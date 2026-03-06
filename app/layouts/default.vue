@@ -22,9 +22,13 @@
               <UButton to="/communautes" variant="ghost" color="neutral" size="sm">
                 Communautés
               </UButton>
-              <UButton to="/streamers" variant="ghost" color="neutral" size="sm">
+              <UButton to="/streamers" variant="ghost" color="neutral" size="sm" class="relative">
                 <UIcon name="i-simple-icons-twitch" class="mr-0.5" />
                 Streameurs
+                <span v-if="liveCount > 0" class="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white px-1">
+                  <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
+                  <span class="relative">{{ liveCount }}</span>
+                </span>
               </UButton>
               <UButton to="/trouver" variant="ghost" color="neutral" size="sm">
                 Trouver ma commu
@@ -81,6 +85,7 @@
           <UButton to="/streamers" variant="ghost" color="neutral" block @click="mobileOpen = false">
             <UIcon name="i-simple-icons-twitch" class="mr-1" />
             Streameurs
+            <UBadge v-if="liveCount > 0" color="error" size="xs" class="ml-1">{{ liveCount }} live</UBadge>
           </UButton>
           <UButton to="/trouver" variant="ghost" color="neutral" block @click="mobileOpen = false">
             Trouver ma commu
@@ -138,6 +143,21 @@ const mobileOpen = ref(false)
 const colorMode = useColorMode()
 const { isRlpdk, disableRlpdk } = useRlpdkTheme()
 const { count: favCount } = useFavorites()
+
+// Live streamer count for navbar badge — poll every 60s
+const { data: liveData } = useFetch<{ count: number }>('/api/streamers/live', {
+  server: false,
+  lazy: true,
+})
+const liveCount = computed(() => liveData.value?.count || 0)
+
+let liveInterval: ReturnType<typeof setInterval>
+onMounted(() => {
+  liveInterval = setInterval(async () => {
+    try { liveData.value = await $fetch('/api/streamers/live') } catch {}
+  }, 60_000)
+})
+onUnmounted(() => clearInterval(liveInterval))
 
 function toggleColorMode() {
   colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'

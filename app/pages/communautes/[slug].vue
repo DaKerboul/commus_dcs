@@ -8,7 +8,7 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row items-start gap-6 mb-8">
       <div class="shrink-0 h-24 w-24 rounded-xl bg-gray-200 dark:bg-gray-800 flex items-center justify-center overflow-hidden">
-        <img v-if="community.logoUrl" :src="community.logoUrl" :alt="community.name" class="h-full w-full object-cover" />
+        <NuxtImg v-if="community.logoUrl" :src="community.logoUrl" :alt="community.name" width="96" height="96" loading="lazy" class="h-full w-full object-cover" />
         <UIcon v-else name="i-heroicons-user-group" class="text-gray-500 text-4xl" />
       </div>
       <div class="flex-1">
@@ -159,7 +159,7 @@
               :key="i"
               class="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-800"
             >
-              <img :src="img.url" :alt="img.alt || community.name" class="w-full h-48 object-cover" />
+              <NuxtImg :src="img.url" :alt="img.alt || community.name" width="400" height="192" loading="lazy" class="w-full h-48 object-cover" />
             </div>
           </div>
         </section>
@@ -255,21 +255,10 @@
         <!-- Share -->
         <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5">
           <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Partager</h3>
-          <div class="flex flex-col gap-2">
-            <UButton icon="i-heroicons-link" variant="outline" color="neutral" size="sm" block @click="copyLink">
-              {{ copied ? 'Lien copié !' : 'Copier le lien' }}
-            </UButton>
-            <UButton
-              icon="i-simple-icons-discord"
-              variant="outline"
-              color="neutral"
-              size="sm"
-              block
-              @click="shareDiscord"
-            >
-              Partager sur Discord
-            </UButton>
-          </div>
+          <SocialShare
+            :url="`https://commus.kerboul.me/communautes/${slug}`"
+            :text="`Découvrez ${community.name} sur Commus DCS FR`"
+          />
         </div>
 
         <!-- Upvote -->
@@ -327,25 +316,25 @@ useHead({
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:image', content: `/api/og/${slug}` },
   ],
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        name: community.value.name,
+        description: community.value.shortDescription || community.value.description || '',
+        url: `https://commus.kerboul.me/communautes/${slug}`,
+        ...(community.value.logoUrl ? { logo: community.value.logoUrl } : {}),
+        ...(community.value.websiteUrl ? { sameAs: [community.value.websiteUrl, community.value.discordUrl, community.value.youtubeUrl, community.value.twitchUrl].filter(Boolean) } : {}),
+      }),
+    },
+  ],
 })
 
 const recruitmentColor = computed(() => {
   return (RECRUITMENT_COLORS[community.value!.recruitmentStatus] || 'neutral') as any
 })
-
-// Share
-const copied = ref(false)
-function copyLink() {
-  navigator.clipboard.writeText(window.location.href)
-  copied.value = true
-  setTimeout(() => { copied.value = false }, 2000)
-}
-function shareDiscord() {
-  const text = `Découvrez ${community.value!.name} sur Commus DCS FR : ${window.location.href}`
-  navigator.clipboard.writeText(text)
-  copied.value = true
-  setTimeout(() => { copied.value = false }, 2000)
-}
 
 // Upvote
 const voteCount = ref(community.value?.votes || 0)
