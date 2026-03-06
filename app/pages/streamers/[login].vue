@@ -79,7 +79,7 @@
             <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
             <span class="relative inline-flex h-3 w-3 rounded-full bg-red-500" />
           </span>
-          <span class="text-sm font-medium text-red-400">En direct sur DCS World</span>
+          <span class="text-sm font-medium text-red-400">En direct</span>
         </div>
         <p class="text-gray-200 font-medium">{{ streamer.lastStreamTitle }}</p>
       </div>
@@ -88,11 +88,11 @@
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
         <div class="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-4 text-center">
           <div class="text-2xl font-bold text-purple-400">{{ streamer.totalStreamHours }}h</div>
-          <div class="text-xs text-gray-500">Heures DCS streamées</div>
+          <div class="text-xs text-gray-500">Heures streamées</div>
         </div>
         <div class="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-4 text-center">
           <div class="text-2xl font-bold text-blue-400">{{ streamer.totalSessions }}</div>
-          <div class="text-xs text-gray-500">Sessions DCS</div>
+          <div class="text-xs text-gray-500">Sessions</div>
         </div>
         <div class="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-4 text-center">
           <div class="text-2xl font-bold text-green-400">~{{ streamer.avgViewers }}</div>
@@ -110,7 +110,7 @@
           <UIcon name="i-heroicons-calendar-days" class="mr-1" />
           Historique d'activité
         </h2>
-        <p class="text-sm text-gray-500 mb-4">Jours où ce streameur a joué à DCS World (3 derniers mois)</p>
+        <p class="text-sm text-gray-500 mb-4">Jours où ce streameur a streamé (3 derniers mois)</p>
         <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-6">
           <StreamCalendarHeatmap
             v-if="streamer.calendarHeatmap?.length > 0"
@@ -127,7 +127,7 @@
           <UIcon name="i-heroicons-clock" class="mr-1" />
           Habitudes de stream
         </h2>
-        <p class="text-sm text-gray-500 mb-4">Créneaux habituels de stream DCS World (heure de Paris)</p>
+        <p class="text-sm text-gray-500 mb-4">Créneaux habituels de stream (heure de Paris)</p>
         <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-6">
           <StreamWeeklyHeatmap
             v-if="hasWeeklyData"
@@ -162,7 +162,7 @@
 
             <div class="flex-1 min-w-0">
               <p class="text-sm font-medium text-gray-900 dark:text-white truncate">
-                {{ session.title || 'Stream DCS' }}
+                {{ session.title || 'Stream' }}
               </p>
               <div class="flex items-center gap-3 mt-1 text-xs text-gray-500">
                 <span class="inline-flex items-center gap-1">
@@ -206,7 +206,7 @@ const { data: streamer, pending } = await useFetch<StreamerDetail>(`/api/streame
 useSeoMeta({
   title: computed(() => streamer.value ? `${streamer.value.displayName} — Streameur DCS FR` : 'Streameur DCS FR'),
   ogTitle: computed(() => streamer.value?.displayName ?? 'Streameur DCS FR'),
-  description: computed(() => streamer.value ? `${streamer.value.displayName} : ${streamer.value.totalStreamHours}h de stream DCS, ${streamer.value.totalSessions} sessions.` : ''),
+  description: computed(() => streamer.value ? `${streamer.value.displayName} : ${streamer.value.totalStreamHours}h de stream, ${streamer.value.totalSessions} sessions.` : ''),
   ogDescription: computed(() => streamer.value ? `Profil de ${streamer.value.displayName} sur Commus DCS FR` : ''),
   twitterCard: 'summary',
 })

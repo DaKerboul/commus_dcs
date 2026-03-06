@@ -230,7 +230,7 @@ export async function backfillStreamerVods(streamerId: number): Promise<number> 
   }
 
   if (imported > 0) {
-    console.log(`[twitch-sync] 📼 Backfilled ${imported} DCS VOD(s) for ${streamer.twitchLogin}`)
+    console.log(`[twitch-sync] 📼 Backfilled ${imported} VOD(s) for ${streamer.twitchLogin}`)
   }
   return imported
 }

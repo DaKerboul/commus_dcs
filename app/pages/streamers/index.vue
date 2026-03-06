@@ -31,11 +31,11 @@
       </div>
       <div class="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-4 text-center">
         <div class="text-2xl font-bold text-purple-400">{{ totalHours }}h</div>
-        <div class="text-xs text-gray-500">Total DCS streamé</div>
+        <div class="text-xs text-gray-500">Total streamé</div>
       </div>
       <div class="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-4 text-center">
         <div class="text-2xl font-bold text-blue-400">{{ totalSessions }}</div>
-        <div class="text-xs text-gray-500">Sessions DCS</div>
+        <div class="text-xs text-gray-500">Sessions</div>
       </div>
     </div>
 

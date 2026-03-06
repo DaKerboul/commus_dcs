@@ -53,7 +53,7 @@
           </span>
           <span class="inline-flex items-center gap-1">
             <UIcon name="i-heroicons-clock" class="text-xs" />
-            {{ streamer.totalStreamHours }}h de stream DCS
+            {{ streamer.totalStreamHours }}h de stream
           </span>
           <span class="inline-flex items-center gap-1">
             <UIcon name="i-heroicons-play" class="text-xs" />
