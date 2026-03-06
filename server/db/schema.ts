@@ -211,3 +211,47 @@ export const modulesRelations = relations(modules, ({ many }) => ({
 export const experiencesRelations = relations(experiences, ({ many }) => ({
   communities: many(communityExperiences),
 }))
+
+// ── Streamers ──────────────────────────────────────────
+
+export const streamers = pgTable('streamers', {
+  id: serial('id').primaryKey(),
+  twitchId: text('twitch_id').notNull().unique(),
+  twitchLogin: varchar('twitch_login', { length: 100 }).notNull().unique(),
+  displayName: varchar('display_name', { length: 255 }).notNull(),
+  description: text('description'),
+  profileImageUrl: text('profile_image_url'),
+  isLive: boolean('is_live').default(false),
+  lastStreamTitle: text('last_stream_title'),
+  lastStreamStartedAt: timestamp('last_stream_started_at'),
+  currentViewers: integer('current_viewers').default(0),
+  communityId: integer('community_id').references(() => communities.id, { onDelete: 'set null' }),
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+})
+
+export const streamSessions = pgTable('stream_sessions', {
+  id: serial('id').primaryKey(),
+  streamerId: integer('streamer_id').notNull().references(() => streamers.id, { onDelete: 'cascade' }),
+  twitchVideoId: text('twitch_video_id'),
+  title: text('title'),
+  startedAt: timestamp('started_at').notNull(),
+  endedAt: timestamp('ended_at'),
+  durationSeconds: integer('duration_seconds'),
+  maxViewers: integer('max_viewers'),
+  avgViewers: integer('avg_viewers'),
+  thumbnailUrl: text('thumbnail_url'),
+  createdAt: timestamp('created_at').defaultNow(),
+})
+
+// ── Streamer Relations ─────────────────────────────────
+
+export const streamersRelations = relations(streamers, ({ one, many }) => ({
+  community: one(communities, { fields: [streamers.communityId], references: [communities.id] }),
+  sessions: many(streamSessions),
+}))
+
+export const streamSessionsRelations = relations(streamSessions, ({ one }) => ({
+  streamer: one(streamers, { fields: [streamSessions.streamerId], references: [streamers.id] }),
+}))

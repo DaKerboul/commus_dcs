@@ -19,6 +19,38 @@ async function runMigrations(client: ReturnType<typeof postgres>) {
     `ALTER TABLE communities ADD COLUMN IF NOT EXISTS votes INTEGER DEFAULT 0`,
     // v3: Enable unaccent extension for diacritics-insensitive search
     `CREATE EXTENSION IF NOT EXISTS unaccent`,
+    // v4: Create streamers and stream_sessions tables
+    `CREATE TABLE IF NOT EXISTS streamers (
+      id SERIAL PRIMARY KEY,
+      twitch_id TEXT NOT NULL UNIQUE,
+      twitch_login VARCHAR(100) NOT NULL UNIQUE,
+      display_name VARCHAR(255) NOT NULL,
+      description TEXT,
+      profile_image_url TEXT,
+      is_live BOOLEAN DEFAULT FALSE,
+      last_stream_title TEXT,
+      last_stream_started_at TIMESTAMP,
+      current_viewers INTEGER DEFAULT 0,
+      community_id INTEGER REFERENCES communities(id) ON DELETE SET NULL,
+      is_active BOOLEAN DEFAULT TRUE,
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW()
+    )`,
+    `CREATE TABLE IF NOT EXISTS stream_sessions (
+      id SERIAL PRIMARY KEY,
+      streamer_id INTEGER NOT NULL REFERENCES streamers(id) ON DELETE CASCADE,
+      twitch_video_id TEXT,
+      title TEXT,
+      started_at TIMESTAMP NOT NULL,
+      ended_at TIMESTAMP,
+      duration_seconds INTEGER,
+      max_viewers INTEGER,
+      avg_viewers INTEGER,
+      thumbnail_url TEXT,
+      created_at TIMESTAMP DEFAULT NOW()
+    )`,
+    `CREATE INDEX IF NOT EXISTS idx_stream_sessions_streamer ON stream_sessions(streamer_id)`,
+    `CREATE INDEX IF NOT EXISTS idx_stream_sessions_started ON stream_sessions(started_at)`,
   ]
 
   for (const sql of migrations) {

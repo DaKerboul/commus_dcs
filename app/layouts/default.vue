@@ -22,6 +22,10 @@
               <UButton to="/communautes" variant="ghost" color="neutral" size="sm">
                 Communautés
               </UButton>
+              <UButton to="/streamers" variant="ghost" color="neutral" size="sm">
+                <UIcon name="i-simple-icons-twitch" class="mr-0.5" />
+                Streameurs
+              </UButton>
               <UButton to="/trouver" variant="ghost" color="neutral" size="sm">
                 Trouver ma commu
               </UButton>
@@ -73,6 +77,10 @@
         <div v-if="mobileOpen" class="md:hidden pb-4 space-y-1">
           <UButton to="/communautes" variant="ghost" color="neutral" block @click="mobileOpen = false">
             Communautés
+          </UButton>
+          <UButton to="/streamers" variant="ghost" color="neutral" block @click="mobileOpen = false">
+            <UIcon name="i-simple-icons-twitch" class="mr-1" />
+            Streameurs
           </UButton>
           <UButton to="/trouver" variant="ghost" color="neutral" block @click="mobileOpen = false">
             Trouver ma commu

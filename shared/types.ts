@@ -130,3 +130,39 @@ export const RECRUITMENT_COLORS: Record<string, string> = {
   none: 'neutral',
   unknown: 'neutral',
 }
+
+// ── Streamer Types ─────────────────────────────────────
+
+export interface StreamerCard {
+  id: number
+  twitchLogin: string
+  displayName: string
+  profileImageUrl: string | null
+  isLive: boolean
+  currentViewers: number
+  lastStreamTitle: string | null
+  lastStreamStartedAt: string | null
+  totalStreamHours: number
+  totalSessions: number
+  avgViewers: number
+  communityName?: string | null
+  communitySlug?: string | null
+}
+
+export interface StreamerDetail extends StreamerCard {
+  description: string | null
+  twitchId: string
+  calendarHeatmap: { date: string; hours: number }[]
+  weeklyHeatmap: number[][] // [dayOfWeek 0=Mon..6=Sun][hour 0-23] = count of sessions
+  recentSessions: StreamSession[]
+}
+
+export interface StreamSession {
+  id: number
+  title: string | null
+  startedAt: string
+  endedAt: string | null
+  durationSeconds: number | null
+  maxViewers: number | null
+  thumbnailUrl: string | null
+}

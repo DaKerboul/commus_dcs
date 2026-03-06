@@ -16,6 +16,8 @@ export default defineNuxtConfig({
     sessionSecret: '',
     adminPassword: '',
     databaseUrl: '',
+    twitchClientId: '',
+    twitchClientSecret: '',
     public: {
       siteName: 'Commus DCS FR',
       siteDescription: 'Annuaire des communautés francophones DCS World',
@@ -55,6 +57,8 @@ export default defineNuxtConfig({
       '/api/communities/random': { swr: false }, // never cache random
       '/api/changelog': { swr: 300 },         // 5 min SWR
       '/api/og/**': { swr: 3600 },            // 1 hour SWR for OG images
+      '/api/streamers': { swr: 60 },             // 1 min SWR
+      '/api/streamers/live': { swr: 60 },        // 1 min SWR
     },
   },
 
