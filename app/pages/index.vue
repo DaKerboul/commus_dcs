@@ -156,8 +156,13 @@
 <script setup lang="ts">
 import type { StatsData, CommunityCard } from '#shared/types'
 
-useHead({
+useSeoMeta({
   title: 'Commus DCS FR — Annuaire des communautés francophones DCS World',
+  ogTitle: 'Commus DCS FR — Annuaire des communautés francophones DCS World',
+  description: 'Trouvez votre communauté francophone DCS World : escadrons, groupes casual, écoles de pilotage. Comparez, filtrez et rejoignez la communauté qui vous correspond.',
+  ogDescription: 'Trouvez votre communauté francophone DCS World : escadrons, groupes casual, écoles de pilotage. Comparez, filtrez et rejoignez la communauté qui vous correspond.',
+  ogType: 'website',
+  twitterCard: 'summary_large_image',
 })
 
 const { isRlpdk, decreeNumber } = useRlpdkTheme()

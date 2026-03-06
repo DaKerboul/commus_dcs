@@ -5,7 +5,7 @@
   >
     <div class="flex items-start gap-4">
       <!-- Logo -->
-      <div class="shrink-0 h-14 w-14 rounded-lg bg-gray-200 dark:bg-gray-800 flex items-center justify-center overflow-hidden">
+      <div class="relative shrink-0 h-14 w-14 rounded-lg bg-gray-200 dark:bg-gray-800 flex items-center justify-center overflow-hidden">
         <img
           v-if="community.logoUrl"
           :src="community.logoUrl"
@@ -20,6 +20,18 @@
           <h3 class="text-base font-semibold text-gray-900 dark:text-white group-hover:text-blue-400 transition-colors truncate">
             {{ community.name }}
           </h3>
+          <!-- Favorite toggle -->
+          <button
+            :title="isFav ? 'Retirer des favoris' : 'Ajouter aux favoris'"
+            class="inline-flex items-center p-0.5 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            @click.prevent.stop="toggleFavorite(community.slug)"
+          >
+            <UIcon
+              :name="isFav ? 'i-heroicons-bookmark-solid' : 'i-heroicons-bookmark'"
+              :class="isFav ? 'text-yellow-500' : 'text-gray-400 hover:text-yellow-400'"
+              class="text-sm"
+            />
+          </button>
           <UBadge
             :color="recruitmentColor"
             variant="subtle"
@@ -29,6 +41,12 @@
           </UBadge>
           <UBadge v-if="isNew" color="warning" variant="subtle" size="xs">
             Nouveau
+          </UBadge>
+          <UBadge v-if="isPopular" color="error" variant="subtle" size="xs">
+            🔥 Populaire
+          </UBadge>
+          <UBadge v-if="isActive" color="success" variant="subtle" size="xs">
+            Actif
           </UBadge>
           <UBadge v-if="isLarge" color="info" variant="subtle" size="xs">
             Grande commu
@@ -82,6 +100,9 @@ const props = defineProps<{
   community: CommunityCard
 }>()
 
+const { isFavorite, toggleFavorite } = useFavorites()
+const isFav = computed(() => isFavorite(props.community.slug))
+
 const recruitmentColor = computed(() => {
   return (RECRUITMENT_COLORS[props.community.recruitmentStatus] || 'neutral') as any
 })
@@ -96,5 +117,17 @@ const isNew = computed(() => {
 
 const isLarge = computed(() => {
   return ['hub_300_plus', 'very_large_150_plus', 'large_50_plus'].includes(props.community.sizeCategory)
+})
+
+const isPopular = computed(() => {
+  return (props.community.votes || 0) >= 5
+})
+
+const isActive = computed(() => {
+  if (!(props.community as any).updatedAt) return false
+  const updated = new Date((props.community as any).updatedAt)
+  const fourteenDaysAgo = new Date()
+  fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14)
+  return updated > fourteenDaysAgo
 })
 </script>

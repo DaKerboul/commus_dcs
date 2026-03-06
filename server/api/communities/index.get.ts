@@ -31,7 +31,7 @@ export default defineEventHandler(async (event) => {
 
   if (search) {
     conditions.push(
-      sql`(${communities.name} ILIKE ${'%' + search + '%'} OR ${communities.shortDescription} ILIKE ${'%' + search + '%'} OR ${communities.description} ILIKE ${'%' + search + '%'})`
+      sql`(unaccent(${communities.name}) ILIKE unaccent(${'%' + search + '%'}) OR unaccent(COALESCE(${communities.shortDescription}, '')) ILIKE unaccent(${'%' + search + '%'}) OR unaccent(COALESCE(${communities.description}, '')) ILIKE unaccent(${'%' + search + '%'}))`
     )
   }
 
@@ -177,6 +177,8 @@ export default defineEventHandler(async (event) => {
     discordUrl: c.discordUrl,
     websiteUrl: c.websiteUrl,
     votes: c.votes || 0,
+    createdAt: c.createdAt,
+    updatedAt: c.updatedAt,
     moduleNames: modMap.get(c.id) || [],
     experienceNames: expMap.get(c.id) || [],
     historicalPeriods: periodMap.get(c.id) || [],

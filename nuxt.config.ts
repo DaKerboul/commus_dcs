@@ -46,6 +46,16 @@ export default defineNuxtConfig({
 
   nitro: {
     compressPublicAssets: true,
+    routeRules: {
+      // Cache heavy public API endpoints with stale-while-revalidate
+      '/api/stats': { swr: 300 },           // 5 min SWR
+      '/api/modules': { swr: 600 },          // 10 min SWR
+      '/api/experiences': { swr: 600 },       // 10 min SWR
+      '/api/communities': { swr: 60 },        // 1 min SWR - listing changes more often
+      '/api/communities/random': { swr: false }, // never cache random
+      '/api/changelog': { swr: 300 },         // 5 min SWR
+      '/api/og/**': { swr: 3600 },            // 1 hour SWR for OG images
+    },
   },
 
   devtools: { enabled: true },

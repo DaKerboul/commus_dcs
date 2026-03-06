@@ -34,6 +34,12 @@
               <UButton to="/a-propos" variant="ghost" color="neutral" size="sm">
                 À propos
               </UButton>
+              <UButton to="/mes-favoris" variant="ghost" color="neutral" size="sm" class="relative">
+                <UIcon name="i-heroicons-bookmark" />
+                <UBadge v-if="favCount > 0" color="warning" size="xs" class="absolute -top-1 -right-1 min-w-4 h-4 flex items-center justify-center text-[10px]">
+                  {{ favCount }}
+                </UBadge>
+              </UButton>
             </div>
           </div>
           <div class="flex items-center gap-2">
@@ -80,6 +86,11 @@
           <UButton to="/a-propos" variant="ghost" color="neutral" block @click="mobileOpen = false">
             À propos
           </UButton>
+          <UButton to="/mes-favoris" variant="ghost" color="neutral" block @click="mobileOpen = false">
+            <UIcon name="i-heroicons-bookmark" class="mr-1" />
+            Favoris
+            <UBadge v-if="favCount > 0" color="warning" size="xs" class="ml-1">{{ favCount }}</UBadge>
+          </UButton>
         </div>
       </nav>
     </header>
@@ -118,6 +129,7 @@
 const mobileOpen = ref(false)
 const colorMode = useColorMode()
 const { isRlpdk, disableRlpdk } = useRlpdkTheme()
+const { count: favCount } = useFavorites()
 
 function toggleColorMode() {
   colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'

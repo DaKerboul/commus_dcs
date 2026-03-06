@@ -152,7 +152,14 @@
 <script setup lang="ts">
 import type { CommunityCard, PaginatedResponse } from '#shared/types'
 
-useHead({ title: 'Trouver ma communauté — Commus DCS FR' })
+useSeoMeta({
+  title: 'Trouver ma communauté — Commus DCS FR',
+  ogTitle: 'Trouvez votre communauté DCS World francophone',
+  description: 'Répondez à quelques questions pour trouver la communauté DCS World francophone qui correspond à votre profil de pilote.',
+  ogDescription: 'Répondez à quelques questions pour trouver la communauté DCS World francophone qui correspond à votre profil de pilote.',
+  ogType: 'website',
+  twitterCard: 'summary',
+})
 
 const totalSteps = 5
 const step = ref(1)

@@ -31,13 +31,28 @@
               :key="c.slug"
               class="p-3 text-center border-b border-gray-200 dark:border-gray-800"
             >
-              <NuxtLink :to="`/communautes/${c.slug}`" class="text-gray-900 dark:text-white font-semibold hover:text-blue-400">
-                {{ c.name }}
-              </NuxtLink>
+              <div class="flex flex-col items-center gap-2">
+                <img v-if="c.logoUrl" :src="c.logoUrl" :alt="c.name" class="h-10 w-10 rounded-lg object-cover" />
+                <NuxtLink :to="`/communautes/${c.slug}`" class="text-gray-900 dark:text-white font-semibold hover:text-blue-400">
+                  {{ c.name }}
+                </NuxtLink>
+              </div>
             </th>
           </tr>
         </thead>
         <tbody>
+          <!-- Votes -->
+          <tr class="border-b border-gray-200/50 dark:border-gray-800/50">
+            <td class="p-3 text-sm text-gray-500 dark:text-gray-400">
+              <UIcon name="i-heroicons-heart" class="mr-1" />Votes
+            </td>
+            <td v-for="c in comparedCommunities" :key="c.slug" class="p-3 text-center text-sm">
+              <span :class="c.votes === maxVotes && maxVotes > 0 ? 'text-red-500 font-bold' : 'text-gray-900 dark:text-white'">
+                {{ c.votes || 0 }}
+              </span>
+              <UIcon v-if="c.votes === maxVotes && maxVotes > 0" name="i-heroicons-trophy" class="text-yellow-500 ml-1" />
+            </td>
+          </tr>
           <tr class="border-b border-gray-200/50 dark:border-gray-800/50">
             <td class="p-3 text-sm text-gray-500 dark:text-gray-400">Type</td>
             <td v-for="c in comparedCommunities" :key="c.slug" class="p-3 text-center text-sm text-gray-900 dark:text-white">
@@ -64,15 +79,25 @@
               {{ FREQUENCY_LABELS[c.eventFrequency] }}
             </td>
           </tr>
+          <!-- Modules with shared highlighting -->
           <tr class="border-b border-gray-200/50 dark:border-gray-800/50">
-            <td class="p-3 text-sm text-gray-500 dark:text-gray-400">Modules DCS</td>
+            <td class="p-3 text-sm text-gray-500 dark:text-gray-400">
+              Modules DCS
+              <div v-if="sharedModules.length" class="mt-1 text-xs text-green-500">
+                {{ sharedModules.length }} en commun
+              </div>
+            </td>
             <td v-for="c in comparedCommunities" :key="c.slug" class="p-3 text-center">
               <div class="flex flex-wrap gap-1 justify-center">
-                <UBadge v-for="m in c.moduleNames?.slice(0, 8)" :key="m" variant="subtle" color="primary" size="xs">
+                <UBadge
+                  v-for="m in c.moduleNames"
+                  :key="m"
+                  :variant="sharedModules.includes(m) ? 'solid' : 'subtle'"
+                  :color="sharedModules.includes(m) ? 'success' : 'primary'"
+                  size="xs"
+                  :title="sharedModules.includes(m) ? 'Module en commun' : ''"
+                >
                   {{ m }}
-                </UBadge>
-                <UBadge v-if="(c.moduleNames?.length || 0) > 8" variant="subtle" color="neutral" size="xs">
-                  +{{ c.moduleNames!.length - 8 }}
                 </UBadge>
               </div>
             </td>
@@ -81,7 +106,13 @@
             <td class="p-3 text-sm text-gray-500 dark:text-gray-400">Expériences</td>
             <td v-for="c in comparedCommunities" :key="c.slug" class="p-3 text-center">
               <div class="flex flex-wrap gap-1 justify-center">
-                <UBadge v-for="e in c.experienceNames" :key="e" variant="subtle" color="neutral" size="xs">
+                <UBadge
+                  v-for="e in c.experienceNames"
+                  :key="e"
+                  :variant="sharedExperiences.includes(e) ? 'solid' : 'subtle'"
+                  :color="sharedExperiences.includes(e) ? 'success' : 'neutral'"
+                  size="xs"
+                >
                   {{ e }}
                 </UBadge>
               </div>
@@ -102,8 +133,30 @@
               <span v-else class="text-gray-600">—</span>
             </td>
           </tr>
+          <tr>
+            <td class="p-3 text-sm text-gray-500 dark:text-gray-400">Site web</td>
+            <td v-for="c in comparedCommunities" :key="c.slug" class="p-3 text-center">
+              <UButton v-if="c.websiteUrl" :to="c.websiteUrl" target="_blank" icon="i-heroicons-globe-alt" size="xs" color="neutral" variant="soft">
+                Visiter
+              </UButton>
+              <span v-else class="text-gray-600">—</span>
+            </td>
+          </tr>
         </tbody>
       </table>
+
+      <!-- Summary -->
+      <div v-if="sharedModules.length" class="mt-6 p-4 rounded-lg bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900">
+        <h3 class="text-sm font-medium text-green-800 dark:text-green-300 flex items-center gap-1">
+          <UIcon name="i-heroicons-check-circle" />
+          Modules en commun ({{ sharedModules.length }})
+        </h3>
+        <div class="mt-2 flex flex-wrap gap-1">
+          <UBadge v-for="m in sharedModules" :key="m" color="success" variant="subtle" size="xs">
+            {{ m }}
+          </UBadge>
+        </div>
+      </div>
     </div>
 
     <div v-else class="text-center py-16">
@@ -155,4 +208,23 @@ function removeCommunity(slug: string) {
   selectedSlugs.value = selectedSlugs.value.filter((s: string) => s !== slug)
   comparedCommunities.value = comparedCommunities.value.filter((c: CommunityDetail) => c.slug !== slug)
 }
+
+// Shared modules: modules present in ALL compared communities
+const sharedModules = computed(() => {
+  if (comparedCommunities.value.length < 2) return []
+  const allModuleLists = comparedCommunities.value.map(c => c.moduleNames || [])
+  return allModuleLists[0].filter(m => allModuleLists.every(list => list.includes(m)))
+})
+
+// Shared experiences
+const sharedExperiences = computed(() => {
+  if (comparedCommunities.value.length < 2) return []
+  const allExpLists = comparedCommunities.value.map(c => c.experienceNames || [])
+  return allExpLists[0].filter(e => allExpLists.every(list => list.includes(e)))
+})
+
+// Max votes for trophy indicator
+const maxVotes = computed(() => {
+  return Math.max(0, ...comparedCommunities.value.map(c => c.votes || 0))
+})
 </script>

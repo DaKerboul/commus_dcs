@@ -99,7 +99,14 @@
 import { SIZE_LABELS, TYPE_LABELS } from '#shared/types'
 import type { StatsData } from '#shared/types'
 
-useHead({ title: 'Statistiques — Commus DCS FR' })
+useSeoMeta({
+  title: 'Statistiques — Commus DCS FR',
+  ogTitle: 'Statistiques des communautés DCS World francophones',
+  description: 'Statistiques sur les communautés francophones DCS World : modules populaires, types de groupes, taux de recrutement et tendances.',
+  ogDescription: 'Statistiques sur les communautés francophones DCS World : modules populaires, types de groupes, taux de recrutement et tendances.',
+  ogType: 'website',
+  twitterCard: 'summary',
+})
 
 const { data: stats } = await useFetch<StatsData>('/api/stats')
 

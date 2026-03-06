@@ -16,7 +16,18 @@
           <UBadge :color="methodColor(endpoint.method)" variant="subtle" size="sm" class="font-mono">
             {{ endpoint.method }}
           </UBadge>
-          <code class="text-sm text-gray-900 dark:text-white font-mono">{{ endpoint.path }}</code>
+          <code class="text-sm text-gray-900 dark:text-white font-mono flex-1">{{ endpoint.path }}</code>
+          <UButton
+            v-if="endpoint.method === 'GET' && endpoint.tryUrl"
+            size="xs"
+            color="primary"
+            variant="soft"
+            icon="i-heroicons-play"
+            :loading="tryingEndpoint === endpoint.path"
+            @click="tryEndpoint(endpoint)"
+          >
+            Tester
+          </UButton>
         </div>
         <div class="p-4">
           <p class="text-sm text-gray-600 dark:text-gray-300">{{ endpoint.description }}</p>
@@ -38,6 +49,20 @@
               <code class="text-xs text-green-400 whitespace-pre">{{ endpoint.example }}</code>
             </div>
           </div>
+
+          <!-- Try-it response -->
+          <div v-if="tryResults[endpoint.path]" class="mt-3">
+            <div class="flex items-center gap-2 mb-2">
+              <p class="text-xs font-medium text-gray-500 uppercase">Réponse</p>
+              <UBadge v-if="tryResults[endpoint.path].status" :color="tryResults[endpoint.path].status < 400 ? 'success' : 'error'" variant="subtle" size="xs">
+                {{ tryResults[endpoint.path].status }}
+              </UBadge>
+              <UButton size="xs" variant="ghost" color="neutral" icon="i-heroicons-x-mark" @click="delete tryResults[endpoint.path]" />
+            </div>
+            <div class="bg-white dark:bg-gray-950 rounded-lg p-3 overflow-x-auto max-h-64 overflow-y-auto">
+              <pre class="text-xs text-gray-300 whitespace-pre-wrap">{{ tryResults[endpoint.path].data }}</pre>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -45,14 +70,42 @@
 </template>
 
 <script setup lang="ts">
-useHead({ title: 'API Documentation — Commus DCS FR' })
+useSeoMeta({
+  title: 'API Documentation — Commus DCS FR',
+  ogTitle: 'API Publique — Commus DCS FR',
+  description: 'Documentation de l\'API ouverte de Commus DCS FR pour accéder aux données des communautés francophones DCS World.',
+  ogDescription: 'Documentation de l\'API ouverte de Commus DCS FR.',
+})
 
 const config = useRuntimeConfig()
-const baseUrl = config.public.siteUrl || 'https://commus.kerboul.me'
+const baseUrl = 'https://commus.kerboul.me'
 
 function methodColor(method: string) {
   const map: Record<string, string> = { GET: 'success', POST: 'warning', PUT: 'info', DELETE: 'error' }
   return (map[method] || 'neutral') as any
+}
+
+const tryingEndpoint = ref<string | null>(null)
+const tryResults = reactive<Record<string, { status: number; data: string }>>({})
+
+async function tryEndpoint(endpoint: { path: string; tryUrl?: string }) {
+  if (!endpoint.tryUrl) return
+  tryingEndpoint.value = endpoint.path
+  try {
+    const res = await fetch(endpoint.tryUrl)
+    const data = await res.json()
+    tryResults[endpoint.path] = {
+      status: res.status,
+      data: JSON.stringify(data, null, 2).slice(0, 5000),
+    }
+  } catch (err: any) {
+    tryResults[endpoint.path] = {
+      status: 0,
+      data: `Erreur : ${err.message}`,
+    }
+  } finally {
+    tryingEndpoint.value = null
+  }
 }
 
 const endpoints = [
@@ -60,13 +113,17 @@ const endpoints = [
     method: 'GET',
     path: '/api/communities',
     description: 'Liste paginée des communautés avec filtres.',
+    tryUrl: '/api/communities?limit=3',
     params: [
-      { name: 'search', type: 'string', desc: 'Recherche textuelle (nom, description)' },
+      { name: 'search', type: 'string', desc: 'Recherche textuelle (nom, description) — insensible aux accents' },
       { name: 'modules', type: 'string', desc: 'Noms de modules séparés par virgule (ex: F-16C,F/A-18C)' },
       { name: 'communityType', type: 'string', desc: 'Types séparés par virgule (open_community, closed_squadron...)' },
-      { name: 'sizeCategory', type: 'string', desc: 'Catégories de taille séparés par virgule' },
+      { name: 'sizeCategory', type: 'string', desc: 'Catégories de taille séparées par virgule' },
       { name: 'recruitmentStatus', type: 'string', desc: 'open, closed, none, unknown' },
-      { name: 'sort', type: 'string', desc: 'Tri : name, size, updated, created' },
+      { name: 'eventFrequency', type: 'string', desc: 'daily, several_per_week, weekly, biweekly, monthly, occasional, unknown' },
+      { name: 'historicalPeriods', type: 'string', desc: 'cold_war, ww2, gulf_war, post_modern, modern, none' },
+      { name: 'experiences', type: 'string', desc: 'Slugs d\'expériences séparés par virgule' },
+      { name: 'sort', type: 'string', desc: 'Tri : name, size, updated, created, votes' },
       { name: 'sortDir', type: 'string', desc: 'asc ou desc' },
       { name: 'page', type: 'number', desc: 'Numéro de page (défaut: 1)' },
       { name: 'limit', type: 'number', desc: 'Résultats par page (défaut: 50, max: 100)' },
@@ -77,6 +134,7 @@ const endpoints = [
     method: 'GET',
     path: '/api/communities/:slug',
     description: 'Détails complets d\'une communauté par son slug.',
+    tryUrl: '/api/communities/bolt',
     params: [
       { name: 'slug', type: 'string', desc: 'Identifiant URL de la communauté' },
     ],
@@ -86,6 +144,7 @@ const endpoints = [
     method: 'GET',
     path: '/api/communities/random',
     description: 'Retourne le slug d\'une communauté aléatoire.',
+    tryUrl: '/api/communities/random',
     example: `curl "${baseUrl}/api/communities/random"`,
   },
   {
@@ -98,27 +157,47 @@ const endpoints = [
     example: `curl "${baseUrl}/api/communities/similar?slug=bolt"`,
   },
   {
+    method: 'POST',
+    path: '/api/communities/:slug/vote',
+    description: 'Voter pour une communauté (+1). Protégé par rate limiting (1 vote/heure/IP + cookie 30j).',
+    params: [
+      { name: 'slug', type: 'string', desc: 'Slug de la communauté' },
+    ],
+    example: `curl -X POST "${baseUrl}/api/communities/bolt/vote"`,
+  },
+  {
+    method: 'GET',
+    path: '/api/communities/export',
+    description: 'Export complet des communautés pour intégration externe.',
+    tryUrl: '/api/communities/export',
+    example: `curl "${baseUrl}/api/communities/export"`,
+  },
+  {
     method: 'GET',
     path: '/api/modules',
     description: 'Liste de tous les modules DCS référencés.',
+    tryUrl: '/api/modules',
     example: `curl "${baseUrl}/api/modules"`,
   },
   {
     method: 'GET',
     path: '/api/experiences',
     description: 'Liste de tous les types d\'expérience (PvP, PvE, formation...).',
+    tryUrl: '/api/experiences',
     example: `curl "${baseUrl}/api/experiences"`,
   },
   {
     method: 'GET',
     path: '/api/stats',
     description: 'Statistiques globales de l\'annuaire.',
+    tryUrl: '/api/stats',
     example: `curl "${baseUrl}/api/stats"`,
   },
   {
     method: 'GET',
     path: '/api/changelog',
-    description: 'Dernières communautés ajoutées ou modifiées.',
+    description: 'Dernières communautés ajoutées ou modifiées (30 entrées).',
+    tryUrl: '/api/changelog',
     example: `curl "${baseUrl}/api/changelog"`,
   },
   {

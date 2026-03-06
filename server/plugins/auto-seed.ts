@@ -17,6 +17,8 @@ async function runMigrations(client: ReturnType<typeof postgres>) {
   const migrations = [
     // v2: Add votes column to communities
     `ALTER TABLE communities ADD COLUMN IF NOT EXISTS votes INTEGER DEFAULT 0`,
+    // v3: Enable unaccent extension for diacritics-insensitive search
+    `CREATE EXTENSION IF NOT EXISTS unaccent`,
   ]
 
   for (const sql of migrations) {
