@@ -97,22 +97,43 @@ const sortOptions = [
   { value: 'name', label: 'Nom' },
 ]
 
-const { data: streamersData, pending } = await useFetch<{ data: StreamerCardType[]; total: number }>('/api/streamers', {
-  query: computed(() => ({ sort: sort.value })),
-})
+const { data: streamersData, pending } = await useFetch<{ data: StreamerCardType[]; total: number }>('/api/streamers')
 
 const filteredStreamers = computed(() => {
   if (!streamersData.value?.data) return []
-  if (!search.value) return streamersData.value.data
 
-  const q = search.value.toLowerCase()
-  return streamersData.value.data.filter(
-    s => s.displayName.toLowerCase().includes(q) || s.twitchLogin.toLowerCase().includes(q),
-  )
+  let list = [...streamersData.value.data]
+
+  // Search filter
+  if (search.value) {
+    const q = search.value.toLowerCase()
+    list = list.filter(
+      s => s.displayName.toLowerCase().includes(q) || s.twitchLogin.toLowerCase().includes(q),
+    )
+  }
+
+  // Sort
+  switch (sort.value) {
+    case 'days':
+      list.sort((a, b) => b.dcsDays - a.dcsDays)
+      break
+    case 'name':
+      list.sort((a, b) => a.displayName.localeCompare(b.displayName))
+      break
+    case 'live':
+    default:
+      list.sort((a, b) => {
+        if (a.isLive !== b.isLive) return a.isLive ? -1 : 1
+        if (a.isLive && b.isLive) return b.currentViewers - a.currentViewers
+        return b.dcsDays - a.dcsDays
+      })
+  }
+
+  return list
 })
 
-const liveCount = computed(() => filteredStreamers.value.filter(s => s.isLive).length)
+const liveCount = computed(() => streamersData.value?.data?.filter(s => s.isLive).length ?? 0)
 const totalDcsDays = computed(() =>
-  filteredStreamers.value.reduce((sum, s) => sum + s.dcsDays, 0),
+  streamersData.value?.data?.reduce((sum, s) => sum + s.dcsDays, 0) ?? 0,
 )
 </script>

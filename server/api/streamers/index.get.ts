@@ -6,10 +6,6 @@ import { streamers, streamerDcsDays, communities } from '#server/db/schema'
 
 export default defineEventHandler(async (event) => {
   const db = useDB()
-  const query = getQuery(event)
-
-  const sort = (query.sort as string) || 'live'
-  const search = (query.search as string) || ''
 
   // 1. Fetch active streamers
   const rawStreamers = await db
@@ -60,33 +56,12 @@ export default defineEventHandler(async (event) => {
     }
   })
 
-  // Search filter
-  if (search) {
-    const q = search.toLowerCase()
-    result = result.filter(
-      s =>
-        s.displayName.toLowerCase().includes(q) ||
-        s.twitchLogin.toLowerCase().includes(q),
-    )
-  }
-
-  // Sort
-  switch (sort) {
-    case 'days':
-      result.sort((a, b) => b.dcsDays - a.dcsDays)
-      break
-    case 'name':
-      result.sort((a, b) => a.displayName.localeCompare(b.displayName))
-      break
-    case 'live':
-    default:
-      // Live first, then by DCS days
-      result.sort((a, b) => {
-        if (a.isLive !== b.isLive) return a.isLive ? -1 : 1
-        if (a.isLive && b.isLive) return b.currentViewers - a.currentViewers
-        return b.dcsDays - a.dcsDays
-      })
-  }
+  // Default sort: live first, then by DCS days
+  result.sort((a, b) => {
+    if (a.isLive !== b.isLive) return a.isLive ? -1 : 1
+    if (a.isLive && b.isLive) return b.currentViewers - a.currentViewers
+    return b.dcsDays - a.dcsDays
+  })
 
   return { data: result, total: result.length }
 })
