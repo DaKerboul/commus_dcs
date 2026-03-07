@@ -101,6 +101,28 @@ async function runMigrations(client: ReturnType<typeof postgres>) {
       WHEN 'aaeeg' THEN '2022-01-01'
       ELSE NULL END
     WHERE founded_date IS NULL`,
+    // v7: Add all missing columns to submissions table (was only created with basic fields)
+    `ALTER TABLE submissions ADD COLUMN IF NOT EXISTS short_description TEXT`,
+    `ALTER TABLE submissions ADD COLUMN IF NOT EXISTS objectives TEXT`,
+    `ALTER TABLE submissions ADD COLUMN IF NOT EXISTS logo_url TEXT`,
+    `ALTER TABLE submissions ADD COLUMN IF NOT EXISTS submission_community_type TEXT`,
+    `ALTER TABLE submissions ADD COLUMN IF NOT EXISTS submission_size_category TEXT`,
+    `ALTER TABLE submissions ADD COLUMN IF NOT EXISTS submission_recruitment_status TEXT`,
+    `ALTER TABLE submissions ADD COLUMN IF NOT EXISTS submission_event_frequency TEXT`,
+    `ALTER TABLE submissions ADD COLUMN IF NOT EXISTS founder VARCHAR(255)`,
+    `ALTER TABLE submissions ADD COLUMN IF NOT EXISTS entry_conditions TEXT`,
+    `ALTER TABLE submissions ADD COLUMN IF NOT EXISTS size_text VARCHAR(255)`,
+    `ALTER TABLE submissions ADD COLUMN IF NOT EXISTS youtube_url TEXT`,
+    `ALTER TABLE submissions ADD COLUMN IF NOT EXISTS instagram_url TEXT`,
+    `ALTER TABLE submissions ADD COLUMN IF NOT EXISTS facebook_url TEXT`,
+    `ALTER TABLE submissions ADD COLUMN IF NOT EXISTS twitch_url TEXT`,
+    `ALTER TABLE submissions ADD COLUMN IF NOT EXISTS twitter_url TEXT`,
+    `ALTER TABLE submissions ADD COLUMN IF NOT EXISTS submission_other_links JSONB`,
+    `ALTER TABLE submissions ADD COLUMN IF NOT EXISTS submission_module_names JSONB`,
+    `ALTER TABLE submissions ADD COLUMN IF NOT EXISTS submission_sought_module_names JSONB`,
+    `ALTER TABLE submissions ADD COLUMN IF NOT EXISTS submission_experience_names JSONB`,
+    `ALTER TABLE submissions ADD COLUMN IF NOT EXISTS submission_historical_periods JSONB`,
+    `ALTER TABLE submissions ADD COLUMN IF NOT EXISTS submission_images JSONB`,
   ]
 
   for (const sql of migrations) {
