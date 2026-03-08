@@ -3,11 +3,11 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files and .npmrc (registry config)
-COPY package.json .npmrc ./
+# Copy package files and lockfile for better layer caching
+COPY package.json package-lock.json* .npmrc ./
 
-# Install dependencies (verbose for debugging)
-RUN cat .npmrc && npm install --loglevel verbose 2>&1
+# Install dependencies
+RUN npm ci --loglevel warn 2>&1
 
 # Copy source
 COPY . .

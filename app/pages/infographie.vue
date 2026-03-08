@@ -136,12 +136,16 @@ onMounted(async () => {
   await nextTick()
   if (!data.value) return
 
-  // Dynamic import of echarts for client-only
-  const echarts = await import('echarts')
+  // Dynamic import of echarts for client-only (tree-shaken)
+  const { init, use } = await import('echarts/core')
+  const { BarChart, PieChart, TreemapChart } = await import('echarts/charts')
+  const { TooltipComponent, GridComponent } = await import('echarts/components')
+  const { CanvasRenderer } = await import('echarts/renderers')
+  use([BarChart, PieChart, TreemapChart, TooltipComponent, GridComponent, CanvasRenderer])
 
   const initChart = (el: HTMLDivElement | undefined, option: any) => {
     if (!el) return
-    const chart = echarts.init(el, 'dark')
+    const chart = init(el, 'dark')
     chart.setOption(option)
     charts.push(chart)
   }

@@ -133,9 +133,10 @@ import type { StreamerDetail } from '#shared/types'
 const route = useRoute()
 const login = route.params.login as string
 
-const { data: streamer, pending } = await useFetch<StreamerDetail>(`/api/streamers/${login}`, {
-  getCachedData: () => null,
-})
+const { data: streamer, pending, refresh } = await useFetch<StreamerDetail>(`/api/streamers/${login}`)
+
+// Force fresh data on every client-side navigation
+onMounted(() => { refresh() })
 
 // SEO
 useSeoMeta({

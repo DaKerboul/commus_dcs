@@ -28,7 +28,6 @@
     "nuxt-auth-utils": "^0.5.0",
     "postgres": "^3.4.0",
     "vue": "latest",
-    "vue-echarts": "^8.0.1",
     "vue-router": "latest"
   },
   "devDependencies": {

@@ -3,6 +3,7 @@
     <!-- Search -->
     <UInput
       v-model="filters.search"
+      name="community-search"
       icon="i-heroicons-magnifying-glass"
       placeholder="Rechercher une communauté..."
       size="lg"
@@ -128,6 +129,7 @@
         <div class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Modules DCS</div>
         <UInput
           v-model="moduleSearch"
+          name="module-search"
           placeholder="Filtrer les modules..."
           size="xs"
           class="mb-2"

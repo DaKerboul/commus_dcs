@@ -48,7 +48,8 @@ export default defineNuxtConfig({
   },
 
   nitro: {
-    compressPublicAssets: true,
+    compressPublicAssets: false,
+    sourceMap: false,
     routeRules: {
       // Cache heavy public API endpoints with stale-while-revalidate
       '/api/stats': { swr: 300 },           // 5 min SWR
@@ -58,8 +59,8 @@ export default defineNuxtConfig({
       '/api/communities/random': { swr: false }, // never cache random
       '/api/changelog': { swr: 300 },         // 5 min SWR
       '/api/og/**': { swr: 3600 },            // 1 hour SWR for OG images
-      '/api/streamers': { swr: 60 },             // 1 min SWR
-      '/api/streamers/live': { swr: 60 },        // 1 min SWR
+      '/api/streamers': { swr: false },            // live data — no cache
+      '/api/streamers/live': { swr: false },       // live data — no cache
       '/api/sitemap.xml': { swr: 3600 },          // 1 hour SWR
       '/api/rss.xml': { swr: 600 },               // 10 min SWR
       '/api/communities/graph': { swr: 300 },     // 5 min SWR

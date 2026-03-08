@@ -8,7 +8,7 @@
       </div>
       <form class="space-y-4" @submit.prevent="login">
         <UFormField label="Mot de passe">
-          <UInput v-model="password" type="password" placeholder="Mot de passe admin" size="lg" autofocus />
+          <UInput v-model="password" name="admin-password" type="password" placeholder="Mot de passe admin" size="lg" autofocus />
         </UFormField>
         <div v-if="error" class="text-red-400 text-sm">{{ error }}</div>
         <UButton type="submit" block size="lg" :loading="loading">

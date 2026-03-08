@@ -18,7 +18,7 @@
     <div v-if="step === 1" class="space-y-4">
       <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Quels modules volez-vous ?</h2>
       <p class="text-sm text-gray-500 dark:text-gray-400">Sélectionnez un ou plusieurs modules (optionnel)</p>
-      <UInput v-model="moduleSearch" placeholder="Filtrer les modules..." icon="i-heroicons-magnifying-glass" />
+      <UInput v-model="moduleSearch" name="module-filter" placeholder="Filtrer les modules..." icon="i-heroicons-magnifying-glass" />
       <div class="flex flex-wrap gap-2 max-h-64 overflow-y-auto">
         <UButton
           v-for="mod in filteredModules"

@@ -39,6 +39,7 @@
     <div class="flex flex-col sm:flex-row gap-3 mb-6">
       <UInput
         v-model="search"
+        name="streamer-search"
         placeholder="Rechercher un streameur..."
         icon="i-heroicons-magnifying-glass"
         class="sm:w-64"
@@ -97,9 +98,10 @@ const sortOptions = [
   { value: 'name', label: 'Nom' },
 ]
 
-const { data: streamersData, pending } = await useFetch<{ data: StreamerCardType[]; total: number }>('/api/streamers', {
-  getCachedData: () => null,
-})
+const { data: streamersData, pending, refresh } = await useFetch<{ data: StreamerCardType[]; total: number }>('/api/streamers')
+
+// Force fresh data on every client-side navigation (avoids stale cache)
+onMounted(() => { refresh() })
 
 const filteredStreamers = computed(() => {
   if (!streamersData.value?.data) return []

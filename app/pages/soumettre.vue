@@ -37,36 +37,36 @@
         <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Informations de base</h2>
 
         <UFormField label="Nom de la communauté *" required>
-          <UInput v-model="form.communityName" placeholder="Ex: VEAF, 3rd Wing, Split'Air..." size="lg" />
+          <UInput v-model="form.communityName" name="communityName" placeholder="Ex: VEAF, 3rd Wing, Split'Air..." size="lg" />
         </UFormField>
 
         <UFormField label="Nom / pseudo du contact *" required>
-          <UInput v-model="form.contactName" placeholder="Votre pseudo Discord" size="lg" />
+          <UInput v-model="form.contactName" name="contactName" placeholder="Votre pseudo Discord" size="lg" />
         </UFormField>
 
         <UFormField label="Description courte">
-          <UInput v-model="form.shortDescription" placeholder="Une phrase pour décrire votre communauté" size="lg" maxlength="200" />
+          <UInput v-model="form.shortDescription" name="shortDescription" placeholder="Une phrase pour décrire votre communauté" size="lg" maxlength="200" />
         </UFormField>
 
         <UFormField label="Description complète">
-          <UTextarea v-model="form.description" placeholder="Historique, valeurs, activités..." :rows="5" size="lg" />
+          <UTextarea v-model="form.description" name="description" placeholder="Historique, valeurs, activités..." :rows="5" size="lg" />
         </UFormField>
 
         <UFormField label="Objectifs">
-          <UTextarea v-model="form.objectives" placeholder="Objectifs et missions de la communauté..." :rows="3" size="lg" />
+          <UTextarea v-model="form.objectives" name="objectives" placeholder="Objectifs et missions de la communauté..." :rows="3" size="lg" />
         </UFormField>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <UFormField label="Fondateur">
-            <UInput v-model="form.founder" placeholder="Pseudo du fondateur" />
+            <UInput v-model="form.founder" name="founder" placeholder="Pseudo du fondateur" />
           </UFormField>
           <UFormField label="Taille (texte libre)">
-            <UInput v-model="form.sizeText" placeholder="Ex: ~50 membres actifs" />
+            <UInput v-model="form.sizeText" name="sizeText" placeholder="Ex: ~50 membres actifs" />
           </UFormField>
         </div>
 
         <UFormField label="Conditions d'entrée">
-          <UTextarea v-model="form.entryConditions" placeholder="Âge minimum, entretien, période d'essai..." :rows="2" />
+          <UTextarea v-model="form.entryConditions" name="entryConditions" placeholder="Âge minimum, entretien, période d'essai..." :rows="2" />
         </UFormField>
       </div>
 
@@ -161,29 +161,29 @@
         <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Liens & Réseaux</h2>
 
         <UFormField label="Discord">
-          <UInput v-model="form.discordUrl" placeholder="https://discord.gg/..." icon="i-simple-icons-discord" />
+          <UInput v-model="form.discordUrl" name="discordUrl" placeholder="https://discord.gg/..." icon="i-simple-icons-discord" />
         </UFormField>
         <UFormField label="Site web">
-          <UInput v-model="form.websiteUrl" placeholder="https://..." icon="i-heroicons-globe-alt" />
+          <UInput v-model="form.websiteUrl" name="websiteUrl" placeholder="https://..." icon="i-heroicons-globe-alt" />
         </UFormField>
         <UFormField label="YouTube">
-          <UInput v-model="form.youtubeUrl" placeholder="https://youtube.com/..." icon="i-simple-icons-youtube" />
+          <UInput v-model="form.youtubeUrl" name="youtubeUrl" placeholder="https://youtube.com/..." icon="i-simple-icons-youtube" />
         </UFormField>
         <UFormField label="Twitch">
-          <UInput v-model="form.twitchUrl" placeholder="https://twitch.tv/..." icon="i-simple-icons-twitch" />
+          <UInput v-model="form.twitchUrl" name="twitchUrl" placeholder="https://twitch.tv/..." icon="i-simple-icons-twitch" />
         </UFormField>
         <UFormField label="Twitter / X">
-          <UInput v-model="form.twitterUrl" placeholder="https://twitter.com/..." icon="i-simple-icons-x" />
+          <UInput v-model="form.twitterUrl" name="twitterUrl" placeholder="https://twitter.com/..." icon="i-simple-icons-x" />
         </UFormField>
         <UFormField label="Instagram">
-          <UInput v-model="form.instagramUrl" placeholder="https://instagram.com/..." icon="i-simple-icons-instagram" />
+          <UInput v-model="form.instagramUrl" name="instagramUrl" placeholder="https://instagram.com/..." icon="i-simple-icons-instagram" />
         </UFormField>
         <UFormField label="Facebook">
-          <UInput v-model="form.facebookUrl" placeholder="https://facebook.com/..." icon="i-simple-icons-facebook" />
+          <UInput v-model="form.facebookUrl" name="facebookUrl" placeholder="https://facebook.com/..." icon="i-simple-icons-facebook" />
         </UFormField>
 
         <UFormField label="Logo (URL)">
-          <UInput v-model="form.logoUrl" placeholder="https://... (lien direct vers l'image)" icon="i-heroicons-photo" />
+          <UInput v-model="form.logoUrl" name="logoUrl" placeholder="https://... (lien direct vers l'image)" icon="i-heroicons-photo" />
         </UFormField>
       </div>
 
