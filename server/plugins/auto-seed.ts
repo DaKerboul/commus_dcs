@@ -123,6 +123,25 @@ async function runMigrations(client: ReturnType<typeof postgres>) {
     `ALTER TABLE submissions ADD COLUMN IF NOT EXISTS submission_experience_names JSONB`,
     `ALTER TABLE submissions ADD COLUMN IF NOT EXISTS submission_historical_periods JSONB`,
     `ALTER TABLE submissions ADD COLUMN IF NOT EXISTS submission_images JSONB`,
+
+    // v8: Add category to experiences table
+    `ALTER TABLE experiences ADD COLUMN IF NOT EXISTS category VARCHAR(50)`,
+    // v8: Categorize existing experiences
+    `UPDATE experiences SET category = 'mission_role' WHERE slug IN ('role-cap', 'role-cas', 'role-sead', 'role-strike', 'role-antiship', 'role-recon')`,
+    `UPDATE experiences SET category = 'gameplay' WHERE slug IN ('milsim-plus', 'milsim-lite', 'missions-arcade', 'campagnes-dynamiques', 'aerobatics', 'tournois', 'competitions-inter', 'evenements-inter', 'meetings-aeriens')`,
+    `UPDATE experiences SET category = 'skill_level' WHERE slug IN ('debutants', 'confirmes', 'multi-branches')`,
+    `UPDATE experiences SET category = 'infrastructure' WHERE slug IN ('serveur-24-7', 'serveur-a-la-demande', 'awacs-humains', 'tuteurs', 'formations-srs', 'entrainements-inscrits', 'entrainements-public')`,
+    // v8: Add isCommunityPillar to communities
+    `ALTER TABLE communities ADD COLUMN IF NOT EXISTS is_community_pillar BOOLEAN DEFAULT FALSE`,
+    // v8: Clean Badge HTML from community names + set pillar flag
+    `UPDATE communities SET is_community_pillar = TRUE, name = regexp_replace(name, ' ?<Badge[^/]*/>', '') WHERE name LIKE '%<Badge%'`,
+    // v8: Add unique indexes on M2M pivot tables (prevent duplicates)
+    `CREATE UNIQUE INDEX IF NOT EXISTS idx_community_modules_unique ON community_modules(community_id, module_id)`,
+    `CREATE UNIQUE INDEX IF NOT EXISTS idx_community_sought_modules_unique ON community_sought_modules(community_id, module_id)`,
+    `CREATE UNIQUE INDEX IF NOT EXISTS idx_community_experiences_unique ON community_experiences(community_id, experience_id)`,
+    `CREATE UNIQUE INDEX IF NOT EXISTS idx_community_periods_unique ON community_historical_periods(community_id, period)`,
+    // v8: Index on published for faster filtered queries
+    `CREATE INDEX IF NOT EXISTS idx_communities_published ON communities(published)`,
   ]
 
   for (const sql of migrations) {

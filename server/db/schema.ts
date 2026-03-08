@@ -106,6 +106,7 @@ export const communities = pgTable('communities', {
   // Meta
   featured: boolean('featured').default(false),
   published: boolean('published').default(true),
+  isCommunityPillar: boolean('is_community_pillar').default(false),
   votes: integer('votes').default(0),
   foundedDate: varchar('founded_date', { length: 50 }),
   createdAt: timestamp('created_at').defaultNow(),
@@ -124,6 +125,7 @@ export const experiences = pgTable('experiences', {
   name: varchar('name', { length: 255 }).notNull().unique(),
   slug: varchar('slug', { length: 100 }).notNull().unique(),
   icon: varchar('icon', { length: 50 }),
+  category: varchar('category', { length: 50 }), // 'mission_role', 'gameplay', 'skill_level', 'infrastructure'
 })
 
 export const communityModules = pgTable('community_modules', {

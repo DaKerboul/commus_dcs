@@ -178,6 +178,7 @@ export default defineEventHandler(async (event) => {
     discordUrl: c.discordUrl,
     websiteUrl: c.websiteUrl,
     votes: c.votes || 0,
+    isCommunityPillar: c.isCommunityPillar || false,
     createdAt: c.createdAt,
     updatedAt: c.updatedAt,
     foundedDate: c.foundedDate || null,

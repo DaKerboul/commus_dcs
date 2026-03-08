@@ -17,6 +17,9 @@
           <UBadge :color="recruitmentColor" variant="subtle">
             {{ RECRUITMENT_LABELS[community.recruitmentStatus] }}
           </UBadge>
+          <UBadge v-if="(community as any).isCommunityPillar" color="warning" variant="solid">
+            ⭐ Pilier de la Communauté
+          </UBadge>
           <UBadge v-if="community.communityType !== 'other'" variant="outline" color="neutral">
             {{ TYPE_LABELS[community.communityType] }}
           </UBadge>

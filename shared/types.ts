@@ -13,6 +13,7 @@ export interface CommunityCard {
   discordUrl: string | null
   websiteUrl: string | null
   votes: number
+  isCommunityPillar: boolean
   moduleNames: string[]
   experienceNames: string[]
   historicalPeriods: string[]
@@ -134,6 +135,20 @@ export const RECRUITMENT_COLORS: Record<string, string> = {
   closed: 'error',
   none: 'neutral',
   unknown: 'neutral',
+}
+
+export const EXPERIENCE_CATEGORY_LABELS: Record<string, string> = {
+  mission_role: 'Rôles de mission',
+  gameplay: 'Types de gameplay',
+  skill_level: 'Niveau & Structure',
+  infrastructure: 'Infrastructure & Services',
+}
+
+export const EXPERIENCE_CATEGORY_COLORS: Record<string, string> = {
+  mission_role: 'primary',
+  gameplay: 'secondary',
+  skill_level: 'success',
+  infrastructure: 'warning',
 }
 
 // ── Streamer Types ─────────────────────────────────────

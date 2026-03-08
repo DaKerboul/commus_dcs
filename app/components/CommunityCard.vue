@@ -45,6 +45,9 @@
           <UBadge v-if="isNew" color="warning" variant="subtle" size="xs">
             Nouveau
           </UBadge>
+          <UBadge v-if="(community as any).isCommunityPillar" color="warning" variant="solid" size="xs" class="pillar-badge">
+            ⭐ Pilier
+          </UBadge>
           <UBadge v-if="isPopular" color="error" variant="subtle" size="xs">
             🔥 Populaire
           </UBadge>

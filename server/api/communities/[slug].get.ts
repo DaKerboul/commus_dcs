@@ -82,6 +82,7 @@ export default defineEventHandler(async (event) => {
     otherLinks: community.otherLinks,
     featured: community.featured,
     published: community.published,
+    isCommunityPillar: community.isCommunityPillar || false,
     votes: community.votes || 0,
     createdAt: community.createdAt?.toISOString(),
     updatedAt: community.updatedAt?.toISOString(),
