@@ -133,7 +133,9 @@ import type { StreamerDetail } from '#shared/types'
 const route = useRoute()
 const login = route.params.login as string
 
-const { data: streamer, pending } = await useFetch<StreamerDetail>(`/api/streamers/${login}`)
+const { data: streamer, pending } = await useFetch<StreamerDetail>(`/api/streamers/${login}`, {
+  getCachedData: () => null,
+})
 
 // SEO
 useSeoMeta({

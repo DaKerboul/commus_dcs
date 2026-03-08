@@ -97,7 +97,9 @@ const sortOptions = [
   { value: 'name', label: 'Nom' },
 ]
 
-const { data: streamersData, pending } = await useFetch<{ data: StreamerCardType[]; total: number }>('/api/streamers')
+const { data: streamersData, pending } = await useFetch<{ data: StreamerCardType[]; total: number }>('/api/streamers', {
+  getCachedData: () => null,
+})
 
 const filteredStreamers = computed(() => {
   if (!streamersData.value?.data) return []
