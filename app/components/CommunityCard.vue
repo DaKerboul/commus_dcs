@@ -116,9 +116,9 @@ const recruitmentColor = computed(() => {
 const isNew = computed(() => {
   if (!(props.community as any).createdAt) return false
   const created = new Date((props.community as any).createdAt)
-  const thirtyDaysAgo = new Date()
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
-  return created > thirtyDaysAgo
+  const threeDaysAgo = new Date()
+  threeDaysAgo.setDate(threeDaysAgo.getDate() - 3)
+  return created > threeDaysAgo
 })
 
 const isLarge = computed(() => {
