@@ -42,6 +42,10 @@ export default defineNuxtConfig({
     },
   },
 
+  icon: {
+    serverBundle: 'remote',   // fetch icons at SSR-time from Iconify CDN instead of bundling 5 MB
+  },
+
   image: {
     quality: 80,
     format: ['webp', 'png', 'jpg'],
@@ -50,6 +54,8 @@ export default defineNuxtConfig({
   nitro: {
     compressPublicAssets: false,
     sourceMap: false,
+    logging: { compressedSizes: false },
+    externals: { trace: false },
     routeRules: {
       // Cache heavy public API endpoints with stale-while-revalidate
       '/api/stats': { swr: 300 },           // 5 min SWR

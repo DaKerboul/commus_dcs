@@ -20,8 +20,9 @@ FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-# Copy built output
+# Copy built output + node_modules (needed because externals.trace is disabled)
 COPY --from=builder /app/.output .output
+COPY --from=builder /app/node_modules node_modules
 COPY --from=builder /app/package.json .
 # Include seed.sql for auto-seed on first boot
 COPY --from=builder /app/scripts/seed.sql seed.sql
