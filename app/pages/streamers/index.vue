@@ -35,6 +35,46 @@
       </div>
     </div>
 
+    <!-- Top streamers -->
+    <div v-if="topStreamers.length" class="mb-8 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5">
+      <h2 class="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-4 uppercase tracking-wider flex items-center gap-2">
+        <UIcon name="i-heroicons-trophy" class="text-amber-400" />
+        Top streameurs par jours de stream DCS
+      </h2>
+      <div class="space-y-2.5">
+        <div
+          v-for="(s, i) in topStreamers"
+          :key="s.id"
+          class="flex items-center gap-3"
+        >
+          <span class="w-6 text-sm font-bold text-right" :class="i === 0 ? 'text-amber-400' : i === 1 ? 'text-gray-300' : i === 2 ? 'text-orange-400' : 'text-gray-500'">{{ i + 1 }}</span>
+          <img
+            v-if="s.profileImageUrl"
+            :src="s.profileImageUrl"
+            :alt="s.displayName"
+            class="h-8 w-8 rounded-full object-cover shrink-0"
+          />
+          <div v-else class="h-8 w-8 rounded-full bg-purple-500/20 flex items-center justify-center shrink-0">
+            <UIcon name="i-simple-icons-twitch" class="text-purple-400 text-sm" />
+          </div>
+          <NuxtLink
+            :to="`/streamers/${s.twitchLogin}`"
+            class="text-sm font-medium text-purple-400 hover:text-purple-300 transition-colors w-36 truncate shrink-0"
+          >
+            {{ s.displayName }}
+          </NuxtLink>
+          <div class="flex-1 h-5 rounded bg-gray-200 dark:bg-gray-800 overflow-hidden">
+            <div
+              class="h-full rounded transition-all duration-700"
+              :class="i === 0 ? 'bg-amber-500/60' : i === 1 ? 'bg-gray-400/40' : i === 2 ? 'bg-orange-500/50' : 'bg-purple-500/50'"
+              :style="{ width: `${(s.dcsDays / maxDcsDays) * 100}%` }"
+            />
+          </div>
+          <span class="text-sm text-gray-500 w-16 text-right shrink-0">{{ s.dcsDays }} j.</span>
+        </div>
+      </div>
+    </div>
+
     <!-- Filters -->
     <div class="flex flex-col sm:flex-row gap-3 mb-6">
       <UInput
@@ -140,4 +180,15 @@ const liveCount = computed(() => streamersData.value?.data?.filter(s => s.isLive
 const totalDcsDays = computed(() =>
   streamersData.value?.data?.reduce((sum, s) => sum + s.dcsDays, 0) ?? 0,
 )
+
+// Top streamers sorted by DCS days (top 10)
+const topStreamers = computed(() => {
+  if (!streamersData.value?.data) return []
+  return [...streamersData.value.data]
+    .filter(s => s.dcsDays > 0)
+    .sort((a, b) => b.dcsDays - a.dcsDays)
+    .slice(0, 10)
+})
+
+const maxDcsDays = computed(() => topStreamers.value[0]?.dcsDays || 1)
 </script>

@@ -57,9 +57,8 @@
                 <UIcon name="i-simple-icons-twitch" class="text-purple-400 text-sm" />
               </div>
               <NuxtLink
-                :to="`https://twitch.tv/${s.twitchLogin}`"
-                target="_blank"
-                class="text-sm font-medium text-purple-400 hover:text-purple-300 transition-colors"
+                :to="`/streamers/${s.twitchLogin}`"
+                class="text-sm font-medium text-purple-400 hover:text-purple-300 transition-colors w-36 truncate shrink-0"
               >
                 {{ s.displayName }}
               </NuxtLink>
