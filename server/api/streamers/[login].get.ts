@@ -57,6 +57,9 @@ export default defineEventHandler(async (event) => {
   // Calendar heatmap: list of dates where streamer was active on DCS
   const calendarHeatmap = dcsDays.map(d => ({ date: d.date, active: true }))
 
+  // Last DCS date = most recent entry in streamerDcsDays (already sorted by date ASC)
+  const lastDcsDate = dcsDays.length > 0 ? dcsDays[dcsDays.length - 1]!.date : null
+
   return {
     id: streamer.id,
     twitchId: streamer.twitchId,
@@ -68,6 +71,7 @@ export default defineEventHandler(async (event) => {
     currentViewers: streamer.currentViewers ?? 0,
     lastStreamTitle: streamer.lastStreamTitle,
     lastStreamStartedAt: streamer.lastStreamStartedAt?.toISOString() ?? null,
+    lastDcsDate,
     dcsDays: totalCount?.count ?? 0,
     communityName: communityInfo?.name ?? null,
     communitySlug: communityInfo?.slug ?? null,

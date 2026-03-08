@@ -148,12 +148,19 @@ useSeoMeta({
 })
 
 const lastStreamAgo = computed(() => {
-  if (!streamer.value?.lastStreamStartedAt) return 'N/A'
-  const diff = Date.now() - new Date(streamer.value.lastStreamStartedAt).getTime()
+  // Use lastDcsDate (from streamerDcsDays table) — not lastStreamStartedAt which is any Twitch stream
+  const raw = (streamer.value as any)?.lastDcsDate
+  if (!raw) return 'N/A'
+  // lastDcsDate is a YYYY-MM-DD string in Europe/Paris timezone
+  const parts = raw.split('-')
+  const dcsDate = new Date(+parts[0], +parts[1] - 1, +parts[2])
+  const now = new Date()
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const diff = today.getTime() - dcsDate.getTime()
   const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-  if (days === 0) return "Aujourd'hui"
+  if (days <= 0) return "Aujourd'hui"
   if (days === 1) return 'Hier'
-  if (days < 7) return `Il y a ${days}j`
+  if (days < 7) return `Il y a ${days} jours`
   if (days < 30) return `Il y a ${Math.floor(days / 7)} sem.`
   return `Il y a ${Math.floor(days / 30)} mois`
 })
