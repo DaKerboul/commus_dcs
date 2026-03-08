@@ -394,21 +394,54 @@
                   </div>
                 </div>
 
-                <!-- Logo URL with preview -->
-                <UFormField label="Logo (URL directe vers l'image)">
-                  <div class="flex items-start gap-4">
-                    <UInput v-model="form.logoUrl" name="logoUrl" placeholder="https://... (lien direct .png/.jpg/.webp)" icon="i-heroicons-photo" class="flex-1" />
-                    <div v-if="form.logoUrl" class="shrink-0">
-                      <img
-                        :src="form.logoUrl"
-                        alt="Aperçu logo"
-                        class="h-12 w-12 rounded-lg object-cover border border-gray-200 dark:border-gray-700"
-                        @error="($event.target as HTMLImageElement).style.display = 'none'"
-                      />
+                <!-- Logo upload with crop -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Logo</label>
+                  <div class="flex items-center gap-4">
+                    <!-- Logo preview / placeholder -->
+                    <div
+                      class="shrink-0 h-20 w-20 rounded-xl border-2 border-dashed flex items-center justify-center overflow-hidden cursor-pointer transition-all hover:border-blue-400"
+                      :class="form.logoUrl
+                        ? 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800'
+                        : 'border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800/50'"
+                      @click="triggerLogoInput"
+                    >
+                      <img v-if="form.logoUrl" :src="form.logoUrl" alt="Logo" class="h-full w-full object-cover rounded-xl" />
+                      <UIcon v-else name="i-heroicons-camera" class="text-2xl text-gray-400" />
                     </div>
+                    <div class="flex-1 space-y-2">
+                      <div class="flex items-center gap-2">
+                        <UButton size="sm" variant="soft" color="primary" icon="i-heroicons-arrow-up-tray" @click="triggerLogoInput">
+                          {{ form.logoUrl ? 'Changer le logo' : 'Uploader un logo' }}
+                        </UButton>
+                        <UButton v-if="form.logoUrl" size="sm" variant="ghost" color="error" icon="i-heroicons-trash" @click="form.logoUrl = ''">
+                          Supprimer
+                        </UButton>
+                      </div>
+                      <p class="text-xs text-gray-400">PNG, JPG ou WebP — sera recadré en carré et compressé (256×256)</p>
+                    </div>
+                    <input
+                      ref="logoInputRef"
+                      type="file"
+                      accept="image/*"
+                      class="hidden"
+                      @change="onLogoFileChange"
+                    />
                   </div>
-                </UFormField>
+                </div>
+
+                <!-- Screenshots upload -->
+                <ScreenshotUploader v-model="screenshots" />
               </div>
+
+              <!-- Logo crop modal -->
+              <ClientOnly>
+                <LogoCropModal
+                  v-model:open="cropModalOpen"
+                  :image-src="cropImageSrc"
+                  @cropped="onLogoCropped"
+                />
+              </ClientOnly>
             </div>
           </div>
 
@@ -542,9 +575,15 @@
                     </div>
                     <div v-if="form.logoUrl" class="flex items-center gap-3 mt-2">
                       <span class="text-gray-500">Logo :</span>
-                      <img :src="form.logoUrl" alt="Logo" class="h-10 w-10 rounded-lg object-cover border border-gray-200 dark:border-gray-700" @error="($event.target as HTMLImageElement).style.display = 'none'" />
+                      <img :src="form.logoUrl" alt="Logo" class="h-10 w-10 rounded-xl object-cover border border-gray-200 dark:border-gray-700" />
                     </div>
-                    <p v-if="!form.discordUrl && !form.websiteUrl && !form.youtubeUrl && !form.twitchUrl" class="text-gray-400 italic">Aucun lien renseigné.</p>
+                    <div v-if="screenshots.length" class="mt-3">
+                      <span class="text-gray-500">Screenshots ({{ screenshots.length }}) :</span>
+                      <div class="flex flex-wrap gap-2 mt-2">
+                        <img v-for="(s, i) in screenshots" :key="i" :src="s" alt="Screenshot" class="h-16 rounded-lg object-cover border border-gray-200 dark:border-gray-700" />
+                      </div>
+                    </div>
+                    <p v-if="!form.discordUrl && !form.websiteUrl && !form.youtubeUrl && !form.twitchUrl && !form.logoUrl && !screenshots.length" class="text-gray-400 italic">Aucun lien ou média renseigné.</p>
                   </div>
                 </div>
               </div>
@@ -727,6 +766,31 @@ const submitted = ref(false)
 const error = ref('')
 const touched = reactive({ communityName: false, contactName: false })
 const shakeField = ref('')
+const screenshots = ref<string[]>([])
+
+// ── Logo upload ────────────────────────────────────────
+const logoInputRef = ref<HTMLInputElement>()
+const cropModalOpen = ref(false)
+const cropImageSrc = ref('')
+
+function triggerLogoInput() {
+  logoInputRef.value?.click()
+}
+
+function onLogoFileChange(e: Event) {
+  const input = e.target as HTMLInputElement
+  if (input.files?.[0]) {
+    const file = input.files[0]
+    if (!file.type.startsWith('image/')) return
+    cropImageSrc.value = URL.createObjectURL(file)
+    cropModalOpen.value = true
+  }
+  input.value = ''
+}
+
+function onLogoCropped(dataUrl: string) {
+  form.logoUrl = dataUrl
+}
 
 // ── Validation ─────────────────────────────────────────
 const stepErrors = computed(() => {
@@ -813,6 +877,9 @@ const completionPercent = computed(() => {
   // Links
   total += 7; if (form.discordUrl) filled += 7
   total += 3; if (form.websiteUrl) filled += 3
+  // Media
+  total += 5; if (form.logoUrl) filled += 5
+  total += 3; if (screenshots.value.length) filled += 3
   return Math.round((filled / total) * 100)
 })
 
@@ -857,7 +924,9 @@ if (import.meta.client) {
   onMounted(() => {
     draftTimer = setInterval(() => {
       if (!submitted.value) {
-        localStorage.setItem(DRAFT_KEY, JSON.stringify(form))
+        // Save draft WITHOUT image data (base64 is too large for localStorage)
+        const { logoUrl: _logo, ...draftFields } = form
+        localStorage.setItem(DRAFT_KEY, JSON.stringify(draftFields))
       }
     }, 3000)
   })
@@ -868,7 +937,8 @@ if (import.meta.client) {
 const isFormDirty = computed(() => {
   return !submitted.value && (
     form.communityName !== '' || form.contactName !== '' || form.description !== '' ||
-    form.moduleNames.length > 0 || form.discordUrl !== ''
+    form.moduleNames.length > 0 || form.discordUrl !== '' ||
+    form.logoUrl !== '' || screenshots.value.length > 0
   )
 })
 
@@ -896,7 +966,15 @@ async function submit() {
   loading.value = true
   error.value = ''
   try {
-    await $fetch('/api/submissions', { method: 'POST', body: form })
+    await $fetch('/api/submissions', {
+      method: 'POST',
+      body: {
+        ...form,
+        images: screenshots.value.length
+          ? screenshots.value.map(url => ({ url, alt: null }))
+          : null,
+      },
+    })
     // Clear draft
     localStorage.removeItem(DRAFT_KEY)
     // Confetti!

@@ -183,6 +183,7 @@ INSERT INTO modules (name, category) VALUES ('Mosquito', 'ww2') ON CONFLICT (nam
 INSERT INTO modules (name, category) VALUES ('P-47D', 'ww2') ON CONFLICT (name) DO NOTHING;
 INSERT INTO modules (name, category) VALUES ('P-51D', 'ww2') ON CONFLICT (name) DO NOTHING;
 INSERT INTO modules (name, category) VALUES ('Spitfire', 'ww2') ON CONFLICT (name) DO NOTHING;
+INSERT INTO modules (name, category) VALUES ('Yak-52', 'eastern_fixed') ON CONFLICT (name) DO NOTHING;
 INSERT INTO modules (name, category) VALUES ('Combined Arms', 'other') ON CONFLICT (name) DO NOTHING;
 INSERT INTO modules (name, category) VALUES ('Flaming Cliffs', 'other') ON CONFLICT (name) DO NOTHING;
 

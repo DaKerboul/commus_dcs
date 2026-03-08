@@ -53,6 +53,7 @@ const MODULE_LIST: { name: string; category: string }[] = [
   { name: 'Su-25T', category: 'eastern_fixed' },
   { name: 'Su-27', category: 'eastern_fixed' },
   { name: 'Su-33', category: 'eastern_fixed' },
+  { name: 'Yak-52', category: 'eastern_fixed' },
   // Helicopters
   { name: 'AH-64D', category: 'helicopter' },
   { name: 'Ka-50', category: 'helicopter' },
