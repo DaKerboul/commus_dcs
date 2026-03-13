@@ -1,4 +1,4 @@
-import { eq, inArray } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import {
   communities,
   communityModules,
@@ -8,7 +8,9 @@ import {
   experiences,
   communityHistoricalPeriods,
   communityImages,
+  communityVotes,
 } from '#server/db/schema'
+import { ensureVoteIntent, getOrCreateVoteSession } from '#server/utils/vote-protection'
 
 export default defineEventHandler(async (event) => {
   const db = useDB()
@@ -28,8 +30,11 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Community not found' })
   }
 
+  const sessionId = getOrCreateVoteSession(event)
+  ensureVoteIntent(event, slug, sessionId)
+
   // Fetch all relations in parallel
-  const [modRows, soughtModRows, expRows, periodRows, imageRows] = await Promise.all([
+  const [modRows, soughtModRows, expRows, periodRows, imageRows, existingVoteRows] = await Promise.all([
     db
       .select({ moduleName: modules.name })
       .from(communityModules)
@@ -54,6 +59,14 @@ export default defineEventHandler(async (event) => {
       .from(communityImages)
       .where(eq(communityImages.communityId, community.id))
       .orderBy(communityImages.sortOrder),
+    db
+      .select({ id: communityVotes.id })
+      .from(communityVotes)
+      .where(and(
+        eq(communityVotes.communityId, community.id),
+        eq(communityVotes.sessionId, sessionId),
+      ))
+      .limit(1),
   ])
 
   return {
@@ -84,6 +97,7 @@ export default defineEventHandler(async (event) => {
     published: community.published,
     isCommunityPillar: community.isCommunityPillar || false,
     votes: community.votes || 0,
+    userHasVoted: Boolean(existingVoteRows[0]),
     createdAt: community.createdAt?.toISOString(),
     updatedAt: community.updatedAt?.toISOString(),
     moduleNames: modRows.map(r => r.moduleName),

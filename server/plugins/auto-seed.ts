@@ -142,6 +142,19 @@ async function runMigrations(client: ReturnType<typeof postgres>) {
     `CREATE UNIQUE INDEX IF NOT EXISTS idx_community_periods_unique ON community_historical_periods(community_id, period)`,
     // v8: Index on published for faster filtered queries
     `CREATE INDEX IF NOT EXISTS idx_communities_published ON communities(published)`,
+    // v9: Persistent vote ledger + anti-abuse indexes
+    `CREATE TABLE IF NOT EXISTS community_votes (
+      id SERIAL PRIMARY KEY,
+      community_id INTEGER NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+      session_id VARCHAR(64) NOT NULL,
+      ip_hash VARCHAR(64) NOT NULL,
+      fingerprint_hash VARCHAR(64) NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW() NOT NULL
+    )`,
+    `CREATE UNIQUE INDEX IF NOT EXISTS idx_community_votes_session_unique ON community_votes(community_id, session_id)`,
+    `CREATE INDEX IF NOT EXISTS idx_community_votes_community ON community_votes(community_id)`,
+    `CREATE INDEX IF NOT EXISTS idx_community_votes_ip_created ON community_votes(ip_hash, created_at)`,
+    `CREATE INDEX IF NOT EXISTS idx_community_votes_fingerprint_created ON community_votes(fingerprint_hash, created_at)`,
   ]
 
   for (const sql of migrations) {

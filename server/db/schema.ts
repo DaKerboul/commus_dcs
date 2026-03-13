@@ -8,6 +8,8 @@ import {
   integer,
   pgEnum,
   jsonb,
+  index,
+  uniqueIndex,
 } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 
@@ -160,6 +162,20 @@ export const communityImages = pgTable('community_images', {
   sortOrder: integer('sort_order').default(0),
 })
 
+export const communityVotes = pgTable('community_votes', {
+  id: serial('id').primaryKey(),
+  communityId: integer('community_id').notNull().references(() => communities.id, { onDelete: 'cascade' }),
+  sessionId: varchar('session_id', { length: 64 }).notNull(),
+  ipHash: varchar('ip_hash', { length: 64 }).notNull(),
+  fingerprintHash: varchar('fingerprint_hash', { length: 64 }).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, table => ({
+  uniqueSessionVote: uniqueIndex('idx_community_votes_session_unique').on(table.communityId, table.sessionId),
+  communityLookup: index('idx_community_votes_community').on(table.communityId),
+  ipCreatedLookup: index('idx_community_votes_ip_created').on(table.ipHash, table.createdAt),
+  fingerprintCreatedLookup: index('idx_community_votes_fingerprint_created').on(table.fingerprintHash, table.createdAt),
+}))
+
 export const submissions = pgTable('submissions', {
   id: serial('id').primaryKey(),
   communityName: varchar('community_name', { length: 255 }).notNull(),
@@ -216,6 +232,7 @@ export const communitiesRelations = relations(communities, ({ many }) => ({
   experiences: many(communityExperiences),
   historicalPeriods: many(communityHistoricalPeriods),
   images: many(communityImages),
+  votesLedger: many(communityVotes),
 }))
 
 export const communityModulesRelations = relations(communityModules, ({ one }) => ({
@@ -239,6 +256,10 @@ export const communityHistoricalPeriodsRelations = relations(communityHistorical
 
 export const communityImagesRelations = relations(communityImages, ({ one }) => ({
   community: one(communities, { fields: [communityImages.communityId], references: [communities.id] }),
+}))
+
+export const communityVotesRelations = relations(communityVotes, ({ one }) => ({
+  community: one(communities, { fields: [communityVotes.communityId], references: [communities.id] }),
 }))
 
 export const modulesRelations = relations(modules, ({ many }) => ({

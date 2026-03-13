@@ -159,11 +159,11 @@ const endpoints = [
   {
     method: 'POST',
     path: '/api/communities/:slug/vote',
-    description: 'Voter pour une communauté (+1). Protégé par rate limiting (1 vote/heure/IP + cookie 30j).',
+    description: 'Voter pour une communauté (+1). Protégé par session signée, délai minimal sur la fiche et rate limiting persistant côté serveur.',
     params: [
       { name: 'slug', type: 'string', desc: 'Slug de la communauté' },
     ],
-    example: `curl -X POST "${baseUrl}/api/communities/bolt/vote"`,
+    example: 'Utiliser le bouton de vote depuis la fiche communauté (le jeton de session est généré à l\'ouverture de la page).',
   },
   {
     method: 'GET',

@@ -273,7 +273,8 @@
             :variant="hasVoted ? 'soft' : 'outline'"
             size="sm"
             block
-            :disabled="hasVoted"
+            :loading="votePending"
+            :disabled="hasVoted || votePending"
             @click="vote"
           >
             {{ hasVoted ? 'Déjà voté !' : "J'aime cette commu" }}
@@ -281,6 +282,12 @@
               <span class="text-xs font-mono">{{ voteCount }}</span>
             </template>
           </UButton>
+          <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+            Un court délai d'affichage et un contrôle serveur sont requis avant validation du vote.
+          </p>
+          <p v-if="voteError" class="mt-2 text-xs text-red-500">
+            {{ voteError }}
+          </p>
         </div>
       </div>
     </div>
@@ -341,23 +348,24 @@ const recruitmentColor = computed(() => {
 
 // Upvote
 const voteCount = ref(community.value?.votes || 0)
-const hasVoted = ref(false)
-
-onMounted(() => {
-  const votedSlugs = JSON.parse(localStorage.getItem('commus_votes') || '[]')
-  hasVoted.value = votedSlugs.includes(slug)
-})
+const hasVoted = ref(Boolean(community.value?.userHasVoted))
+const votePending = ref(false)
+const voteError = ref('')
 
 async function vote() {
-  if (hasVoted.value) return
+  if (hasVoted.value || votePending.value) return
+  votePending.value = true
+  voteError.value = ''
+
   try {
     const result = await $fetch<{ votes: number }>(`/api/communities/${slug}/vote`, { method: 'POST' })
     voteCount.value = result.votes
     hasVoted.value = true
-    const votedSlugs = JSON.parse(localStorage.getItem('commus_votes') || '[]')
-    votedSlugs.push(slug)
-    localStorage.setItem('commus_votes', JSON.stringify(votedSlugs))
-  } catch { /* ignore */ }
+  } catch (error: any) {
+    voteError.value = error?.data?.statusMessage || 'Vote refusé. Rechargez la page puis réessayez.'
+  } finally {
+    votePending.value = false
+  }
 }
 
 // Similar communities

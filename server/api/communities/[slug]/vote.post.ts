@@ -1,9 +1,13 @@
-import { eq, sql } from 'drizzle-orm'
-import { communities } from '#server/db/schema'
-
-// Simple in-memory rate limit store (resets on server restart)
-const voteCooldowns = new Map<string, number>()
-const VOTE_COOLDOWN_MS = 60 * 60 * 1000 // 1 hour per IP+slug combo
+import { and, count, eq, gte, sql } from 'drizzle-orm'
+import { communities, communityVotes } from '#server/db/schema'
+import {
+  clearVoteIntent,
+  getOrCreateVoteSession,
+  getVoteHashes,
+  MAX_VOTES_PER_IP_PER_DAY,
+  MAX_VOTES_PER_IP_PER_HOUR,
+  validateVoteIntent,
+} from '#server/utils/vote-protection'
 
 export default defineEventHandler(async (event) => {
   const db = useDB()
@@ -13,24 +17,13 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Slug requis' })
   }
 
-  // Rate limit by IP + slug
-  const ip = getRequestIP(event, { xForwardedFor: true }) || 'unknown'
-  const rateKey = `${ip}:${slug}`
-  const lastVote = voteCooldowns.get(rateKey)
-  if (lastVote && Date.now() - lastVote < VOTE_COOLDOWN_MS) {
-    const remainingMin = Math.ceil((VOTE_COOLDOWN_MS - (Date.now() - lastVote)) / 60000)
-    throw createError({
-      statusCode: 429,
-      statusMessage: `Vous avez déjà voté pour cette communauté. Réessayez dans ${remainingMin} min.`,
-    })
+  const sessionId = getOrCreateVoteSession(event)
+  const voteIntent = validateVoteIntent(event, slug, sessionId)
+  if (!voteIntent.ok) {
+    throw createError({ statusCode: voteIntent.statusCode, statusMessage: voteIntent.statusMessage })
   }
 
-  // Check cookie-based vote tracking
-  const votedCookie = getCookie(event, 'commus_voted') || ''
-  const votedSlugs = votedCookie ? votedCookie.split(',') : []
-  if (votedSlugs.includes(slug)) {
-    throw createError({ statusCode: 429, statusMessage: 'Vous avez déjà voté pour cette communauté.' })
-  }
+  const { ipHash, fingerprintHash } = getVoteHashes(event, sessionId)
 
   // Check community exists
   const [community] = await db
@@ -43,31 +36,85 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Communauté introuvable' })
   }
 
-  // Increment vote count
-  await db
-    .update(communities)
-    .set({ votes: sql`COALESCE(${communities.votes}, 0) + 1` })
-    .where(eq(communities.slug, slug))
+  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000)
+  const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000)
 
-  // Record rate limit
-  voteCooldowns.set(rateKey, Date.now())
+  const [existingSessionVote, existingFingerprintVote, hourlyIpUsage, dailyIpUsage] = await Promise.all([
+    db
+      .select({ id: communityVotes.id })
+      .from(communityVotes)
+      .where(and(
+        eq(communityVotes.communityId, community.id),
+        eq(communityVotes.sessionId, sessionId),
+      ))
+      .limit(1),
+    db
+      .select({ id: communityVotes.id })
+      .from(communityVotes)
+      .where(and(
+        eq(communityVotes.communityId, community.id),
+        eq(communityVotes.fingerprintHash, fingerprintHash),
+      ))
+      .limit(1),
+    db
+      .select({ total: count() })
+      .from(communityVotes)
+      .where(and(
+        eq(communityVotes.ipHash, ipHash),
+        gte(communityVotes.createdAt, oneHourAgo),
+      )),
+    db
+      .select({ total: count() })
+      .from(communityVotes)
+      .where(and(
+        eq(communityVotes.ipHash, ipHash),
+        gte(communityVotes.createdAt, oneDayAgo),
+      )),
+  ])
 
-  // Set cookie (30 days, append slug)
-  votedSlugs.push(slug)
-  setCookie(event, 'commus_voted', votedSlugs.join(','), {
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-    httpOnly: false, // Allow client-side reading for UI
-    path: '/',
-    sameSite: 'lax',
-  })
-
-  // Cleanup old rate limit entries periodically (keep map from growing)
-  if (voteCooldowns.size > 10000) {
-    const now = Date.now()
-    for (const [key, time] of voteCooldowns) {
-      if (now - time > VOTE_COOLDOWN_MS) voteCooldowns.delete(key)
-    }
+  if (existingSessionVote[0] || existingFingerprintVote[0]) {
+    throw createError({ statusCode: 429, statusMessage: 'Vous avez déjà soutenu cette communauté.' })
   }
+
+  const hourlyCount = Number(hourlyIpUsage[0]?.total || 0)
+  if (hourlyCount >= MAX_VOTES_PER_IP_PER_HOUR) {
+    throw createError({
+      statusCode: 429,
+      statusMessage: 'Trop de votes depuis cette connexion. Réessayez dans une heure.',
+    })
+  }
+
+  const dailyCount = Number(dailyIpUsage[0]?.total || 0)
+  if (dailyCount >= MAX_VOTES_PER_IP_PER_DAY) {
+    throw createError({
+      statusCode: 429,
+      statusMessage: 'Limite quotidienne de votes atteinte pour cette connexion.',
+    })
+  }
+
+  try {
+    await db.transaction(async (tx) => {
+      await tx.insert(communityVotes).values({
+        communityId: community.id,
+        sessionId,
+        ipHash,
+        fingerprintHash,
+      })
+
+      await tx
+        .update(communities)
+        .set({ votes: sql`COALESCE(${communities.votes}, 0) + 1` })
+        .where(eq(communities.id, community.id))
+    })
+  } catch (error: any) {
+    if (error?.code === '23505') {
+      throw createError({ statusCode: 429, statusMessage: 'Vous avez déjà soutenu cette communauté.' })
+    }
+
+    throw error
+  }
+
+  clearVoteIntent(event, slug)
 
   return { votes: (community.votes || 0) + 1 }
 })

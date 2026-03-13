@@ -36,6 +36,7 @@ export interface CommunityDetail extends CommunityCard {
   soughtModuleNames: string[]
   featured: boolean
   votes: number
+  userHasVoted?: boolean
   createdAt: string
   updatedAt: string
 }
