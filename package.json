@@ -12,9 +12,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:seed": "tsx server/db/seed.ts",
-    "db:seed:sql": "tsx scripts/generate-seed-sql.ts",
-    "db:studio": "drizzle-kit studio",
-    "votes:reset": "tsx scripts/reset-community-votes.ts"
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@iconify-json/heroicons": "^1.2.0",

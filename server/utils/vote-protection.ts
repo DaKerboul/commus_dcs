@@ -23,7 +23,17 @@ function getCookieOptions(maxAge: number) {
 
 function getVoteSecret() {
   const config = useRuntimeConfig()
-  return config.sessionSecret || process.env.NUXT_SESSION_SECRET || 'commus-dcs-dev-vote-secret'
+  const secret = config.sessionSecret || process.env.NUXT_SESSION_SECRET
+
+  if (secret) {
+    return secret
+  }
+
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('NUXT_SESSION_SECRET (or runtime sessionSecret) must be configured in production')
+  }
+
+  return 'commus-dcs-dev-vote-secret'
 }
 
 function sign(value: string) {

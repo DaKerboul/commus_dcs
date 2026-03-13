@@ -24,8 +24,6 @@ WORKDIR /app
 COPY --from=builder /app/.output .output
 COPY --from=builder /app/node_modules node_modules
 COPY --from=builder /app/package.json .
-# Include seed.sql for auto-seed on first boot
-COPY --from=builder /app/scripts/seed.sql seed.sql
 
 # Expose port 3000 (Nuxt default)
 EXPOSE 3000
