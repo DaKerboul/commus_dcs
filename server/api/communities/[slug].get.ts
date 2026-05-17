@@ -69,22 +69,47 @@ export default defineEventHandler(async (event) => {
       .limit(1),
   ])
 
+  const irreOverrides = slug === 'irre' ? {
+    shortDescription: 'Communauté francophone active sur DCS World et IL-2 Great Battles.',
+    description: `Nous sommes une communauté de passionnés d’aviation et de simulation de vol fondée en 2013.
+Au fil des années nous avons développé une structure solide autour de notre forum, des missions PvE et PvP, des campagnes ainsi que des événements inter-escadrilles.
+Nous hébergeons nos missions, campagnes et cartes écoles sur notre propre serveur, tout en organisant des sorties sur serveurs publics.
+La particularité de notre escadrille est d’avoir deux pôles majeurs :
+une section IL-2 Great Battles avec près d’une cinquantaine de pilotes (un des groupes les plus actifs sur la sphère francophone)
+une section DCS avec une vingtaine de pilotes.`,
+    objectives: `Développer nos compétences individuelles et par équipe au cours de missions PvE ou PvP immersives
+Partager notre passion commune de l’aviation`,
+    logoUrl: '/commus_img/irre/LOGO_IRRE.png',
+    sizeCategory: 'medium_30_plus',
+    communityType: 'semi_open_squadron',
+    recruitmentStatus: 'open',
+    eventFrequency: 'very_frequent',
+    founder: 'Quintus',
+    contact: 'Simpel\nGenius',
+    entryConditions: `Âge minimum : 18 ans
+Pas de niveau minimum (il est toutefois recommandé pour DCS de connaître les bases de son avion). La mentalité et le comportement prévalent.`,
+    sizeText: 'Moyenne taille (+30 pilotes)',
+    moduleNames: ['F-14', 'F-16C', 'F/A-18C', 'M2000-C'],
+    soughtModuleNames: ['F-14', 'F-16C', 'F/A-18C', 'M2000-C'],
+    historicalPeriods: ['gulf_war', 'early_modern', 'post_modern', 'ww2'],
+  } : null
+
   return {
     id: community.id,
     slug: community.slug,
     name: community.name,
-    shortDescription: community.shortDescription,
-    description: community.description,
-    objectives: community.objectives,
-    logoUrl: community.logoUrl,
-    sizeCategory: community.sizeCategory,
-    communityType: community.communityType,
-    recruitmentStatus: community.recruitmentStatus,
-    eventFrequency: community.eventFrequency,
-    founder: community.founder,
-    contact: community.contact,
-    entryConditions: community.entryConditions,
-    sizeText: community.sizeText,
+    shortDescription: irreOverrides?.shortDescription ?? community.shortDescription,
+    description: irreOverrides?.description ?? community.description,
+    objectives: irreOverrides?.objectives ?? community.objectives,
+    logoUrl: irreOverrides?.logoUrl ?? community.logoUrl,
+    sizeCategory: irreOverrides?.sizeCategory ?? community.sizeCategory,
+    communityType: irreOverrides?.communityType ?? community.communityType,
+    recruitmentStatus: irreOverrides?.recruitmentStatus ?? community.recruitmentStatus,
+    eventFrequency: irreOverrides?.eventFrequency ?? community.eventFrequency,
+    founder: irreOverrides?.founder ?? community.founder,
+    contact: irreOverrides?.contact ?? community.contact,
+    entryConditions: irreOverrides?.entryConditions ?? community.entryConditions,
+    sizeText: irreOverrides?.sizeText ?? community.sizeText,
     discordUrl: community.discordUrl,
     websiteUrl: community.websiteUrl,
     youtubeUrl: community.youtubeUrl,
@@ -100,10 +125,24 @@ export default defineEventHandler(async (event) => {
     userHasVoted: Boolean(existingVoteRows[0]),
     createdAt: community.createdAt?.toISOString(),
     updatedAt: community.updatedAt?.toISOString(),
-    moduleNames: modRows.map(r => r.moduleName),
-    soughtModuleNames: soughtModRows.map(r => r.moduleName),
-    experienceNames: expRows.map(r => r.experienceName),
-    historicalPeriods: periodRows.map(r => r.period),
+    moduleNames: irreOverrides?.moduleNames ?? modRows.map(r => r.moduleName),
+    soughtModuleNames: irreOverrides?.soughtModuleNames ?? soughtModRows.map(r => r.moduleName),
+    experienceNames: irreOverrides ? [
+      'Formations à la Phraséo/Communication (SRS)',
+      "Présence d'AWACS Humains (Avec/Sans LotATC)",
+      'Entraînements pour Inscrits',
+      'Présence Tuteurs pour Modules',
+      'Événements Inter-Communautaires',
+      "Présence d'un Serveur Dédié 24/7",
+      'Campagnes Dynamiques (DSMC/Liberation)',
+      'Missions MILSIM Lite',
+      'Rôle : CAP',
+      'Rôle : STRIKE',
+      'Rôle : SEAD',
+      'Rôle : CAS',
+      'Rôle : ANTISHIP',
+    ] : expRows.map(r => r.experienceName),
+    historicalPeriods: irreOverrides?.historicalPeriods ?? periodRows.map(r => r.period),
     images: imageRows,
   }
 })
