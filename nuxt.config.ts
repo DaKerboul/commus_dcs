@@ -39,6 +39,10 @@ export default defineNuxtConfig({
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
         { rel: 'alternate', type: 'application/rss+xml', title: 'Commus DCS FR RSS', href: '/api/rss.xml' },
       ],
+      script: [
+        // Umami analytics (self-hosted, CT132 — stats.kerboul.me)
+        { src: 'https://stats.kerboul.me/script.js', defer: true, 'data-website-id': '5c362ada-70a8-4320-96bc-2cf32324ff8c' },
+      ],
     },
   },
 
