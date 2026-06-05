@@ -36,3 +36,8 @@ Thumbs.db
 *.key
 id_rsa*
 known_hosts
+
+# Cookie jars / build dumps (ne jamais committer)
+*cookies*.txt
+tmp_*.txt
+build-output.txt
