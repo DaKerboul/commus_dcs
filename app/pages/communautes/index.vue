@@ -72,18 +72,23 @@
 import type { FilterOptions, CommunityCard, PaginatedResponse } from '#shared/types'
 
 const route = useRoute()
+const router = useRouter()
+
+function splitParam(key: string): string[] {
+  return route.query[key] ? (route.query[key] as string).split(',') : []
+}
 
 const filters = ref<FilterOptions>({
   search: (route.query.search as string) || '',
-  modules: route.query.modules ? (route.query.modules as string).split(',') : [],
-  communityType: [],
-  sizeCategory: [],
-  recruitmentStatus: [],
-  eventFrequency: [],
-  historicalPeriods: [],
-  experiences: [],
-  sort: 'name',
-  sortDir: 'asc',
+  modules: splitParam('modules'),
+  communityType: splitParam('communityType'),
+  sizeCategory: splitParam('sizeCategory'),
+  recruitmentStatus: splitParam('recruitmentStatus'),
+  eventFrequency: splitParam('eventFrequency'),
+  historicalPeriods: splitParam('historicalPeriods'),
+  experiences: splitParam('experiences'),
+  sort: (route.query.sort as string) || 'name',
+  sortDir: (route.query.sortDir as 'asc' | 'desc') || 'asc',
   limit: 50,
 })
 
@@ -128,6 +133,10 @@ useSeoMeta({
 })
 watch(filters, () => {
   currentPage.value = 1
+}, { deep: true })
+
+watch(queryParams, (params) => {
+  router.replace({ query: params })
 }, { deep: true })
 
 function resetFilters() {
