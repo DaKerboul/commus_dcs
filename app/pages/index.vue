@@ -59,7 +59,7 @@
         >
           <div class="stat-counter-value">
             <template v-if="typeof stat.value === 'number'">
-              <span class="tabular-nums">{{ statsVisible ? stat.value : 0 }}</span>
+              <span class="tabular-nums">{{ stat.displayed }}</span>
             </template>
             <template v-else>
               {{ stat.value }}
@@ -330,7 +330,7 @@ async function goRandom() {
   if (data.value?.slug) navigateTo(`/communautes/${data.value.slug}`)
 }
 
-const heroStats = computed(() => {
+const rawStats = computed(() => {
   if (!stats.value) return []
   return [
     { value: stats.value.totalCommunities, label: 'Communautés' },
@@ -338,6 +338,27 @@ const heroStats = computed(() => {
     { value: stats.value.openRecruitment, label: 'Recrutent' },
     { value: stats.value.topModules?.[0]?.name || '—', label: 'Module #1' },
   ]
+})
+
+// Animated targets: only trigger when section becomes visible
+const countTargets = [ref(0), ref(0), ref(0)]
+const countDisplayed = countTargets.map(t => useCountUp(t))
+
+watch(statsVisible, (visible) => {
+  if (!visible) return
+  rawStats.value.forEach((stat, i) => {
+    if (typeof stat.value === 'number' && countTargets[i]) {
+      countTargets[i].value = stat.value
+    }
+  })
+})
+
+const heroStats = computed(() => {
+  if (!rawStats.value.length) return []
+  return rawStats.value.map((stat, i) => ({
+    ...stat,
+    displayed: typeof stat.value === 'number' ? countDisplayed[i]?.value ?? stat.value : stat.value,
+  }))
 })
 
 const discoverCards = [
