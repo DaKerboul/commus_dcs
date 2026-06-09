@@ -58,7 +58,11 @@
             variant="outline"
             color="neutral"
             size="sm"
-          />
+            :aria-label="`${community.name} sur YouTube`"
+            :title="`${community.name} sur YouTube`"
+          >
+            YouTube
+          </UButton>
           <UButton
             v-if="community.twitchUrl"
             :to="community.twitchUrl"
@@ -67,7 +71,11 @@
             variant="outline"
             color="neutral"
             size="sm"
-          />
+            :aria-label="`${community.name} sur Twitch`"
+            :title="`${community.name} sur Twitch`"
+          >
+            Twitch
+          </UButton>
           <UButton
             v-if="community.instagramUrl"
             :to="community.instagramUrl"
@@ -76,7 +84,11 @@
             variant="outline"
             color="neutral"
             size="sm"
-          />
+            :aria-label="`${community.name} sur Instagram`"
+            :title="`${community.name} sur Instagram`"
+          >
+            Instagram
+          </UButton>
           <UButton
             v-if="community.facebookUrl"
             :to="community.facebookUrl"
@@ -85,7 +97,11 @@
             variant="outline"
             color="neutral"
             size="sm"
-          />
+            :aria-label="`${community.name} sur Facebook`"
+            :title="`${community.name} sur Facebook`"
+          >
+            Facebook
+          </UButton>
           <UButton
             v-if="community.twitterUrl"
             :to="community.twitterUrl"
@@ -94,7 +110,11 @@
             variant="outline"
             color="neutral"
             size="sm"
-          />
+            :aria-label="`${community.name} sur X (Twitter)`"
+            :title="`${community.name} sur X (Twitter)`"
+          >
+            X
+          </UButton>
         </div>
       </div>
     </div>
