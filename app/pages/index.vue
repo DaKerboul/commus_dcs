@@ -340,6 +340,19 @@ const rawStats = computed(() => {
   ]
 })
 
+// Intersection Observer refs — declared before the watch below to avoid a TDZ error
+const statsRef = ref<HTMLElement | null>(null)
+const featuredRef = ref<HTMLElement | null>(null)
+const modulesRef = ref<HTMLElement | null>(null)
+const galleryRef = ref<HTMLElement | null>(null)
+const discoverRef = ref<HTMLElement | null>(null)
+
+const statsVisible = ref(false)
+const featuredVisible = ref(false)
+const modulesVisible = ref(false)
+const galleryVisible = ref(false)
+const discoverVisible = ref(false)
+
 // Animated targets: only trigger when section becomes visible
 const countTargets = [ref(0), ref(0), ref(0)]
 const countDisplayed = countTargets.map(t => useCountUp(t))
@@ -383,19 +396,6 @@ const galleryImages = [
   { src: '/commus_img/splitair/split3.png', alt: 'SplitAir' },
   { src: '/commus_img/raybirds/raybirds_w.png', alt: 'Raybirds' },
 ]
-
-// Intersection Observer for scroll-triggered animations
-const statsRef = ref<HTMLElement | null>(null)
-const featuredRef = ref<HTMLElement | null>(null)
-const modulesRef = ref<HTMLElement | null>(null)
-const galleryRef = ref<HTMLElement | null>(null)
-const discoverRef = ref<HTMLElement | null>(null)
-
-const statsVisible = ref(false)
-const featuredVisible = ref(false)
-const modulesVisible = ref(false)
-const galleryVisible = ref(false)
-const discoverVisible = ref(false)
 
 onMounted(() => {
   const entries: [Ref<HTMLElement | null>, Ref<boolean>][] = [
