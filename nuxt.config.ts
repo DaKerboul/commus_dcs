@@ -25,6 +25,7 @@ export default defineNuxtConfig({
   },
 
   app: {
+    pageTransition: { name: 'page', mode: 'out-in' },
     head: {
       title: 'Commus DCS FR — Annuaire des communautés francophones DCS World',
       meta: [

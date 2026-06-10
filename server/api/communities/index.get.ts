@@ -21,8 +21,8 @@ export default defineEventHandler(async (event) => {
   const frequencyFilter = query.eventFrequency ? (query.eventFrequency as string).split(',') : []
   const periodFilter = query.historicalPeriods ? (query.historicalPeriods as string).split(',') : []
   const experienceFilter = query.experiences ? (query.experiences as string).split(',') : []
-  const sort = (query.sort as string) || 'name'
-  const sortDir = (query.sortDir as string) || 'asc'
+  const sort = (query.sort as string) || 'votes'
+  const sortDir = (query.sortDir as string) || (sort === 'votes' ? 'desc' : 'asc')
   const page = Math.max(1, parseInt(query.page as string) || 1)
   const limit = Math.min(100, Math.max(1, parseInt(query.limit as string) || 50))
 

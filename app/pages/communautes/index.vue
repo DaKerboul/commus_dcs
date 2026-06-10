@@ -78,6 +78,8 @@ function splitParam(key: string): string[] {
   return route.query[key] ? (route.query[key] as string).split(',') : []
 }
 
+const initialSort = (route.query.sort as string) || 'votes'
+
 const filters = ref<FilterOptions>({
   search: (route.query.search as string) || '',
   modules: splitParam('modules'),
@@ -87,8 +89,8 @@ const filters = ref<FilterOptions>({
   eventFrequency: splitParam('eventFrequency'),
   historicalPeriods: splitParam('historicalPeriods'),
   experiences: splitParam('experiences'),
-  sort: (route.query.sort as string) || 'name',
-  sortDir: (route.query.sortDir as 'asc' | 'desc') || 'asc',
+  sort: initialSort,
+  sortDir: (route.query.sortDir as 'asc' | 'desc') || (initialSort === 'votes' ? 'desc' : 'asc'),
   limit: 50,
 })
 
