@@ -39,6 +39,13 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 500, statusMessage: 'Admin auth is not configured' })
   }
 
+  if (adminPassword.length < 12) {
+    // Keep the reason server-side only — the client must not learn the env var name
+    // or that the configured password is short.
+    console.error('[auth] NUXT_ADMIN_PASSWORD is shorter than 12 characters — admin login disabled until it is rotated.')
+    throw createError({ statusCode: 500, statusMessage: 'Admin auth is not configured' })
+  }
+
   const candidate = typeof body?.password === 'string' ? body.password : ''
   const isValid = safeEqual(candidate, adminPassword)
 
@@ -52,14 +59,31 @@ export default defineEventHandler(async (event) => {
     }
 
     loginAttempts.set(ip, base)
+
+    console.log(JSON.stringify({
+      event: 'auth.login',
+      result: 'failure',
+      ip,
+      timestamp: new Date(now).toISOString(),
+      attemptCount: base.count,
+      blocked: !!base.blockedUntil,
+    }))
+
     throw createError({ statusCode: 401, statusMessage: 'Invalid password' })
   }
 
   loginAttempts.delete(ip)
 
+  console.log(JSON.stringify({
+    event: 'auth.login',
+    result: 'success',
+    ip,
+    timestamp: new Date(now).toISOString(),
+  }))
+
   await setUserSession(event, {
     user: { name: 'admin' },
-  })
+  }, { maxAge: 8 * 60 * 60 })
 
   return { ok: true }
 })

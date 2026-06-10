@@ -1,43 +1,14 @@
 import { submissions } from '#server/db/schema'
+import {
+  trimText,
+  normalizeUrl,
+  normalizeStringArray,
+  normalizeOtherLinks,
+  normalizeImages,
+} from '../utils/validation'
 
 const MAX_SHORT_TEXT = 280
 const MAX_LONG_TEXT = 8_000
-const MAX_URL_LENGTH = 1_024
-const MAX_ARRAY_ITEMS = 64
-
-function trimText(value: unknown, maxLength: number) {
-  if (typeof value !== 'string') return null
-  const trimmed = value.trim()
-  if (!trimmed) return null
-  return trimmed.slice(0, maxLength)
-}
-
-function normalizeUrl(value: unknown) {
-  const text = trimText(value, MAX_URL_LENGTH)
-  if (!text) return null
-
-  try {
-    const parsed = new URL(text)
-    if (!['http:', 'https:'].includes(parsed.protocol)) {
-      return null
-    }
-    return parsed.toString()
-  } catch {
-    return null
-  }
-}
-
-function normalizeStringArray(value: unknown) {
-  if (!Array.isArray(value)) return null
-
-  const cleaned = value
-    .filter((item): item is string => typeof item === 'string')
-    .map(item => item.trim())
-    .filter(Boolean)
-    .slice(0, MAX_ARRAY_ITEMS)
-
-  return cleaned.length ? cleaned : null
-}
 
 export default defineEventHandler(async (event) => {
   const db = useDB()
@@ -71,12 +42,12 @@ export default defineEventHandler(async (event) => {
     facebookUrl: normalizeUrl(body?.facebookUrl),
     twitchUrl: normalizeUrl(body?.twitchUrl),
     twitterUrl: normalizeUrl(body?.twitterUrl),
-    otherLinks: body.otherLinks || null,
+    otherLinks: normalizeOtherLinks(body?.otherLinks),
     moduleNames: normalizeStringArray(body?.moduleNames),
     soughtModuleNames: normalizeStringArray(body?.soughtModuleNames),
     experienceNames: normalizeStringArray(body?.experienceNames),
     historicalPeriods: normalizeStringArray(body?.historicalPeriods),
-    images: body.images || null,
+    images: normalizeImages(body?.images),
   }).returning()
 
   return submission

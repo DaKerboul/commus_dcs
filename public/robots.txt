@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /mes-favoris
+Disallow: /mon-profil
+
+Sitemap: https://commus.kerboul.me/api/sitemap.xml

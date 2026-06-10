@@ -6,6 +6,7 @@ import {
   communityExperiences,
   experiences,
 } from '#server/db/schema'
+import { csvEscape } from '../../utils/csv'
 
 export default defineEventHandler(async (event) => {
   const db = useDB()
@@ -94,13 +95,6 @@ export default defineEventHandler(async (event) => {
   }
 
   if (format === 'csv') {
-    const csvEscape = (val: string) => {
-      if (val.includes(',') || val.includes('"') || val.includes('\n')) {
-        return `"${val.replace(/"/g, '""')}"`
-      }
-      return val
-    }
-
     const header = 'Nom,Type,Taille,Recrutement,Fréquence événements,Modules,Expériences,Discord,Site web,Votes'
     const lines = rows.map(c => {
       const mods = (modMap.get(c.id) || []).join('; ')

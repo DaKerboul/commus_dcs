@@ -1,6 +1,8 @@
 import crypto from 'node:crypto'
 import { deleteCookie, getCookie, getRequestIP, setCookie, type H3Event } from 'h3'
 import { useRuntimeConfig } from '#imports'
+export { sha256, normalizeIp } from './ip-utils'
+import { sha256, normalizeIp } from './ip-utils'
 
 const VOTE_SESSION_COOKIE = 'commus_vote_session'
 const VOTE_INTENT_PREFIX = 'commus_vote_intent_'
@@ -21,19 +23,21 @@ function getCookieOptions(maxAge: number) {
   }
 }
 
+// Generate a random in-process secret for dev (rotates on restart, that's OK)
+const DEV_VOTE_SECRET = 'commus-dcs-dev-' + Math.random().toString(36).slice(2)
+
 function getVoteSecret() {
   const config = useRuntimeConfig()
   const secret = config.sessionSecret || process.env.NUXT_SESSION_SECRET
 
-  if (secret) {
-    return secret
-  }
+  if (secret) return secret
 
   if (process.env.NODE_ENV === 'production') {
-    throw new Error('NUXT_SESSION_SECRET (or runtime sessionSecret) must be configured in production')
+    throw new Error('NUXT_SESSION_SECRET must be set in production')
   }
 
-  return 'commus-dcs-dev-vote-secret'
+  console.warn('[vote-protection] No NUXT_SESSION_SECRET — using ephemeral dev secret (votes reset on restart)')
+  return DEV_VOTE_SECRET
 }
 
 function sign(value: string) {
@@ -55,22 +59,6 @@ function decodePayload<T>(payload: string): T | null {
   }
 }
 
-export function sha256(value: string) {
-  return crypto
-    .createHash('sha256')
-    .update(value)
-    .digest('hex')
-}
-
-export function normalizeIp(ip: string | null | undefined) {
-  if (!ip) return 'unknown'
-
-  const first = ip.split(',')[0]?.trim() || 'unknown'
-  return first
-    .replace(/^::ffff:/, '')
-    .replace(/\s+/g, '')
-    .toLowerCase()
-}
 
 export function getOrCreateVoteSession(event: H3Event) {
   const existing = getCookie(event, VOTE_SESSION_COOKIE)
