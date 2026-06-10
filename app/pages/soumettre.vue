@@ -649,6 +649,8 @@ import { SIZE_LABELS, TYPE_LABELS, RECRUITMENT_LABELS, FREQUENCY_LABELS, PERIOD_
 
 useHead({ title: 'Soumettre — Commus DCS FR' })
 
+const toast = useToast()
+
 // ── Steps ──────────────────────────────────────────────
 const step = ref(0)
 const steps = [
@@ -991,8 +993,20 @@ async function submit() {
     } catch { /* confetti is non-critical */ }
     submitted.value = true
     window.scrollTo({ top: 0, behavior: 'smooth' })
+    toast.add({
+      title: 'Soumission envoyée !',
+      description: 'Merci, nous examinerons votre demande dans les meilleurs délais.',
+      color: 'success',
+      icon: 'i-heroicons-check-circle',
+    })
   } catch (e: any) {
     error.value = e?.data?.statusMessage || 'Erreur lors de l\'envoi.'
+    toast.add({
+      title: 'Échec de l\'envoi',
+      description: error.value,
+      color: 'error',
+      icon: 'i-heroicons-exclamation-triangle',
+    })
   } finally {
     loading.value = false
   }

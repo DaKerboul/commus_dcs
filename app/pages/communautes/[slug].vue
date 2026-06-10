@@ -1,5 +1,14 @@
 <template>
   <div v-if="community" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Breadcrumb -->
+    <AppBreadcrumb
+      :items="[
+        { label: 'Accueil', to: '/', icon: 'i-heroicons-home' },
+        { label: 'Communautés', to: '/communautes' },
+        { label: community.name },
+      ]"
+    />
+
     <!-- Back -->
     <UButton to="/communautes" variant="ghost" color="neutral" size="sm" icon="i-heroicons-arrow-left" class="mb-6">
       Retour aux communautés

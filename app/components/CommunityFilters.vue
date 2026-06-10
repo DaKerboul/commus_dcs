@@ -317,7 +317,7 @@ function setSort(value: string) {
 }
 
 function resetFilters() {
-  filters.value = { sort: 'name', sortDir: 'asc' }
+  filters.value = { sort: 'votes', sortDir: 'desc' }
   emitFilters()
 }
 

@@ -1,5 +1,13 @@
 <template>
   <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Breadcrumb -->
+    <AppBreadcrumb
+      :items="[
+        { label: 'Accueil', to: '/', icon: 'i-heroicons-home' },
+        { label: 'Trouver une communauté' },
+      ]"
+    />
+
     <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Trouver ma communauté</h1>
     <p class="text-gray-500 dark:text-gray-400 mb-8">Répondez à quelques questions pour trouver la communauté DCS francophone qui vous correspond.</p>
 
