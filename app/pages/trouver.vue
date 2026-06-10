@@ -161,6 +161,8 @@ useSeoMeta({
   twitterCard: 'summary',
 })
 
+const { track } = useUmami()
+
 const totalSteps = 5
 const step = ref(1)
 const moduleSearch = ref('')
@@ -223,6 +225,7 @@ async function nextStep() {
 
   results.value = await $fetch<PaginatedResponse<CommunityCard>>('/api/communities', { query: params })
   step.value = totalSteps + 1
+  track('finder_completion', { resultCount: results.value?.data?.length ?? 0 })
 }
 
 function restart() {

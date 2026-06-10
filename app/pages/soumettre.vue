@@ -659,10 +659,12 @@ const steps = [
   { label: 'Récap', icon: 'i-heroicons-eye' },
 ]
 
-// Track slide direction for transitions
+// Track slide direction for transitions + analytics
+const { track } = useUmami()
 const slideDirection = ref<'slide-left' | 'slide-right'>('slide-left')
 watch(step, (newVal, oldVal) => {
   slideDirection.value = newVal > oldVal ? 'slide-left' : 'slide-right'
+  track('form_step_change', { step: newVal + 1, direction: newVal > oldVal ? 'next' : 'back' })
 })
 
 // ── Options ────────────────────────────────────────────

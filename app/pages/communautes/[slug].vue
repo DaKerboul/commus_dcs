@@ -36,6 +36,7 @@
             icon="i-simple-icons-discord"
             color="primary"
             size="sm"
+            @click="trackSocial('discord')"
           >
             Discord
           </UButton>
@@ -47,6 +48,7 @@
             variant="outline"
             color="neutral"
             size="sm"
+            @click="trackSocial('website')"
           >
             Site web
           </UButton>
@@ -60,6 +62,7 @@
             size="sm"
             :aria-label="`${community.name} sur YouTube`"
             :title="`${community.name} sur YouTube`"
+            @click="trackSocial('youtube')"
           >
             YouTube
           </UButton>
@@ -73,6 +76,7 @@
             size="sm"
             :aria-label="`${community.name} sur Twitch`"
             :title="`${community.name} sur Twitch`"
+            @click="trackSocial('twitch')"
           >
             Twitch
           </UButton>
@@ -86,6 +90,7 @@
             size="sm"
             :aria-label="`${community.name} sur Instagram`"
             :title="`${community.name} sur Instagram`"
+            @click="trackSocial('instagram')"
           >
             Instagram
           </UButton>
@@ -99,6 +104,7 @@
             size="sm"
             :aria-label="`${community.name} sur Facebook`"
             :title="`${community.name} sur Facebook`"
+            @click="trackSocial('facebook')"
           >
             Facebook
           </UButton>
@@ -112,6 +118,7 @@
             size="sm"
             :aria-label="`${community.name} sur X (Twitter)`"
             :title="`${community.name} sur X (Twitter)`"
+            @click="trackSocial('twitter')"
           >
             X
           </UButton>
@@ -197,6 +204,7 @@
               :href="link.url"
               target="_blank"
               class="flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors"
+              @click="trackSocial('other')"
             >
               <UIcon name="i-heroicons-link" />
               {{ link.label }}
@@ -271,6 +279,7 @@
           color="primary"
           size="lg"
           block
+          @click="trackSocial('discord')"
         >
           Rejoindre le Discord
         </UButton>
@@ -329,6 +338,12 @@ import type { CommunityDetail, CommunityCard } from '#shared/types'
 const route = useRoute()
 const slug = route.params.slug as string
 
+const { track } = useUmami()
+
+function trackSocial(network: 'discord' | 'website' | 'youtube' | 'instagram' | 'facebook' | 'twitch' | 'twitter' | 'other') {
+  track('social_click', { network, slug })
+}
+
 const { data: community } = await useFetch<CommunityDetail>(`/api/communities/${slug}`)
 
 if (!community.value) {
@@ -381,6 +396,7 @@ async function vote() {
     const result = await $fetch<{ votes: number }>(`/api/communities/${slug}/vote`, { method: 'POST' })
     voteCount.value = result.votes
     hasVoted.value = true
+    track('community_vote', { slug })
   } catch (error: any) {
     voteError.value = error?.data?.statusMessage || 'Vote refusé. Rechargez la page puis réessayez.'
   } finally {
