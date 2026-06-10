@@ -206,6 +206,8 @@ const filters = ref<FilterOptions>({ ...props.modelValue })
 const openSections = ref<string[]>([])
 const moduleSearch = ref('')
 
+const { track } = useUmami()
+
 const filterSections = [
   { key: 'recruitment', label: 'Recrutement' },
   { key: 'type', label: 'Type' },
@@ -300,6 +302,7 @@ function toggleFilter(key: keyof FilterOptions, value: string) {
   if (idx >= 0) arr.splice(idx, 1)
   else arr.push(value)
   ;(filters.value as any)[key] = [...arr]
+  if (key === 'modules') track('module_filter_applied', { module: value, active: idx < 0 })
   emitFilters()
 }
 
