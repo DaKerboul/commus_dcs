@@ -25,6 +25,9 @@ COPY --from=builder /app/.output .output
 COPY --from=builder /app/node_modules node_modules
 COPY --from=builder /app/package.json .
 
+# Copy versioned migrations so the runtime migrate runner can apply them
+COPY --from=builder /app/server/db/migrations ./server/db/migrations
+
 # Expose port 3000 (Nuxt default)
 EXPOSE 3000
 

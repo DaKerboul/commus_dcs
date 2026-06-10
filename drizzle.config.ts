@@ -5,6 +5,6 @@ export default defineConfig({
   out: './server/db/migrations',
   dialect: 'postgresql',
   dbCredentials: {
-    url: process.env.DATABASE_URL || 'postgresql://commus:commus@localhost:5432/commus_dcs',
+    url: process.env.NUXT_DATABASE_URL || process.env.DATABASE_URL || 'postgresql://commus:commus@localhost:5432/commus_dcs',
   },
 })
