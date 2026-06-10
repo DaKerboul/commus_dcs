@@ -166,6 +166,7 @@
             <NuxtLink to="/contact" class="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Contact</NuxtLink>
             <NuxtLink to="/changelog" class="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Changelog</NuxtLink>
             <NuxtLink to="/api-docs" class="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">API</NuxtLink>
+            <NuxtLink to="/confidentialite" class="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Confidentialité</NuxtLink>
             <a href="/api/rss.xml" class="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">RSS</a>
             <a href="https://github.com/DaKerboul/commus_dcs" target="_blank" class="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">GitHub</a>
             <span v-if="!isRlpdk">© {{ new Date().getFullYear() }} Kerboulistan</span>

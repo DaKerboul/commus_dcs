@@ -11,9 +11,9 @@ async function requireAdmin(event: any) {
 export default defineEventHandler(async (event) => {
   await requireAdmin(event)
   const db = useDB()
-  const id = parseInt(getRouterParam(event, 'id')!)
+  const id = parseInt(getRouterParam(event, 'id') || '', 10)
 
-  if (!id) {
+  if (!Number.isInteger(id) || id <= 0) {
     throw createError({ statusCode: 400, statusMessage: 'Invalid ID' })
   }
 

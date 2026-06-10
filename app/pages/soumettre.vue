@@ -623,16 +623,21 @@
           >
             {{ step === steps.length - 2 ? 'Récapitulatif' : 'Suivant' }}
           </UButton>
-          <UButton
-            v-else
-            type="submit"
-            color="primary"
-            :loading="loading"
-            icon="i-heroicons-paper-airplane"
-            size="lg"
-          >
-            Envoyer la soumission
-          </UButton>
+          <div v-else class="flex flex-col items-end gap-2">
+            <p class="text-xs text-gray-500 dark:text-gray-400 text-right max-w-xs">
+              En soumettant ce formulaire, vous acceptez que les informations de contact fournies soient publiées sur la fiche publique de votre communauté.
+              <NuxtLink to="/confidentialite" class="underline underline-offset-2 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">Politique de confidentialité</NuxtLink>.
+            </p>
+            <UButton
+              type="submit"
+              color="primary"
+              :loading="loading"
+              icon="i-heroicons-paper-airplane"
+              size="lg"
+            >
+              Envoyer la soumission
+            </UButton>
+          </div>
         </div>
       </div>
     </form>
