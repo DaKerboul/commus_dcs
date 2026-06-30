@@ -12,9 +12,13 @@ services:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://commus:${DB_PASSWORD:-commus}@db:5432/commus_dcs
       - NUXT_DATABASE_URL=postgresql://commus:${DB_PASSWORD:-commus}@db:5432/commus_dcs
+      # Override ALL variables below in Coolify — fallbacks are insecure placeholders only
       - NUXT_SESSION_PASSWORD=${NUXT_SESSION_PASSWORD:-change-me-to-a-32-char-secret!!}
+      - NUXT_SESSION_SECRET=${NUXT_SESSION_SECRET:-}
       - NUXT_ADMIN_PASSWORD=${NUXT_ADMIN_PASSWORD:-admin}
       - NUXT_PUBLIC_SITE_URL=${NUXT_PUBLIC_SITE_URL:-http://localhost:3050}
+      - NUXT_TWITCH_CLIENT_ID=${NUXT_TWITCH_CLIENT_ID:-}
+      - NUXT_TWITCH_CLIENT_SECRET=${NUXT_TWITCH_CLIENT_SECRET:-}
     ports:
       - "${PORT:-3050}:3000"
     depends_on:

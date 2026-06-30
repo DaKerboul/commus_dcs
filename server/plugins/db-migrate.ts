@@ -100,7 +100,13 @@ export default defineNitroPlugin(async () => {
     // d. Dedicated, ephemeral single-connection client; closed in finally.
     const sql = postgres(url, { max: 1 })
 
+    // Advisory lock key — ensures only one instance runs migrations at a time.
+    // Safe in mono-instance (current deployment); required if replicas are ever added.
+    const LOCK_KEY = 7_919_317
+
     try {
+      await sql`SELECT pg_advisory_lock(${LOCK_KEY})`
+
       // e. Introspect the live database.
       // journalApplied: drizzle.__drizzle_migrations exists AND has >= 1 row.
       const journalReg = await sql`SELECT to_regclass('drizzle.__drizzle_migrations') AS reg`
@@ -173,6 +179,8 @@ export default defineNitroPlugin(async () => {
       await migrate(db, { migrationsFolder })
       log({ result: action === 'fresh-migrate' ? 'applied' : 'up-to-date', action })
     } finally {
+      // Release advisory lock before closing (connection close also releases it, this is belt-and-suspenders).
+      try { await sql`SELECT pg_advisory_unlock(${LOCK_KEY})` } catch {}
       // d. Always release the dedicated connection.
       await sql.end({ timeout: 5 })
     }

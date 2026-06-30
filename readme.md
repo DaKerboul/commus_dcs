@@ -111,28 +111,39 @@ Dans Coolify (<https://coolify.kerboul.me>) :
 2. Source : connecter le repo Git `DaKerboul/commus_dcs`
 3. Build Pack : **Dockerfile** (le `Dockerfile` à la racine sera utilisé)
 4. Port : `3000`
-5. Variables d'environnement :
+5. Variables d'environnement (toutes obligatoires en production) :
 
    ```text
-   DATABASE_URL=postgresql://commus:PASSWORD@postgresql-xxx:5432/commus_dcs
-   NUXT_SESSION_SECRET=<générer avec openssl rand -hex 32>
-   NUXT_ADMIN_PASSWORD=<mot de passe admin>
-   NUXT_PUBLIC_SITE_URL=https://commus-dcs.kerboul.me
+   DATABASE_URL=postgresql://commus:PASSWORD@db:5432/commus_dcs
+   NUXT_DATABASE_URL=postgresql://commus:PASSWORD@db:5432/commus_dcs
+   DB_PASSWORD=<mot de passe fort>
+   NUXT_SESSION_SECRET=<openssl rand -hex 32>
+   NUXT_SESSION_PASSWORD=<openssl rand -hex 32>
+   NUXT_ADMIN_PASSWORD=<mot de passe admin ≥ 12 chars>
+   NUXT_PUBLIC_SITE_URL=https://commus.kerboul.me
+   NUXT_TWITCH_CLIENT_ID=<optionnel — désactive les features streamers si absent>
+   NUXT_TWITCH_CLIENT_SECRET=<optionnel>
    ```
 
-6. Health Check : `GET /` sur le port 3000
+6. Health Check : `GET /api/health` sur le port 3000
 
 ### 3. Migration initiale
 
-Le schéma et les données sont désormais gérés explicitement (pas d'auto-seed au runtime).
+Le schéma est géré par des **migrations versionnées Drizzle** appliquées automatiquement au démarrage du conteneur (`server/plugins/db-migrate.ts`). Aucune action manuelle n'est requise lors d'un déploiement.
 
-**Méthode recommandée** : exécuter `npm run db:push` puis `npm run db:seed` en local avec la `DATABASE_URL` de production (tunnel SSH vers Coolify ou exposition temporaire du port PostgreSQL).
+> ⚠️ **Ne jamais exécuter `db:push` contre la production.** Cette commande peut émettre des `DROP` implicites et contourner le journal de migrations. Voir [`docs/migrations.md`](docs/migrations.md).
 
 ## Variables d'environnement
 
 | Variable | Description | Défaut |
 | --- | --- | --- |
 | `DATABASE_URL` | URL de connexion PostgreSQL | `postgresql://commus:commus@localhost:5432/commus_dcs` |
-| `NUXT_SESSION_SECRET` | Secret pour les sessions cookie | (obligatoire en prod) |
-| `NUXT_ADMIN_PASSWORD` | Mot de passe du panel admin | (obligatoire en prod) |
+| `NUXT_DATABASE_URL` | Alias Nuxt de DATABASE_URL | identique à DATABASE_URL |
+| `DB_PASSWORD` | Mot de passe PostgreSQL (utilisé par le compose) | ⚠️ `commus` (insécurisé) |
+| `NUXT_SESSION_SECRET` | Secret HMAC pour les cookies de vote | **obligatoire en prod** |
+| `NUXT_SESSION_PASSWORD` | Clé de chiffrement des sessions admin (nuxt-auth-utils) | **obligatoire en prod** |
+| `NUXT_ADMIN_PASSWORD` | Mot de passe du panel admin (≥ 12 chars) | **obligatoire en prod** |
 | `NUXT_PUBLIC_SITE_URL` | URL publique du site | `http://localhost:3000` |
+| `NUXT_TWITCH_CLIENT_ID` | Client ID Twitch (features streamers) | optionnel |
+| `NUXT_TWITCH_CLIENT_SECRET` | Secret Twitch | optionnel |
+| `NUXT_RUN_MIGRATIONS` | Passer `false` pour désactiver le runner de migration | `true` |
