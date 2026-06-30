@@ -20,15 +20,19 @@ FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-# Copy built output + node_modules (needed because externals.trace is disabled)
-COPY --from=builder /app/.output .output
-COPY --from=builder /app/node_modules node_modules
-COPY --from=builder /app/package.json .
+# Switch to non-root user before any writes (node uid=1000 provided by node:20-alpine)
+RUN chown node:node /app
+USER node
 
-# Copy versioned migrations so the runtime migrate runner can apply them
-COPY --from=builder /app/server/db/migrations ./server/db/migrations
+# Install production deps only — devDeps (vitest, drizzle-kit, typescript…) are not needed at runtime.
+# --ignore-scripts skips `nuxt prepare` (postinstall) which requires the full source tree.
+COPY --chown=node:node package.json package-lock.json* .npmrc ./
+RUN npm ci --omit=dev --ignore-scripts --loglevel warn 2>&1
 
-# Expose port 3000 (Nuxt default)
+# Copy built Nitro output and versioned migrations (needed by the startup migrate runner)
+COPY --chown=node:node --from=builder /app/.output .output
+COPY --chown=node:node --from=builder /app/server/db/migrations ./server/db/migrations
+
 EXPOSE 3000
 
 ENV NODE_ENV=production
