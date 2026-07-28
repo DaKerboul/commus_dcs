@@ -66,6 +66,48 @@
               </div>
             </div>
 
+            <!-- Comptes gestionnaires -->
+            <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5">
+              <div class="flex items-center gap-3 mb-3">
+                <UIcon name="i-simple-icons-discord" class="text-blue-400 text-lg shrink-0" />
+                <h3 class="font-semibold text-gray-900 dark:text-white">Comptes gestionnaires (connexion Discord)</h3>
+              </div>
+              <div class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed space-y-2">
+                <p>
+                  Si vous vous connectez avec Discord pour gérer la fiche de votre communauté, nous conservons
+                  uniquement votre <strong class="text-gray-900 dark:text-white">identifiant Discord</strong>,
+                  votre <strong class="text-gray-900 dark:text-white">pseudo</strong> et l'URL de votre
+                  <strong class="text-gray-900 dark:text-white">avatar</strong>. Aucun mot de passe, aucune adresse
+                  e-mail, et aucun jeton Discord n'est stocké.
+                </p>
+                <p>
+                  Ces informations servent à vous identifier comme responsable d'une fiche et à afficher votre
+                  nom dans l'interface d'administration. Elles ne sont jamais transmises à un tiers.
+                </p>
+                <p>
+                  <strong class="text-gray-900 dark:text-white">Durée de conservation :</strong> les comptes
+                  inactifs depuis plus de 18 mois et qui ne gèrent aucune fiche sont supprimés automatiquement.
+                  Vous pouvez demander la suppression de votre compte à tout moment via la page contact.
+                </p>
+              </div>
+            </div>
+
+            <!-- Statistiques par fiche -->
+            <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5">
+              <div class="flex items-center gap-3 mb-3">
+                <UIcon name="i-heroicons-presentation-chart-line" class="text-blue-400 text-lg shrink-0" />
+                <h3 class="font-semibold text-gray-900 dark:text-white">Statistiques par communauté</h3>
+              </div>
+              <div class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed space-y-2">
+                <p>
+                  Chaque fiche compte le nombre de consultations et de clics sur ses liens, afin que ses
+                  responsables sachent si leur page fonctionne. Il s'agit de
+                  <strong class="text-gray-900 dark:text-white">compteurs agrégés par jour</strong> :
+                  aucune ligne par visiteur, aucun identifiant, aucune adresse IP n'est enregistrée.
+                </p>
+              </div>
+            </div>
+
             <!-- Analytics -->
             <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5">
               <div class="flex items-center gap-3 mb-3">

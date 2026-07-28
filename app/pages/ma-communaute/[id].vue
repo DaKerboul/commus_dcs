@@ -39,6 +39,14 @@
         </p>
       </div>
 
+      <!-- Stats -->
+      <div v-if="stats" class="mt-6 grid gap-3 grid-cols-2 sm:grid-cols-4">
+        <div v-for="s in statTiles" :key="s.label" class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-4">
+          <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ s.value }}</p>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ s.label }}</p>
+        </div>
+      </div>
+
       <div class="mt-8 space-y-8">
         <!-- Presentation -->
         <section class="space-y-4">
@@ -424,6 +432,37 @@ const inviteUrl = computed(() =>
   inviteCode.value ? `${window.location.origin}/invitation?code=${inviteCode.value}` : '',
 )
 
+interface Stats {
+  totals: Record<string, number>
+  totalVotes: number
+  votesLast30Days: number
+}
+
+const stats = ref<Stats | null>(null)
+
+const statTiles = computed(() => {
+  if (!stats.value) return []
+  const t = stats.value.totals
+  const clicks = Object.entries(t)
+    .filter(([k]) => k.startsWith('click_'))
+    .reduce((sum, [, v]) => sum + v, 0)
+
+  return [
+    { label: 'Vues (30 j)', value: t.view ?? 0 },
+    { label: 'Clics sortants (30 j)', value: clicks },
+    { label: 'Clics Discord (30 j)', value: t.click_discord ?? 0 },
+    { label: 'Votes au total', value: stats.value.totalVotes },
+  ]
+})
+
+async function loadStats() {
+  try {
+    stats.value = await $fetch<Stats>(`/api/my/communities/${id}/stats`)
+  } catch {
+    stats.value = null
+  }
+}
+
 async function loadMembers() {
   try {
     members.value = await $fetch<Member[]>(`/api/my/communities/${id}/members`)
@@ -617,7 +656,7 @@ onMounted(async () => {
     })
     pendingFields.value = data.pendingRevision?.fields ?? []
     loaded.value = true
-    await loadMembers()
+    await Promise.all([loadMembers(), loadStats()])
   } catch (error: any) {
     loadError.value = error?.data?.statusMessage
       || "Impossible de charger cette fiche. Vérifiez que vous la gérez bien."

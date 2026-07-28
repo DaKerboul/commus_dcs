@@ -349,6 +349,24 @@ export const communityRevisions = pgTable('community_revisions', {
   byCommunity: index('idx_community_revisions_community').on(table.communityId),
 }))
 
+/**
+ * Per-community traffic, aggregated by day and type.
+ *
+ * Counters only — no per-visitor row, no identifier of any kind — so this adds
+ * nothing to the site's privacy footprint while still telling a manager whether
+ * their page is working.
+ */
+export const communityEvents = pgTable('community_events', {
+  id: serial('id').primaryKey(),
+  communityId: integer('community_id').notNull().references(() => communities.id, { onDelete: 'cascade' }),
+  type: varchar('type', { length: 30 }).notNull(), // 'view' | 'click_discord' | 'click_<network>'
+  day: varchar('day', { length: 10 }).notNull(),   // YYYY-MM-DD, Paris time
+  count: integer('count').notNull().default(0),
+}, table => ({
+  uniqueEvent: uniqueIndex('idx_community_events_unique').on(table.communityId, table.type, table.day),
+  byCommunity: index('idx_community_events_community').on(table.communityId, table.day),
+}))
+
 /** Full copy of a community taken before each edit, so any save can be undone. */
 export const communitySnapshots = pgTable('community_snapshots', {
   id: serial('id').primaryKey(),

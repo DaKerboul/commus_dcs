@@ -442,6 +442,8 @@ const { track } = useUmami()
 
 function trackSocial(network: 'discord' | 'website' | 'youtube' | 'instagram' | 'facebook' | 'twitch' | 'twitter' | 'other') {
   track('social_click', { network, slug })
+  // Also counted per-community so managers see it in their own dashboard.
+  if (network !== 'other') recordPageEvent(`click_${network}`)
 }
 
 const { data: community } = await useFetch<CommunityDetail>(`/api/communities/${slug}`)
@@ -504,6 +506,11 @@ async function vote() {
   }
 }
 
+/** Aggregate-only counter for the community's own dashboard; fire-and-forget. */
+function recordPageEvent(type: string) {
+  $fetch(`/api/communities/${slug}/track`, { method: 'POST', body: { type } }).catch(() => {})
+}
+
 // Claim / manage
 const account = useAccount()
 const claimOpen = ref(false)
@@ -552,6 +559,7 @@ onMounted(() => {
       experienceNames: community.value.experienceNames || [],
       communityType: community.value.communityType,
     })
+    recordPageEvent('view')
   }
 })
 </script>
