@@ -21,6 +21,9 @@
         <UButton to="/admin/reclamations" variant="ghost" color="neutral" block class="justify-start" icon="i-heroicons-hand-raised">
           Réclamations
         </UButton>
+        <UButton to="/admin/revisions" variant="ghost" color="neutral" block class="justify-start" icon="i-heroicons-document-check">
+          Modifications
+        </UButton>
       </nav>
       <div class="p-4 border-t border-gray-200 dark:border-gray-800">
         <UButton variant="ghost" color="error" block icon="i-heroicons-arrow-right-on-rectangle" @click="logout">

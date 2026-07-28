@@ -24,28 +24,55 @@
         </UButton>
       </div>
 
-      <!-- What can't be edited here -->
-      <div class="mt-6 rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-4 text-sm text-gray-600 dark:text-gray-400">
-        <UIcon name="i-heroicons-information-circle" class="mr-1 align-text-bottom" />
-        Le nom, le logo, les liens et la galerie ne sont pas encore modifiables ici&nbsp;—
-        écrivez à un administrateur pour ces changements.
+      <!-- Pending review -->
+      <div
+        v-if="pendingFields.length"
+        class="mt-6 rounded-lg border border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 p-4 text-sm"
+      >
+        <p class="font-medium text-amber-800 dark:text-amber-300">
+          <UIcon name="i-heroicons-clock" class="mr-1 align-text-bottom" />
+          {{ pendingFields.length }} modification{{ pendingFields.length > 1 ? 's' : '' }} en attente de validation
+        </p>
+        <p class="text-amber-700 dark:text-amber-400 mt-1">
+          {{ pendingFields.map(f => SENSITIVE_LABELS[f] || f).join(', ') }}.
+          Le reste de vos changements est déjà en ligne.
+        </p>
       </div>
 
       <div class="mt-8 space-y-8">
         <!-- Presentation -->
         <section class="space-y-4">
-          <h2 class="font-semibold text-gray-900 dark:text-white">Présentation</h2>
+          <div class="flex items-center justify-between gap-3">
+            <h2 class="font-semibold text-gray-900 dark:text-white">Présentation</h2>
+            <UButton
+              :icon="previewOn ? 'i-heroicons-pencil' : 'i-heroicons-eye'"
+              variant="ghost"
+              color="neutral"
+              size="xs"
+              @click="togglePreview"
+            >
+              {{ previewOn ? 'Éditer' : 'Aperçu' }}
+            </UButton>
+          </div>
+
+          <p class="text-xs text-gray-500 dark:text-gray-400">
+            Mise en forme possible&nbsp;: <code>**gras**</code>, <code>*italique*</code>,
+            <code>### titre</code>, listes avec <code>-</code>, <code>&gt; citation</code>,
+            <code>[lien](https://…)</code>.
+          </p>
 
           <UFormField label="Description courte" hint="Affichée dans les listes (300 caractères max)">
             <UTextarea v-model="form.shortDescription" :rows="2" :maxlength="300" class="w-full" />
           </UFormField>
 
           <UFormField label="Description">
-            <UTextarea v-model="form.description" :rows="6" class="w-full" />
+            <CommunityRichText v-if="previewOn" :html="previewHtml.description" class="rounded-lg border border-gray-200 dark:border-gray-800 p-4 min-h-32" />
+            <UTextarea v-else v-model="form.description" :rows="8" class="w-full font-mono text-sm" />
           </UFormField>
 
           <UFormField label="Objectifs">
-            <UTextarea v-model="form.objectives" :rows="4" class="w-full" />
+            <CommunityRichText v-if="previewOn" :html="previewHtml.objectives" class="rounded-lg border border-gray-200 dark:border-gray-800 p-4 min-h-24" />
+            <UTextarea v-else v-model="form.objectives" :rows="5" class="w-full font-mono text-sm" />
           </UFormField>
 
           <UFormField label="Conditions d'entrée">
@@ -148,6 +175,33 @@
             </UButton>
           </div>
         </section>
+
+        <!-- Identity & links — reviewed before publishing -->
+        <section class="space-y-4">
+          <div>
+            <h2 class="font-semibold text-gray-900 dark:text-white">Identité et liens</h2>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <UIcon name="i-heroicons-shield-check" class="align-text-bottom" />
+              Ces champs passent par une validation avant publication (protection contre
+              l'usurpation et les liens malveillants).
+            </p>
+          </div>
+
+          <UFormField label="Nom de la communauté">
+            <UInput v-model="form.name" class="w-full" />
+          </UFormField>
+
+          <div class="grid gap-4 sm:grid-cols-2">
+            <UFormField v-for="link in LINK_FIELDS" :key="link.key" :label="link.label">
+              <UInput
+                v-model="(form as any)[link.key]"
+                type="url"
+                :placeholder="link.placeholder"
+                class="w-full"
+              />
+            </UFormField>
+          </div>
+        </section>
       </div>
 
       <!-- Save bar -->
@@ -187,6 +241,34 @@ const saveError = ref('')
 const savedAt = ref<number | null>(null)
 const moduleFilter = ref('')
 
+const previewOn = ref(false)
+const previewHtml = reactive({ description: '', objectives: '' })
+const pendingFields = ref<string[]>([])
+
+const SENSITIVE_LABELS: Record<string, string> = {
+  name: 'Nom de la communauté',
+  logoUrl: 'Logo',
+  discordUrl: 'Lien Discord',
+  websiteUrl: 'Site web',
+  youtubeUrl: 'YouTube',
+  instagramUrl: 'Instagram',
+  facebookUrl: 'Facebook',
+  twitchUrl: 'Twitch',
+  twitterUrl: 'X / Twitter',
+  otherLinks: 'Autres liens',
+  images: 'Galerie',
+}
+
+const LINK_FIELDS = [
+  { key: 'discordUrl', label: 'Discord', placeholder: 'https://discord.gg/…' },
+  { key: 'websiteUrl', label: 'Site web', placeholder: 'https://…' },
+  { key: 'youtubeUrl', label: 'YouTube', placeholder: 'https://youtube.com/…' },
+  { key: 'twitchUrl', label: 'Twitch', placeholder: 'https://twitch.tv/…' },
+  { key: 'instagramUrl', label: 'Instagram', placeholder: 'https://instagram.com/…' },
+  { key: 'facebookUrl', label: 'Facebook', placeholder: 'https://facebook.com/…' },
+  { key: 'twitterUrl', label: 'X / Twitter', placeholder: 'https://x.com/…' },
+] as const
+
 const form = reactive({
   name: '',
   slug: '',
@@ -200,11 +282,49 @@ const form = reactive({
   sizeCategory: 'unknown',
   recruitmentStatus: 'unknown',
   eventFrequency: 'unknown',
+  discordUrl: '',
+  websiteUrl: '',
+  youtubeUrl: '',
+  twitchUrl: '',
+  instagramUrl: '',
+  facebookUrl: '',
+  twitterUrl: '',
   historicalPeriods: [] as string[],
   moduleNames: [] as string[],
   soughtModuleNames: [] as string[],
   experienceNames: [] as string[],
 })
+
+/**
+ * Preview is rendered by the server so it goes through the exact same markdown
+ * pipeline (and sanitizer) as the published page.
+ */
+async function refreshPreview() {
+  const [description, objectives] = await Promise.all([
+    renderPreview(form.description),
+    renderPreview(form.objectives),
+  ])
+  previewHtml.description = description
+  previewHtml.objectives = objectives
+}
+
+async function togglePreview() {
+  previewOn.value = !previewOn.value
+  if (previewOn.value) await refreshPreview()
+}
+
+async function renderPreview(source: string): Promise<string> {
+  if (!source.trim()) return ''
+  try {
+    const res = await $fetch<{ html: string }>('/api/markdown/preview', {
+      method: 'POST',
+      body: { source },
+    })
+    return res.html
+  } catch {
+    return ''
+  }
+}
 
 function toOptions(labels: Record<string, string>) {
   return Object.entries(labels).map(([value, label]) => ({ value, label }))
@@ -236,8 +356,12 @@ function toggle(list: string[], value: string) {
 onMounted(async () => {
   try {
     const data = await $fetch<Record<string, any>>(`/api/my/communities/${id}`)
+    // Show any sensitive value already submitted for review, so the field does
+    // not appear to have reverted while it waits.
+    const proposed = data.pendingRevision?.patch ?? {}
+
     Object.assign(form, {
-      name: data.name ?? '',
+      name: proposed.name ?? data.name ?? '',
       slug: data.slug ?? '',
       shortDescription: data.shortDescription ?? '',
       description: data.description ?? '',
@@ -249,11 +373,19 @@ onMounted(async () => {
       sizeCategory: data.sizeCategory ?? 'unknown',
       recruitmentStatus: data.recruitmentStatus ?? 'unknown',
       eventFrequency: data.eventFrequency ?? 'unknown',
+      discordUrl: proposed.discordUrl ?? data.discordUrl ?? '',
+      websiteUrl: proposed.websiteUrl ?? data.websiteUrl ?? '',
+      youtubeUrl: proposed.youtubeUrl ?? data.youtubeUrl ?? '',
+      twitchUrl: proposed.twitchUrl ?? data.twitchUrl ?? '',
+      instagramUrl: proposed.instagramUrl ?? data.instagramUrl ?? '',
+      facebookUrl: proposed.facebookUrl ?? data.facebookUrl ?? '',
+      twitterUrl: proposed.twitterUrl ?? data.twitterUrl ?? '',
       historicalPeriods: data.historicalPeriods ?? [],
       moduleNames: data.moduleNames ?? [],
       soughtModuleNames: data.soughtModuleNames ?? [],
       experienceNames: data.experienceNames ?? [],
     })
+    pendingFields.value = data.pendingRevision?.fields ?? []
     loaded.value = true
   } catch (error: any) {
     loadError.value = error?.data?.statusMessage
@@ -268,8 +400,13 @@ async function save() {
   savedAt.value = null
 
   try {
-    await $fetch(`/api/my/communities/${id}`, { method: 'PUT', body: { ...form } })
+    const res = await $fetch<{ pendingFields?: string[] }>(`/api/my/communities/${id}`, {
+      method: 'PUT',
+      body: { ...form },
+    })
+    pendingFields.value = res?.pendingFields ?? []
     savedAt.value = Date.now()
+    if (previewOn.value) await refreshPreview()
   } catch (error: any) {
     saveError.value = error?.data?.statusMessage || "L'enregistrement a échoué. Réessayez."
   } finally {

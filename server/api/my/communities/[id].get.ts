@@ -41,6 +41,8 @@ export default defineEventHandler(async (event) => {
     db.select().from(communityImages).where(eq(communityImages.communityId, id)).orderBy(communityImages.sortOrder),
   ])
 
+  const pending = await getPendingRevision(id)
+
   return {
     ...community,
     moduleNames: moduleRows.map(r => r.name),
@@ -48,5 +50,10 @@ export default defineEventHandler(async (event) => {
     experienceNames: experienceRows.map(r => r.name),
     historicalPeriods: periodRows.map(r => r.period),
     images: imageRows.map(r => ({ url: r.url, alt: r.alt })),
+    // Sensitive edits already submitted and awaiting review, so the editor can
+    // show them as proposed rather than silently reverting to the live value.
+    pendingRevision: pending
+      ? { fields: Object.keys(pending.fieldsPatch ?? {}), patch: pending.fieldsPatch, createdAt: pending.createdAt }
+      : null,
   }
 })

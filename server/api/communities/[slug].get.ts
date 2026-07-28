@@ -94,13 +94,20 @@ Pas de niveau minimum (il est toutefois recommandé pour DCS de connaître les b
     historicalPeriods: ['gulf_war', 'early_modern', 'post_modern', 'ww2'],
   } : null
 
+  const description = irreOverrides?.description ?? community.description
+  const objectives = irreOverrides?.objectives ?? community.objectives
+
   return {
     id: community.id,
     slug: community.slug,
     name: community.name,
     shortDescription: irreOverrides?.shortDescription ?? community.shortDescription,
-    description: irreOverrides?.description ?? community.description,
-    objectives: irreOverrides?.objectives ?? community.objectives,
+    description,
+    objectives,
+    // Markdown is rendered and sanitized server-side; the client only ever
+    // receives HTML that has already been through the allowlist.
+    descriptionHtml: renderMarkdown(description),
+    objectivesHtml: renderMarkdown(objectives),
     logoUrl: irreOverrides?.logoUrl ?? community.logoUrl,
     sizeCategory: irreOverrides?.sizeCategory ?? community.sizeCategory,
     communityType: irreOverrides?.communityType ?? community.communityType,
