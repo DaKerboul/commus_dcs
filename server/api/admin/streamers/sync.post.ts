@@ -1,13 +1,10 @@
 /**
- * POST /api/admin/streamers/sync — Trigger a full Twitch sync (discover + VOD backfill).
- * Can optionally provide a list of logins to seed.
+ * POST /api/admin/streamers/sync — run a sampling pass now, optionally seeding
+ * extra logins first. Pass { maintenance: true } to also force the daily
+ * rollup, follower snapshot, VOD matching and sample purge.
  */
 export default defineEventHandler(async (event) => {
-  // Require admin
-  const session = await getUserSession(event)
-  if (!session?.user) {
-    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
-  }
+  await requireAdmin(event)
 
   // Check Twitch credentials
   const config = useRuntimeConfig()
@@ -28,12 +25,19 @@ export default defineEventHandler(async (event) => {
       added = await addStreamersByLogin(logins)
     }
 
-    // Run full sync
-    const result = await fullSync()
+    const result = await collectSamples()
+
+    // Opt-in: maintenance is heavy (one API call per streamer for followers).
+    let maintenance: string | null = null
+    if (body?.maintenance === true) {
+      await runDailyMaintenance()
+      maintenance = 'done'
+    }
 
     return {
       success: true,
       added,
+      maintenance,
       ...result,
     }
   } catch (err: any) {
