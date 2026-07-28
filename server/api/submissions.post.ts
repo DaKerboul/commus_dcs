@@ -21,6 +21,12 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Le nom de la communauté et le contact sont obligatoires.' })
   }
 
+  // Signing in is optional here; when present, the submitter becomes owner of
+  // the page once the admin approves it.
+  const session = await getUserSession(event)
+  const sessionUser = (session as { user?: { role?: string; id?: number } } | null)?.user
+  const submittedByUserId = sessionUser?.role === 'member' && sessionUser.id ? sessionUser.id : null
+
   const [submission] = await db.insert(submissions).values({
     communityName,
     contactName,
@@ -48,6 +54,7 @@ export default defineEventHandler(async (event) => {
     experienceNames: normalizeStringArray(body?.experienceNames),
     historicalPeriods: normalizeStringArray(body?.historicalPeriods),
     images: normalizeImages(body?.images),
+    submittedByUserId,
   }).returning()
 
   return submission
