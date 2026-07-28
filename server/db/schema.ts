@@ -90,6 +90,12 @@ export const claimStatusEnum = pgEnum('claim_status', [
   'rejected',
 ])
 
+export const revisionStatusEnum = pgEnum('revision_status', [
+  'pending',
+  'approved',
+  'rejected',
+])
+
 // ── Tables ─────────────────────────────────────────────
 
 export const communities = pgTable('communities', {
@@ -287,6 +293,24 @@ export const claimRequests = pgTable('claim_requests', {
   byStatus: index('idx_claim_requests_status').on(table.status),
 }))
 
+/**
+ * Pending changes to sensitive fields (name, links, images), held for admin
+ * review. At most one pending row per community: a later save merges into it.
+ */
+export const communityRevisions = pgTable('community_revisions', {
+  id: serial('id').primaryKey(),
+  communityId: integer('community_id').notNull().references(() => communities.id, { onDelete: 'cascade' }),
+  userId: integer('user_id').references(() => users.id, { onDelete: 'set null' }),
+  fieldsPatch: jsonb('fields_patch').$type<Record<string, unknown>>().notNull(),
+  status: revisionStatusEnum('status').notNull().default('pending'),
+  adminNote: text('admin_note'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  reviewedAt: timestamp('reviewed_at'),
+}, table => ({
+  byStatus: index('idx_community_revisions_status').on(table.status),
+  byCommunity: index('idx_community_revisions_community').on(table.communityId),
+}))
+
 /** Full copy of a community taken before each edit, so any save can be undone. */
 export const communitySnapshots = pgTable('community_snapshots', {
   id: serial('id').primaryKey(),
@@ -310,6 +334,12 @@ export const communitiesRelations = relations(communities, ({ many }) => ({
   members: many(communityMembers),
   claimRequests: many(claimRequests),
   snapshots: many(communitySnapshots),
+  revisions: many(communityRevisions),
+}))
+
+export const communityRevisionsRelations = relations(communityRevisions, ({ one }) => ({
+  community: one(communities, { fields: [communityRevisions.communityId], references: [communities.id] }),
+  user: one(users, { fields: [communityRevisions.userId], references: [users.id] }),
 }))
 
 export const usersRelations = relations(users, ({ many }) => ({

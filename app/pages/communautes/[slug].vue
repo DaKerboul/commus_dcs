@@ -141,17 +141,13 @@
         <!-- Description -->
         <section v-if="community.description">
           <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Présentation</h2>
-          <div class="prose prose-invert max-w-none text-gray-600 dark:text-gray-300 whitespace-pre-line">
-            {{ community.description }}
-          </div>
+          <CommunityRichText :html="community.descriptionHtml" :fallback="community.description" />
         </section>
 
         <!-- Objectives -->
         <section v-if="community.objectives">
           <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Objectifs</h2>
-          <div class="prose prose-invert max-w-none text-gray-600 dark:text-gray-300 whitespace-pre-line">
-            {{ community.objectives }}
-          </div>
+          <CommunityRichText :html="community.objectivesHtml" :fallback="community.objectives" />
         </section>
 
         <!-- Modules -->

@@ -8,13 +8,16 @@ import {
   sizeCategoryEnum,
 } from '#server/db/schema'
 import type { RelationKind } from '#server/utils/community-write'
+import type { SensitiveField } from '#server/utils/community-revisions'
 
 /**
  * Self-service save.
  *
- * Phase 1 scope: free text, classification and referentials only. Identity
- * (name, slug), links, images and admin flags are NOT reachable here — they
- * are absent from the allowlist below, so no request body can touch them.
+ * Free text, classification and referentials publish immediately — the worst
+ * case is mediocre copy on the manager's own page. Identity, links and images
+ * are held for admin review (see community-revisions.ts). Admin-only flags
+ * (slug, featured, published, votes, isCommunityPillar) appear in neither list,
+ * so no request body can reach them.
  */
 
 const SAVE_LIMIT = {
@@ -63,6 +66,7 @@ export default defineEventHandler(async (event) => {
 
   await snapshotCommunity(id, user?.id ?? null)
 
+  // ── Published immediately ────────────────────────────
   const [community] = await db.update(communities).set({
     shortDescription: trimText(body?.shortDescription, 300),
     description: trimText(body?.description, 10_000),
@@ -89,12 +93,26 @@ export default defineEventHandler(async (event) => {
     historicalPeriods: periods,
   }, EDITABLE_RELATIONS)
 
+  // ── Held for admin review ────────────────────────────
+  const proposed: Partial<Record<SensitiveField, unknown>> = {}
+
+  if ('name' in body) proposed.name = trimText(body.name, 255) ?? current.name
+  if ('logoUrl' in body) proposed.logoUrl = normalizeImageUrl(body.logoUrl)
+  for (const key of ['discordUrl', 'websiteUrl', 'youtubeUrl', 'instagramUrl', 'facebookUrl', 'twitchUrl', 'twitterUrl'] as const) {
+    if (key in body) proposed[key] = normalizeUrl(body[key])
+  }
+  if ('otherLinks' in body) proposed.otherLinks = normalizeOtherLinks(body.otherLinks)
+  if ('images' in body) proposed.images = normalizeImages(body.images)
+
+  const pendingFields = await queueSensitiveChanges(id, user?.id ?? null, proposed)
+
   console.log(JSON.stringify({
     event: 'community.edit',
     result: 'saved',
     communityId: id,
     userId: user?.id ?? null,
+    pendingReview: pendingFields,
   }))
 
-  return community
+  return { ...community, pendingFields }
 })
