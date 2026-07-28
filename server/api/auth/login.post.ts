@@ -1,12 +1,9 @@
 import crypto from 'node:crypto'
 
-const LOGIN_WINDOW_MS = 10 * 60 * 1000
-const MAX_LOGIN_ATTEMPTS = 8
-const LOGIN_COOLDOWN_MS = 15 * 60 * 1000
-const loginAttempts = new Map<string, { count: number; firstAttempt: number; blockedUntil?: number }>()
-
-function getClientIp(event: any) {
-  return (getRequestIP(event, { xForwardedFor: true }) || 'unknown').toLowerCase().slice(0, 128)
+const LOGIN_LIMIT = {
+  max: 8,
+  windowMs: 10 * 60 * 1000,
+  blockMs: 15 * 60 * 1000,
 }
 
 function safeEqual(a: string, b: string) {
@@ -23,15 +20,14 @@ function safeEqual(a: string, b: string) {
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const config = useRuntimeConfig()
-  const ip = getClientIp(event)
+  const ip = (getRequestIP(event, { xForwardedFor: true }) || 'unknown').toLowerCase().slice(0, 128)
+  const rateKey = `admin-login:${ip}`
   const now = Date.now()
-  const entry = loginAttempts.get(ip)
 
-  if (entry?.blockedUntil && now < entry.blockedUntil) {
-    throw createError({
-      statusCode: 429,
-      statusMessage: 'Trop de tentatives. Réessayez plus tard.',
-    })
+  // Must short-circuit before the comparison below, or the block would throttle
+  // only the response and leave brute-forcing unimpeded.
+  if (!isRateLimited(rateKey).ok) {
+    throw createError({ statusCode: 429, statusMessage: 'Trop de tentatives. Réessayez plus tard.' })
   }
 
   const adminPassword = String(config.adminPassword || '')
@@ -50,29 +46,25 @@ export default defineEventHandler(async (event) => {
   const isValid = safeEqual(candidate, adminPassword)
 
   if (!isValid) {
-    const base = !entry || now - entry.firstAttempt > LOGIN_WINDOW_MS
-      ? { count: 1, firstAttempt: now }
-      : { ...entry, count: entry.count + 1 }
-
-    if (base.count >= MAX_LOGIN_ATTEMPTS) {
-      base.blockedUntil = now + LOGIN_COOLDOWN_MS
-    }
-
-    loginAttempts.set(ip, base)
+    // Only failures count, so a valid admin is never locked out.
+    const result = consumeRateLimit(rateKey, LOGIN_LIMIT)
 
     console.log(JSON.stringify({
       event: 'auth.login',
       result: 'failure',
       ip,
       timestamp: new Date(now).toISOString(),
-      attemptCount: base.count,
-      blocked: !!base.blockedUntil,
+      blocked: !result.ok,
     }))
+
+    if (!result.ok) {
+      throw createError({ statusCode: 429, statusMessage: 'Trop de tentatives. Réessayez plus tard.' })
+    }
 
     throw createError({ statusCode: 401, statusMessage: 'Invalid password' })
   }
 
-  loginAttempts.delete(ip)
+  resetRateLimit(rateKey)
 
   console.log(JSON.stringify({
     event: 'auth.login',
@@ -82,7 +74,7 @@ export default defineEventHandler(async (event) => {
   }))
 
   await setUserSession(event, {
-    user: { name: 'admin' },
+    user: { role: 'admin', name: 'admin' },
   }, { maxAge: 8 * 60 * 60 })
 
   return { ok: true }
