@@ -16,6 +16,7 @@ export interface ManagedCommunity {
 interface AccountState {
   user: AccountUser | null
   communities: ManagedCommunity[]
+  isAdmin: boolean
 }
 
 /**
@@ -23,15 +24,21 @@ interface AccountState {
  * 'account' useAsyncData key, so the header and pages stay in sync.
  */
 export function useAccount() {
+  // useRequestFetch forwards the incoming request's cookies during SSR. A plain
+  // $fetch does not, so the server would render every visitor as signed out and
+  // the client would hydrate that stale state without refetching.
+  const requestFetch = useRequestFetch()
+
   const { data, refresh, status } = useAsyncData<AccountState>(
     'account',
-    () => $fetch('/api/me'),
-    { default: () => ({ user: null, communities: [] }) },
+    () => requestFetch('/api/me') as Promise<AccountState>,
+    { default: () => ({ user: null, communities: [], isAdmin: false }) },
   )
 
   const user = computed(() => data.value?.user ?? null)
   const communities = computed(() => data.value?.communities ?? [])
   const isSignedIn = computed(() => !!user.value)
+  const isAdmin = computed(() => data.value?.isAdmin ?? false)
 
   /** Sends the visitor to Discord, coming back to `redirectTo` afterwards. */
   function signIn(redirectTo?: string) {
@@ -41,7 +48,7 @@ export function useAccount() {
 
   async function signOut() {
     await $fetch('/api/auth/logout', { method: 'POST' })
-    data.value = { user: null, communities: [] }
+    data.value = { user: null, communities: [], isAdmin: false }
     await refresh()
   }
 
@@ -54,6 +61,7 @@ export function useAccount() {
     user,
     communities,
     isSignedIn,
+    isAdmin,
     pending: computed(() => status.value === 'pending'),
     signIn,
     signOut,

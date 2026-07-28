@@ -243,6 +243,15 @@
             <NuxtLink to="/confidentialite" class="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Confidentialité</NuxtLink>
             <a href="/api/rss.xml" class="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">RSS</a>
             <a href="https://github.com/DaKerboul/commus_dcs" target="_blank" class="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">GitHub</a>
+            <!-- Discreet admin entry: reachable but not advertised. -->
+            <NuxtLink
+              to="/admin"
+              aria-label="Administration"
+              title="Administration"
+              class="text-gray-300 dark:text-gray-700 hover:text-gray-500 dark:hover:text-gray-500 transition-colors"
+            >
+              <UIcon name="i-heroicons-cog-6-tooth" class="text-sm align-text-bottom" />
+            </NuxtLink>
             <span v-if="!isRlpdk">© {{ new Date().getFullYear() }} Kerboulistan</span>
             <span v-else class="font-serif text-emerald-400">© République du Kerboulistan — Tous droits réservés par décret</span>
           </div>
