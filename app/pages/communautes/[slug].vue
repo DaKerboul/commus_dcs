@@ -327,8 +327,88 @@
             {{ voteError }}
           </p>
         </div>
+
+        <!-- Claim / manage this page -->
+        <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5">
+          <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Gérer cette fiche</h3>
+
+          <template v-if="managesThisCommunity">
+            <UButton
+              :to="`/ma-communaute/${community.id}`"
+              icon="i-heroicons-pencil-square"
+              color="primary"
+              variant="soft"
+              size="sm"
+              block
+            >
+              Modifier cette page
+            </UButton>
+            <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+              Vous gérez cette communauté.
+            </p>
+          </template>
+
+          <template v-else-if="claimSent">
+            <p class="text-sm text-emerald-600 dark:text-emerald-400">
+              Demande envoyée. Elle sera examinée prochainement.
+            </p>
+          </template>
+
+          <template v-else>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">
+              Vous êtes responsable de cette communauté&nbsp;? Réclamez cette page pour la mettre à jour vous-même.
+            </p>
+            <UButton
+              v-if="!account.isSignedIn.value"
+              icon="i-simple-icons-discord"
+              color="neutral"
+              variant="outline"
+              size="sm"
+              block
+              @click="account.signIn()"
+            >
+              Se connecter avec Discord
+            </UButton>
+            <UButton
+              v-else
+              icon="i-heroicons-hand-raised"
+              color="neutral"
+              variant="outline"
+              size="sm"
+              block
+              @click="claimOpen = true"
+            >
+              Réclamer cette page
+            </UButton>
+          </template>
+        </div>
       </div>
     </div>
+
+    <!-- Claim request modal -->
+    <UModal v-model:open="claimOpen" title="Réclamer cette page">
+      <template #body>
+        <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
+          Expliquez votre rôle dans <strong>{{ community.name }}</strong> et comment le vérifier
+          (pseudo sur le Discord de la commu, fonction, etc.). Un administrateur recoupera avant de valider.
+        </p>
+        <UTextarea
+          v-model="claimMessage"
+          :rows="4"
+          class="w-full"
+          placeholder="Ex : je suis TheQueen, fondateur de l'escadron, admin sur notre Discord."
+        />
+        <p v-if="claimError" class="mt-2 text-sm text-red-500">{{ claimError }}</p>
+      </template>
+      <template #footer>
+        <div class="flex justify-end gap-2 w-full">
+          <UButton color="neutral" variant="ghost" @click="claimOpen = false">Annuler</UButton>
+          <UButton :loading="claimPending" :disabled="!claimMessage.trim()" @click="submitClaim">
+            Envoyer la demande
+          </UButton>
+        </div>
+      </template>
+    </UModal>
 
     <!-- Similar communities -->
     <section v-if="similar?.data?.length" class="mt-12">
@@ -410,6 +490,38 @@ async function vote() {
     voteError.value = error?.data?.statusMessage || 'Vote refusé. Rechargez la page puis réessayez.'
   } finally {
     votePending.value = false
+  }
+}
+
+// Claim / manage
+const account = useAccount()
+const claimOpen = ref(false)
+const claimMessage = ref('')
+const claimPending = ref(false)
+const claimError = ref('')
+const claimSent = ref(false)
+
+const managesThisCommunity = computed(() =>
+  !!community.value && account.roleFor(community.value.id) !== null,
+)
+
+async function submitClaim() {
+  if (claimPending.value) return
+  claimPending.value = true
+  claimError.value = ''
+
+  try {
+    await $fetch(`/api/communities/${slug}/claim`, {
+      method: 'POST',
+      body: { message: claimMessage.value },
+    })
+    claimSent.value = true
+    claimOpen.value = false
+    claimMessage.value = ''
+  } catch (error: any) {
+    claimError.value = error?.data?.statusMessage || "Impossible d'envoyer la demande. Réessayez."
+  } finally {
+    claimPending.value = false
   }
 }
 

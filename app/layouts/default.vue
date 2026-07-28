@@ -75,6 +75,59 @@
             </div>
           </div>
           <div class="flex items-center gap-2">
+            <!-- Account -->
+            <UPopover v-if="account.isSignedIn.value">
+              <UButton variant="ghost" color="neutral" size="sm" class="gap-1.5">
+                <img
+                  v-if="account.user.value?.avatarUrl"
+                  :src="account.user.value.avatarUrl"
+                  alt=""
+                  class="h-6 w-6 rounded-full"
+                />
+                <UIcon v-else name="i-heroicons-user-circle" class="text-lg" />
+                <span class="hidden lg:inline max-w-28 truncate">{{ account.user.value?.displayName }}</span>
+              </UButton>
+              <template #content>
+                <div class="p-2 space-y-0.5 w-56">
+                  <UButton
+                    to="/ma-communaute"
+                    variant="ghost"
+                    color="neutral"
+                    size="sm"
+                    block
+                    class="justify-start"
+                    icon="i-heroicons-pencil-square"
+                  >
+                    Mes communautés
+                    <UBadge v-if="account.communities.value.length" color="neutral" size="xs" class="ml-auto">
+                      {{ account.communities.value.length }}
+                    </UBadge>
+                  </UButton>
+                  <UButton
+                    variant="ghost"
+                    color="neutral"
+                    size="sm"
+                    block
+                    class="justify-start"
+                    icon="i-heroicons-arrow-right-on-rectangle"
+                    @click="account.signOut()"
+                  >
+                    Se déconnecter
+                  </UButton>
+                </div>
+              </template>
+            </UPopover>
+            <UButton
+              v-else
+              variant="ghost"
+              color="neutral"
+              size="sm"
+              icon="i-simple-icons-discord"
+              class="hidden sm:flex"
+              @click="account.signIn()"
+            >
+              <span class="hidden lg:inline">Connexion</span>
+            </UButton>
             <UButton
               :icon="colorMode.value === 'dark' ? 'i-heroicons-sun' : 'i-heroicons-moon'"
               variant="ghost"
@@ -143,6 +196,27 @@
             Favoris
             <UBadge v-if="favCount > 0" color="warning" size="xs" class="ml-1">{{ favCount }}</UBadge>
           </UButton>
+          <UButton
+            v-if="account.isSignedIn.value"
+            to="/ma-communaute"
+            variant="ghost"
+            color="neutral"
+            block
+            icon="i-heroicons-pencil-square"
+            @click="mobileOpen = false"
+          >
+            Mes communautés
+          </UButton>
+          <UButton
+            v-else
+            variant="ghost"
+            color="neutral"
+            block
+            icon="i-simple-icons-discord"
+            @click="account.signIn()"
+          >
+            Connexion Discord
+          </UButton>
         </div>
       </nav>
     </header>
@@ -183,6 +257,7 @@ const mobileOpen = ref(false)
 const colorMode = useColorMode()
 const { isRlpdk, disableRlpdk } = useRlpdkTheme()
 const { count: favCount } = useFavorites()
+const account = useAccount()
 
 // Live streamer count for navbar badge — poll every 60s
 const { data: liveData } = useFetch<{ count: number }>('/api/streamers/live', {
