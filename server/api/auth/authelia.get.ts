@@ -21,7 +21,9 @@ function isConfigured(): boolean {
 }
 
 const oidcHandler = defineOAuthOidcEventHandler({
-  config: { scope: ['openid', 'profile', 'groups'] },
+  // 'openid' is added by the handler itself — listing it here duplicates it in
+  // the authorization URL.
+  config: { scope: ['profile', 'groups'] },
 
   async onSuccess(event, { user }) {
     const claims = user as Record<string, unknown>
