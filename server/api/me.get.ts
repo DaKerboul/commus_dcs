@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm'
 import { communities, communityMembers, users } from '#server/db/schema'
 
-const ANONYMOUS = { user: null, communities: [] }
+const ANONYMOUS = { user: null, communities: [], isAdmin: false }
 
 /**
  * Current member session plus the communities they may edit.
@@ -15,15 +15,18 @@ export default defineEventHandler(async (event) => {
     const session = await getUserSession(event)
     const sessionUser = (session as { user?: { role?: string; id?: number } } | null)?.user
 
+    // Drives the admin route guard; the API stays the real authorization check.
+    const admin = await isAdmin(event)
+
     if (sessionUser?.role !== 'member' || !sessionUser.id) {
-      return ANONYMOUS
+      return { ...ANONYMOUS, isAdmin: admin }
     }
 
     const db = useDB()
     const [account] = await db.select().from(users).where(eq(users.id, sessionUser.id)).limit(1)
 
     if (!account || account.isBlocked) {
-      return ANONYMOUS
+      return { ...ANONYMOUS, isAdmin: admin }
     }
 
     const managed = await db
@@ -47,6 +50,7 @@ export default defineEventHandler(async (event) => {
         avatarUrl: account.discordAvatarUrl,
       },
       communities: managed,
+      isAdmin: admin,
     }
   } catch (error) {
     console.error(JSON.stringify({
