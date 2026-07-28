@@ -17,6 +17,19 @@ export interface TwitchStream {
   started_at: string
   language: string
   thumbnail_url: string
+  tags?: string[]
+  is_mature?: boolean
+}
+
+export interface TwitchChannel {
+  broadcaster_id: string
+  broadcaster_login: string
+  broadcaster_name: string
+  broadcaster_language: string
+  game_id: string
+  game_name: string
+  title: string
+  tags?: string[]
 }
 
 export interface TwitchUser {
@@ -26,6 +39,7 @@ export interface TwitchUser {
   description: string
   profile_image_url: string
   created_at: string
+  broadcaster_type?: string // 'partner' | 'affiliate' | ''
 }
 
 export interface TwitchVideo {
@@ -134,30 +148,95 @@ export async function twitchApi<T = any>(
 // ── Specific Endpoints ─────────────────────────────────
 
 /**
- * Fetch all currently live DCS World French streams.
- * Uses game_id filter → guaranteed DCS only.
+ * Every live DCS stream, all languages.
+ *
+ * The French filter used to be applied here, which silently dropped French
+ * streamers who never tag their stream as fr. We pull the whole category —
+ * it is one request — and classify afterwards (see twitch-french.ts).
  */
-export async function fetchLiveDcsStreams(): Promise<TwitchStream[]> {
+export async function fetchAllLiveDcsStreams(): Promise<TwitchStream[]> {
   const allStreams: TwitchStream[] = []
   let cursor: string | undefined
 
   do {
-    const params: Record<string, string> = {
-      game_id: DCS_GAME_ID,
-      language: 'fr',
-      first: '100',
-    }
+    const params: Record<string, string> = { game_id: DCS_GAME_ID, first: '100' }
     if (cursor) params.after = cursor
 
-    const data = await twitchApi<{ data: TwitchStream[]; pagination: { cursor?: string } }>(
-      'streams',
-      params,
-    )
+    const data = await twitchApi<{ data: TwitchStream[]; pagination: { cursor?: string } }>('streams', params)
     allStreams.push(...data.data)
     cursor = data.pagination?.cursor
   } while (cursor)
 
   return allStreams
+}
+
+/**
+ * Live status of specific channels, whatever they are playing.
+ *
+ * Complements the category poll: that one only shows a streamer while they are
+ * on DCS, so it cannot tell DCS time from total airtime. 100 ids per request.
+ */
+export async function fetchStreamsByUserIds(userIds: string[]): Promise<TwitchStream[]> {
+  if (userIds.length === 0) return []
+
+  const allStreams: TwitchStream[] = []
+  for (let i = 0; i < userIds.length; i += 100) {
+    const batch = userIds.slice(i, i + 100)
+    const params = new URLSearchParams()
+    batch.forEach(id => params.append('user_id', id))
+    params.append('first', '100')
+
+    const data = await twitchApi<{ data: TwitchStream[] }>('streams', params)
+    allStreams.push(...data.data)
+  }
+  return allStreams
+}
+
+/** Channel metadata — notably broadcaster_language. 100 ids per request. */
+export async function fetchChannelInfo(broadcasterIds: string[]): Promise<TwitchChannel[]> {
+  if (broadcasterIds.length === 0) return []
+
+  const all: TwitchChannel[] = []
+  for (let i = 0; i < broadcasterIds.length; i += 100) {
+    const batch = broadcasterIds.slice(i, i + 100)
+    const params = new URLSearchParams()
+    batch.forEach(id => params.append('broadcaster_id', id))
+
+    const data = await twitchApi<{ data: TwitchChannel[] }>('channels', params)
+    all.push(...data.data)
+  }
+  return all
+}
+
+/**
+ * Follower count for one channel.
+ *
+ * Verified 2026-07-29: an app token gets `total` (the follower *list* does need
+ * the broadcaster's consent). This is undocumented — the reference implies a
+ * user token is required — so treat it as a bonus and return null on failure
+ * rather than letting it break the sync.
+ */
+export async function fetchFollowerCount(broadcasterId: string): Promise<number | null> {
+  try {
+    const data = await twitchApi<{ total?: number }>('channels/followers', { broadcaster_id: broadcasterId })
+    return typeof data.total === 'number' ? data.total : null
+  } catch {
+    return null
+  }
+}
+
+/** Recent VOD archives for a channel. Twitch deletes these after 14–60 days. */
+export async function fetchVideos(userId: string, limit = 20): Promise<TwitchVideo[]> {
+  try {
+    const data = await twitchApi<{ data: TwitchVideo[] }>('videos', {
+      user_id: userId,
+      type: 'archive',
+      first: String(Math.min(limit, 100)),
+    })
+    return data.data
+  } catch {
+    return []
+  }
 }
 
 /**

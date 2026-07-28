@@ -1,5 +1,6 @@
 import {
   pgTable,
+  bigserial,
   serial,
   text,
   varchar,
@@ -478,9 +479,99 @@ export const streamers = pgTable('streamers', {
   currentViewers: integer('current_viewers').default(0),
   communityId: integer('community_id').references(() => communities.id, { onDelete: 'set null' }),
   isActive: boolean('is_active').default(true),
+
+  // Channel-level language, more stable than the per-stream one: many French
+  // streamers never tag the stream itself as fr.
+  broadcasterLanguage: varchar('broadcaster_language', { length: 10 }),
+  // 'partner' | 'affiliate' | '' — a free proxy for channel size.
+  broadcasterType: varchar('broadcaster_type', { length: 20 }),
+  // Result of the FR classifier; overridable by an admin (see frenchOverride).
+  isFrench: boolean('is_french').default(true),
+  // When set, wins over the classifier — lets an admin fix a wrong guess.
+  frenchOverride: boolean('french_override'),
+  followers: integer('followers'),
+
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 })
+
+/**
+ * One observation of a live stream, taken every poll.
+ *
+ * Twitch archives nothing: viewer counts, titles and session boundaries exist
+ * only while the stream is live. Everything downstream (sessions, daily stats,
+ * curves) is derived from this table, so a gap here is a permanent hole.
+ */
+export const streamerSamples = pgTable('streamer_samples', {
+  id: bigserial('id', { mode: 'number' }).primaryKey(),
+  streamerId: integer('streamer_id').notNull().references(() => streamers.id, { onDelete: 'cascade' }),
+  // Twitch's own stream id — groups samples into a session with no guesswork.
+  streamId: varchar('stream_id', { length: 32 }).notNull(),
+  observedAt: timestamp('observed_at').defaultNow().notNull(),
+  viewerCount: integer('viewer_count').notNull().default(0),
+  gameId: varchar('game_id', { length: 32 }),
+  title: text('title'),
+}, table => ({
+  uniqueObservation: uniqueIndex('idx_streamer_samples_unique').on(table.streamerId, table.streamId, table.observedAt),
+  byStreamer: index('idx_streamer_samples_streamer').on(table.streamerId, table.observedAt),
+  byStream: index('idx_streamer_samples_stream').on(table.streamId),
+}))
+
+/**
+ * A stream session, maintained incrementally as samples arrive.
+ *
+ * `startedAt` comes straight from Twitch and is exact; `lastSeenAt` is the last
+ * poll that still saw the stream, so the end is precise to one poll interval.
+ * Sums are kept alongside counts so averages never need a scan of the samples.
+ */
+export const streamerSessions = pgTable('streamer_sessions', {
+  id: serial('id').primaryKey(),
+  streamerId: integer('streamer_id').notNull().references(() => streamers.id, { onDelete: 'cascade' }),
+  streamId: varchar('stream_id', { length: 32 }).notNull().unique(),
+  startedAt: timestamp('started_at').notNull(),
+  lastSeenAt: timestamp('last_seen_at').notNull(),
+  isLive: boolean('is_live').notNull().default(true),
+  sampleCount: integer('sample_count').notNull().default(0),
+  dcsSampleCount: integer('dcs_sample_count').notNull().default(0),
+  viewerSum: integer('viewer_sum').notNull().default(0),
+  peakViewers: integer('peak_viewers').notNull().default(0),
+  titles: jsonb('titles').$type<string[]>(),
+  vodUrl: text('vod_url'),
+  vodDuration: varchar('vod_duration', { length: 16 }),
+  vodViewCount: integer('vod_view_count'),
+}, table => ({
+  byStreamer: index('idx_streamer_sessions_streamer').on(table.streamerId, table.startedAt),
+  byLive: index('idx_streamer_sessions_live').on(table.isLive),
+}))
+
+/** Daily rollup, kept forever — raw samples are purged after 90 days. */
+export const streamerDailyStats = pgTable('streamer_daily_stats', {
+  streamerId: integer('streamer_id').notNull().references(() => streamers.id, { onDelete: 'cascade' }),
+  day: varchar('day', { length: 10 }).notNull(), // YYYY-MM-DD, Paris time
+  dcsMinutes: integer('dcs_minutes').notNull().default(0),
+  totalMinutes: integer('total_minutes').notNull().default(0),
+  sessions: integer('sessions').notNull().default(0),
+  peakViewers: integer('peak_viewers').notNull().default(0),
+  avgViewers: integer('avg_viewers').notNull().default(0),
+}, table => ({
+  pk: uniqueIndex('idx_streamer_daily_stats_pk').on(table.streamerId, table.day),
+  byDay: index('idx_streamer_daily_stats_day').on(table.day),
+}))
+
+/**
+ * Follower count over time.
+ *
+ * Deliberately its own table: reading the total with an app token is an
+ * undocumented behaviour that Twitch could remove at any time, and nothing else
+ * must break when it does.
+ */
+export const streamerFollowerHistory = pgTable('streamer_follower_history', {
+  streamerId: integer('streamer_id').notNull().references(() => streamers.id, { onDelete: 'cascade' }),
+  day: varchar('day', { length: 10 }).notNull(),
+  followers: integer('followers').notNull(),
+}, table => ({
+  pk: uniqueIndex('idx_streamer_follower_history_pk').on(table.streamerId, table.day),
+}))
 
 export const streamerDcsDays = pgTable('streamer_dcs_days', {
   id: serial('id').primaryKey(),
@@ -494,6 +585,22 @@ export const streamerDcsDays = pgTable('streamer_dcs_days', {
 export const streamersRelations = relations(streamers, ({ one, many }) => ({
   community: one(communities, { fields: [streamers.communityId], references: [communities.id] }),
   dcsDays: many(streamerDcsDays),
+  samples: many(streamerSamples),
+  sessions: many(streamerSessions),
+  dailyStats: many(streamerDailyStats),
+  followerHistory: many(streamerFollowerHistory),
+}))
+
+export const streamerSamplesRelations = relations(streamerSamples, ({ one }) => ({
+  streamer: one(streamers, { fields: [streamerSamples.streamerId], references: [streamers.id] }),
+}))
+
+export const streamerSessionsRelations = relations(streamerSessions, ({ one }) => ({
+  streamer: one(streamers, { fields: [streamerSessions.streamerId], references: [streamers.id] }),
+}))
+
+export const streamerDailyStatsRelations = relations(streamerDailyStats, ({ one }) => ({
+  streamer: one(streamers, { fields: [streamerDailyStats.streamerId], references: [streamers.id] }),
 }))
 
 export const streamerDcsDaysRelations = relations(streamerDcsDays, ({ one }) => ({
