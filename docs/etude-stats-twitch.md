@@ -40,16 +40,28 @@ J'ai testé chaque endpoint avec nos identifiants de production plutôt que de m
 | `Get Clips` | `view_count`, `creator_name`, `vod_offset`, `duration` | ✅ 20 clips |
 | `Get Channel Information` | **`broadcaster_language`**, `tags`, titre, jeu courant | ✅ `fr` + tags `["DCSWorld","armeedelair","Français",…]` |
 
-> **Surprise n°1 — les followers sont publics.** Je m'attendais à devoir demander une autorisation OAuth à chaque streamer (l'endpoint a été restreint en 2023). En réalité, la **liste** des followers exige un user token, mais le **total** est renvoyé avec un simple app token. On peut donc suivre la croissance de chaque chaîne sans rien demander à personne. C'est la statistique la plus attendue sur ce genre de site, et elle est à portée immédiate.
+> **Surprise n°1 — les followers sont accessibles.** La documentation et les rapports de la communauté développeurs affirment l'inverse : depuis la refonte de 2023, `Get Channel Followers` exigerait un user token avec `moderator:read:followers`, et un app token recevrait un 401. **Ce n'est pas ce qui se passe.** Testé le 2026-07-29 avec un token `client_credentials` sur 4 chaînes : la **liste** est bien vide (elle, exige le consentement), mais le champ `total` est renvoyé correctement, avec des valeurs distinctes et cohérentes (2 830 / 616 / 2 864 / 151).
+>
+> Deux conséquences. D'abord, la statistique la plus attendue sur ce type de site est à portée immédiate, sans rien demander à personne. Ensuite, **c'est un comportement non documenté** : Twitch peut le fermer sans préavis. À traiter comme un bonus dont la disparition ne doit rien casser — d'où la table `streamer_follower_history` séparée dans le schéma plus bas, dont la perte n'affecterait aucune autre statistique.
+
+### Deux autres gisements, confirmés par la doc
+
+**Les clips n'expirent jamais.** Contrairement aux VODs (supprimées à 14 jours, 60 pour les affiliés/partenaires), les clips sont permanents et interrogeables par fenêtres de dates (`started_at`/`ended_at`). C'est **la seule source d'historique rétroactif profond disponible sans consentement** : pour un streamer qu'on ajoute aujourd'hui, on peut reconstituer des années de signal d'engagement. Les VODs de type `highlight` et `upload` ne périment pas non plus — seul le type `archive` est effacé.
+
+**`Get Teams`** expose les membres d'une team Twitch. Utile pour découvrir des grappes de streamers d'un coup, et potentiellement pour rapprocher automatiquement streamers et communautés.
 
 ### Ce qui restera hors de portée
 
 Sans que chaque streamer autorise explicitement notre application :
 
-- Abonnés payants, revenus, données démographiques
-- Endpoints d'analytics (`Get Game Analytics`, `Get Extension Analytics`)
-- Rétention d'audience, sources de trafic, chat
-- **L'historique passé** : Twitch ne fournit aucune archive de sessions. Tout ce qui n'a pas été échantillonné en direct est perdu à jamais.
+- Abonnés payants, revenus, données démographiques, chat
+- Rétention d'audience, sources de trafic
+
+Et même **avec** leur consentement, ces données n'existent dans aucune API :
+
+- Les analytics du dashboard Twitch (heures regardées, rétention) ne sont pas exposées. Les endpoints `analytics/*` ne concernent que les jeux et extensions dont *on* est l'éditeur.
+- **Les vues totales de chaîne** : le champ `view_count` de `Get Users` a été déprécié en 2022 puis retiré. Plus personne n'y a accès.
+- **L'historique des sessions passées** : Twitch n'archive rien. Tout ce qui n'a pas été échantillonné en direct est perdu définitivement.
 
 Cette dernière limite est structurelle et gouverne toute la stratégie : **la profondeur d'historique ne s'achète pas, elle se capitalise**. Chaque jour sans échantillonnage fin est un jour définitivement perdu. C'est l'argument principal pour agir tôt plutôt que parfaitement.
 
@@ -65,12 +77,16 @@ Mesure faite pendant l'étude : **11 streams DCS live dans le monde, 0 en franç
 
 Notre filtre `language=fr` porte sur la langue **déclarée du stream**. Or beaucoup de francophones ne la renseignent pas, ou streament sous une autre étiquette. On les rate entièrement.
 
-Deux signaux, tous deux disponibles sans consentement, corrigent ça :
+Plusieurs signaux, tous disponibles sans consentement, corrigent ça :
 
-1. `Get Channel Information` → `broadcaster_language` (la langue de la **chaîne**, plus stable que celle du stream)
+1. `Get Channel Information` → `broadcaster_language` (la langue de la **chaîne**, plus stable que celle du stream) — accepte 100 chaînes par appel
 2. Le champ `tags` du stream → `"Français"`, `"armeedelair"`, `"FR"`…
+3. `Get Teams` → les membres d'une team Twitch d'un coup, utile pour les escadrons organisés
+4. `Search Channels` → recherche par nom, pratique pour un ajout manuel depuis l'admin
 
-**Proposition** : interroger la catégorie DCS **sans filtre de langue** (11 streams, un seul appel), puis classer FR / non-FR sur ces deux signaux, avec une possibilité de correction manuelle en admin. On passe d'une découverte qui rate des gens à une découverte quasi exhaustive, pour le même coût.
+**Proposition** : interroger la catégorie DCS **sans filtre de langue** (11 streams, un seul appel), puis classer FR / non-FR sur ces signaux, avec correction manuelle possible en admin. On passe d'une découverte qui rate des gens à une découverte quasi exhaustive, pour le même coût.
+
+À noter aussi : `Get Users` renvoie `broadcaster_type` (`partner` / `affiliate` / vide), un bon indicateur de taille de chaîne, et `created_at` pour l'ancienneté. Deux champs gratuits qu'on ne stocke pas aujourd'hui.
 
 ---
 
@@ -176,7 +192,17 @@ Une fois par jour :
   - Rollup quotidien, purge des relevés > 90 jours
 ```
 
-Le second appel (par `user_id`) est ce qui permet de mesurer **DCS vs autres jeux** : le filtre par catégorie seul ne montre un streamer que pendant qu'il est sur DCS.
+Le second appel (par `user_id`) est ce qui permet de mesurer **DCS vs autres jeux** : le filtre par catégorie seul ne montre un streamer que pendant qu'il est sur DCS. `Get Streams` accepte 100 `user_id` par requête — nos 135 streamers tiennent en 2 appels.
+
+### Pourquoi pas EventSub (pour l'instant)
+
+Twitch propose EventSub : des webhooks `stream.online` / `stream.offline` / `channel.update`, qui fonctionnent **sans le consentement du streamer** avec un app token (1 point de quota par abonnement, plafond à 10 000). Ça donne des bornes de session exactes et du temps réel, sans polling.
+
+C'est séduisant, mais **le gain marginal ici est faible** : `Get Streams` renvoie déjà `started_at`, donc le **début de session est déjà exact** avec du simple polling. EventSub n'apporterait que la fin exacte (au lieu de ±5 min) et la notification instantanée du passage en live.
+
+En face, le coût est réel : endpoint public avec vérification HMAC de la signature, réponse en moins de 10 s, gestion du challenge de vérification, du cycle de vie des abonnements et des révocations. Sur une scène où une session dure 3 heures, mesurer 3 h 02 au lieu de 3 h 00 ne change aucune statistique.
+
+**Recommandation : polling d'abord.** EventSub devient intéressant plus tard, et pour une autre raison que la précision — un badge « en direct » instantané sur le site, ou une notification Discord automatique quand une commu passe en live. À traiter comme une évolution produit, pas comme un prérequis technique.
 
 ---
 
@@ -191,7 +217,9 @@ Table `streamer_samples`, stockage du `stream_id`, passage à 5 minutes, découv
 Dérivation des sessions, agrégats quotidiens, refonte de `/streamers/[login]` : courbe d'audience, sessions récentes, heatmap horaire, heures et régularité. La heatmap existe déjà (`StreamCalendarHeatmap.vue`), elle passe de « jours actifs » à « intensité réelle ».
 
 **Étape 3 — Followers, VODs, clips** · S
-Suivi quotidien des followers, rapprochement VOD ↔ session, top clips. Beaucoup de valeur perçue pour peu de travail — mais la courbe de followers ne devient intéressante qu'après quelques semaines de collecte, d'où sa position après l'étape 1.
+Suivi quotidien des followers, rapprochement VOD ↔ session via `stream_id`, top clips. Beaucoup de valeur perçue pour peu de travail — mais la courbe de followers ne devient intéressante qu'après quelques semaines de collecte, d'où sa position après l'étape 1.
+
+Les clips méritent un traitement à part : comme ils n'expirent jamais, un balayage par fenêtres de dates permet de **reconstituer rétroactivement** l'engagement d'un streamer sur plusieurs années. C'est le seul endroit du projet où on peut récupérer du passé — partout ailleurs, seul l'échantillonnage à venir compte.
 
 **Étape 4 — La scène FR** · M
 Classements, calendrier collectif, page « Pulse Twitch DCS FR », et surtout **le lien streamers ↔ communautés** (rapprochement automatique par nom/Discord + validation admin, exploitant le `communityId` déjà présent mais vide). C'est ce croisement qui rend le site unique.
@@ -206,7 +234,9 @@ Classements, calendrier collectif, page « Pulse Twitch DCS FR », et surtout **
 
 **L'historique existant reste pauvre rétroactivement.** Les 838 jours déjà collectés resteront des booléens : aucune durée ni audience ne peut être reconstruite après coup. La courbe riche démarre au jour du déploiement de l'étape 1.
 
-**Point RGPD** : on stocke des données d'activité publique de personnes identifiables. Rien de sensible, mais il faudrait ajouter une ligne à `/confidentialite` et prévoir un moyen simple pour un streamer de demander son retrait (`streamers.isActive = false` existe déjà et suffit).
+**Point RGPD et conformité Twitch** : on stocke des données d'activité publique de personnes identifiables. Rien de sensible, mais deux obligations se cumulent — le RGPD et le *Twitch Developer Services Agreement*, qui impose de supprimer les données d'un utilisateur sur demande et interdit les statistiques trompeuses. Le modèle « agrégation de données publiques par polling » est celui de TwitchTracker et SullyGnome, donc toléré, à condition de rester supprimable. Concrètement : une ligne dans `/confidentialite` et un chemin de retrait. `streamers.isActive = false` existe déjà mais ne fait que masquer — il faudrait qu'il purge aussi les relevés associés.
+
+**Le token applicatif expire.** Le `client_credentials` vit environ 60 jours et n'est pas rafraîchissable. Notre code le met en cache et le redemande à l'expiration (`server/utils/twitch.ts`), ce qui est correct — mais si la collecte devient une fonction critique du site, il faudra une alerte en cas d'échec répété d'obtention du token, sans quoi la collecte s'arrêterait silencieusement.
 
 **Question ouverte, à toi** : viser la **scène FR uniquement** (cohérent avec l'identité du site, ~135 streamers) ou **DCS mondial** (11 live au lieu de 0 au moment du test, mais on quitte le positionnement « francophone » et on entre en concurrence frontale avec les gros sites de stats) ? Ma recommandation est de rester FR — c'est là qu'on est légitimes et irremplaçables.
 
