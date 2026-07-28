@@ -10,15 +10,6 @@ const ALL_RELATIONS: RelationKind[] = [
   'images',
 ]
 
-function generateSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '')
-}
-
 export default defineEventHandler(async (event) => {
   await requireAdmin(event)
   const db = useDB()
@@ -41,7 +32,7 @@ export default defineEventHandler(async (event) => {
   }).where(eq(submissions.id, id)).returning()
 
   if (body.status === 'approved') {
-    const slug = generateSlug(submission.communityName)
+    const slug = await generateUniqueSlug(submission.communityName)
 
     const [community] = await db.insert(communities).values({
       slug,
