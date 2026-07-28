@@ -41,10 +41,14 @@ export default defineEventHandler(async (event) => {
     db.select().from(communityImages).where(eq(communityImages.communityId, id)).orderBy(communityImages.sortOrder),
   ])
 
-  const pending = await getPendingRevision(id)
+  const [pending, sections] = await Promise.all([
+    getPendingRevision(id),
+    getCommunitySections(id),
+  ])
 
   return {
     ...community,
+    sections: sections.map(s => ({ title: s.title, body: s.body })),
     moduleNames: moduleRows.map(r => r.name),
     soughtModuleNames: soughtRows.map(r => r.name),
     experienceNames: experienceRows.map(r => r.name),

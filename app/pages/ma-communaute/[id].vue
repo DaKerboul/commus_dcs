@@ -176,6 +176,67 @@
           </div>
         </section>
 
+        <!-- Free sections -->
+        <section class="space-y-4">
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <h2 class="font-semibold text-gray-900 dark:text-white">Sections libres</h2>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Jusqu'à {{ MAX_SECTIONS }} sections de votre choix (« Nos serveurs », « Notre histoire »…).
+              </p>
+            </div>
+            <UButton
+              v-if="form.sections.length < MAX_SECTIONS"
+              icon="i-heroicons-plus"
+              variant="outline"
+              color="neutral"
+              size="xs"
+              @click="form.sections.push({ title: '', body: '' })"
+            >
+              Ajouter
+            </UButton>
+          </div>
+
+          <div
+            v-for="(section, i) in form.sections"
+            :key="i"
+            class="rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-3"
+          >
+            <div class="flex items-center gap-2">
+              <UInput v-model="section.title" placeholder="Titre de la section" class="flex-1" />
+              <UButton icon="i-heroicons-arrow-up" variant="ghost" color="neutral" size="xs" :disabled="i === 0" @click="moveSection(i, -1)" />
+              <UButton icon="i-heroicons-arrow-down" variant="ghost" color="neutral" size="xs" :disabled="i === form.sections.length - 1" @click="moveSection(i, 1)" />
+              <UButton icon="i-heroicons-trash" variant="ghost" color="error" size="xs" @click="form.sections.splice(i, 1)" />
+            </div>
+            <UTextarea v-model="section.body" :rows="5" placeholder="Contenu (markdown accepté)" class="w-full font-mono text-sm" />
+          </div>
+        </section>
+
+        <!-- Appearance -->
+        <section class="space-y-4">
+          <div>
+            <h2 class="font-semibold text-gray-900 dark:text-white">Apparence</h2>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              Une couleur d'accent pour votre fiche, choisie dans la palette de l'annuaire.
+            </p>
+          </div>
+          <div class="flex flex-wrap gap-2 items-center">
+            <button
+              v-for="c in ACCENT_COLORS"
+              :key="c.value"
+              type="button"
+              :title="c.label"
+              class="h-8 w-8 rounded-full border-2 transition-transform hover:scale-110"
+              :class="form.accentColor === c.value ? 'border-gray-900 dark:border-white scale-110' : 'border-transparent'"
+              :style="{ backgroundColor: c.hex }"
+              @click="form.accentColor = c.value"
+            />
+            <UButton v-if="form.accentColor" variant="ghost" color="neutral" size="xs" @click="form.accentColor = null">
+              Réinitialiser
+            </UButton>
+          </div>
+        </section>
+
         <!-- Identity & links — reviewed before publishing -->
         <section class="space-y-4">
           <div>
@@ -201,6 +262,72 @@
               />
             </UFormField>
           </div>
+        </section>
+
+        <!-- Managers -->
+        <section v-if="isOwner" class="space-y-4">
+          <div>
+            <h2 class="font-semibold text-gray-900 dark:text-white">Gestionnaires</h2>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              Invitez un co-gestionnaire avec un lien à usage unique valable 72&nbsp;h.
+            </p>
+          </div>
+
+          <div v-if="members.length" class="space-y-2">
+            <div
+              v-for="m in members"
+              :key="m.userId"
+              class="flex items-center gap-3 rounded-lg border border-gray-200 dark:border-gray-800 p-3"
+            >
+              <img v-if="m.avatarUrl" :src="m.avatarUrl" alt="" class="h-8 w-8 rounded-full" />
+              <UIcon v-else name="i-heroicons-user-circle" class="text-2xl text-gray-400" />
+              <span class="flex-1 min-w-0 truncate text-sm text-gray-900 dark:text-white">{{ m.displayName }}</span>
+              <UBadge :color="m.role === 'owner' ? 'primary' : 'neutral'" variant="subtle" size="xs">
+                {{ m.role === 'owner' ? 'Responsable' : 'Éditeur' }}
+              </UBadge>
+              <UButton
+                v-if="m.role === 'editor'"
+                variant="ghost"
+                color="neutral"
+                size="xs"
+                :loading="memberBusy === m.userId"
+                @click="setRole(m.userId, 'owner')"
+              >
+                Promouvoir
+              </UButton>
+              <UButton
+                icon="i-heroicons-x-mark"
+                variant="ghost"
+                color="error"
+                size="xs"
+                :loading="memberBusy === m.userId"
+                @click="removeMember(m.userId)"
+              />
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 flex-wrap">
+            <UButton icon="i-heroicons-link" variant="outline" color="neutral" size="sm" :loading="inviteBusy" @click="createInvite">
+              Générer un lien d'invitation
+            </UButton>
+            <UButton v-if="members.length" variant="ghost" color="neutral" size="sm" icon="i-heroicons-arrow-path" @click="loadMembers">
+              Rafraîchir
+            </UButton>
+          </div>
+
+          <div v-if="inviteCode" class="rounded-lg border border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/30 p-3">
+            <p class="text-xs text-emerald-800 dark:text-emerald-300 mb-2">
+              Partagez ce lien avec la personne concernée. Il n'est affiché qu'une fois.
+            </p>
+            <div class="flex items-center gap-2">
+              <UInput :model-value="inviteUrl" readonly class="flex-1 font-mono text-xs" />
+              <UButton icon="i-heroicons-clipboard" variant="outline" color="neutral" size="sm" @click="copyInvite">
+                {{ copied ? 'Copié' : 'Copier' }}
+              </UButton>
+            </div>
+          </div>
+
+          <p v-if="memberError" class="text-sm text-red-500">{{ memberError }}</p>
         </section>
       </div>
 
@@ -259,6 +386,105 @@ const SENSITIVE_LABELS: Record<string, string> = {
   images: 'Galerie',
 }
 
+const MAX_SECTIONS = 4
+
+// Mirrors the server-side palette in server/utils/community-theme.ts.
+const ACCENT_COLORS = [
+  { value: 'blue', label: 'Bleu', hex: '#3b82f6' },
+  { value: 'sky', label: 'Ciel', hex: '#0ea5e9' },
+  { value: 'cyan', label: 'Cyan', hex: '#06b6d4' },
+  { value: 'teal', label: 'Turquoise', hex: '#14b8a6' },
+  { value: 'emerald', label: 'Émeraude', hex: '#10b981' },
+  { value: 'amber', label: 'Ambre', hex: '#f59e0b' },
+  { value: 'orange', label: 'Orange', hex: '#f97316' },
+  { value: 'red', label: 'Rouge', hex: '#ef4444' },
+  { value: 'rose', label: 'Rose', hex: '#f43f5e' },
+  { value: 'violet', label: 'Violet', hex: '#8b5cf6' },
+  { value: 'indigo', label: 'Indigo', hex: '#6366f1' },
+  { value: 'slate', label: 'Ardoise', hex: '#64748b' },
+]
+
+interface Member {
+  userId: number
+  displayName: string
+  avatarUrl: string | null
+  role: 'owner' | 'editor'
+}
+
+const account = useAccount()
+const members = ref<Member[]>([])
+const memberBusy = ref<number | null>(null)
+const memberError = ref('')
+const inviteBusy = ref(false)
+const inviteCode = ref('')
+const copied = ref(false)
+
+const isOwner = computed(() => account.roleFor(id) === 'owner')
+const inviteUrl = computed(() =>
+  inviteCode.value ? `${window.location.origin}/invitation?code=${inviteCode.value}` : '',
+)
+
+async function loadMembers() {
+  try {
+    members.value = await $fetch<Member[]>(`/api/my/communities/${id}/members`)
+  } catch {
+    members.value = []
+  }
+}
+
+async function createInvite() {
+  inviteBusy.value = true
+  memberError.value = ''
+  copied.value = false
+  try {
+    const res = await $fetch<{ code: string }>(`/api/my/communities/${id}/invites`, { method: 'POST' })
+    inviteCode.value = res.code
+  } catch (error: any) {
+    memberError.value = error?.data?.statusMessage || "Impossible de générer l'invitation."
+  } finally {
+    inviteBusy.value = false
+  }
+}
+
+async function copyInvite() {
+  await navigator.clipboard.writeText(inviteUrl.value)
+  copied.value = true
+}
+
+async function setRole(userId: number, role: 'owner' | 'editor') {
+  memberBusy.value = userId
+  memberError.value = ''
+  try {
+    await $fetch(`/api/my/communities/${id}/members/${userId}`, { method: 'PUT', body: { role } })
+    await loadMembers()
+  } catch (error: any) {
+    memberError.value = error?.data?.statusMessage || "Modification impossible."
+  } finally {
+    memberBusy.value = null
+  }
+}
+
+async function removeMember(userId: number) {
+  memberBusy.value = userId
+  memberError.value = ''
+  try {
+    await $fetch(`/api/my/communities/${id}/members/${userId}`, { method: 'DELETE' })
+    await loadMembers()
+    await account.refresh()
+  } catch (error: any) {
+    memberError.value = error?.data?.statusMessage || "Retrait impossible."
+  } finally {
+    memberBusy.value = null
+  }
+}
+
+function moveSection(index: number, delta: number) {
+  const target = index + delta
+  if (target < 0 || target >= form.sections.length) return
+  const [item] = form.sections.splice(index, 1)
+  form.sections.splice(target, 0, item!)
+}
+
 const LINK_FIELDS = [
   { key: 'discordUrl', label: 'Discord', placeholder: 'https://discord.gg/…' },
   { key: 'websiteUrl', label: 'Site web', placeholder: 'https://…' },
@@ -289,10 +515,12 @@ const form = reactive({
   instagramUrl: '',
   facebookUrl: '',
   twitterUrl: '',
+  accentColor: null as string | null,
   historicalPeriods: [] as string[],
   moduleNames: [] as string[],
   soughtModuleNames: [] as string[],
   experienceNames: [] as string[],
+  sections: [] as { title: string; body: string }[],
 })
 
 /**
@@ -380,13 +608,16 @@ onMounted(async () => {
       instagramUrl: proposed.instagramUrl ?? data.instagramUrl ?? '',
       facebookUrl: proposed.facebookUrl ?? data.facebookUrl ?? '',
       twitterUrl: proposed.twitterUrl ?? data.twitterUrl ?? '',
+      accentColor: data.accentColor ?? null,
       historicalPeriods: data.historicalPeriods ?? [],
       moduleNames: data.moduleNames ?? [],
       soughtModuleNames: data.soughtModuleNames ?? [],
       experienceNames: data.experienceNames ?? [],
+      sections: data.sections ?? [],
     })
     pendingFields.value = data.pendingRevision?.fields ?? []
     loaded.value = true
+    await loadMembers()
   } catch (error: any) {
     loadError.value = error?.data?.statusMessage
       || "Impossible de charger cette fiche. Vérifiez que vous la gérez bien."
