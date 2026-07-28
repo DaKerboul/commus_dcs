@@ -26,6 +26,15 @@
           <UBadge :color="recruitmentColor" variant="subtle">
             {{ RECRUITMENT_LABELS[community.recruitmentStatus] }}
           </UBadge>
+          <UBadge
+            v-if="(community as any).isManagedByCommunity"
+            color="success"
+            variant="subtle"
+            title="Fiche tenue à jour par ses responsables"
+          >
+            <UIcon name="i-heroicons-check-badge" class="mr-0.5" />
+            Gérée par la commu
+          </UBadge>
           <UBadge v-if="(community as any).isCommunityPillar" color="warning" variant="solid">
             ⭐ Pilier de la Communauté
           </UBadge>
@@ -148,6 +157,12 @@
         <section v-if="community.objectives">
           <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Objectifs</h2>
           <CommunityRichText :html="community.objectivesHtml" :fallback="community.objectives" />
+        </section>
+
+        <!-- Community-authored sections -->
+        <section v-for="section in community.sections || []" :key="section.title">
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">{{ section.title }}</h2>
+          <CommunityRichText :html="section.bodyHtml" />
         </section>
 
         <!-- Modules -->

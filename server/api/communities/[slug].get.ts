@@ -97,6 +97,11 @@ Pas de niveau minimum (il est toutefois recommandé pour DCS de connaître les b
   const description = irreOverrides?.description ?? community.description
   const objectives = irreOverrides?.objectives ?? community.objectives
 
+  const [sectionRows, memberCount] = await Promise.all([
+    getCommunitySections(community.id),
+    countCommunityManagers(community.id),
+  ])
+
   return {
     id: community.id,
     slug: community.slug,
@@ -108,6 +113,12 @@ Pas de niveau minimum (il est toutefois recommandé pour DCS de connaître les b
     // receives HTML that has already been through the allowlist.
     descriptionHtml: renderMarkdown(description),
     objectivesHtml: renderMarkdown(objectives),
+    sections: sectionRows.map(s => ({ title: s.title, bodyHtml: renderMarkdown(s.body) })),
+    accentColor: community.accentColor,
+    accentHex: accentHex(community.accentColor),
+    bannerUrl: community.bannerUrl,
+    // Drives the "managed by the community" badge, the incentive for others to claim.
+    isManagedByCommunity: memberCount > 0,
     logoUrl: irreOverrides?.logoUrl ?? community.logoUrl,
     sizeCategory: irreOverrides?.sizeCategory ?? community.sizeCategory,
     communityType: irreOverrides?.communityType ?? community.communityType,

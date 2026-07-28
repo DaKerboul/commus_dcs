@@ -80,6 +80,17 @@ export async function requireUser(event: H3Event) {
   return user
 }
 
+/** How many people manage this community. Zero means nobody has claimed it. */
+export async function countCommunityManagers(communityId: number): Promise<number> {
+  const db = useDB()
+  const rows = await db
+    .select({ userId: communityMembers.userId })
+    .from(communityMembers)
+    .where(eq(communityMembers.communityId, communityId))
+
+  return rows.length
+}
+
 /** The membership row linking a user to a community, or null. */
 export async function getCommunityMembership(userId: number, communityId: number) {
   const db = useDB()

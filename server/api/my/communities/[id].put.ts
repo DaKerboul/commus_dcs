@@ -78,8 +78,14 @@ export default defineEventHandler(async (event) => {
     communityType: pickEnum(communityTypeEnum.enumValues, body?.communityType, current.communityType ?? 'other'),
     recruitmentStatus: pickEnum(recruitmentStatusEnum.enumValues, body?.recruitmentStatus, current.recruitmentStatus ?? 'unknown'),
     eventFrequency: pickEnum(eventFrequencyEnum.enumValues, body?.eventFrequency, current.eventFrequency ?? 'unknown'),
+    // Rejected values fall back to null rather than storing arbitrary text.
+    accentColor: 'accentColor' in body ? normalizeAccentColor(body.accentColor) : current.accentColor,
     updatedAt: new Date(),
   }).where(eq(communities.id, id)).returning()
+
+  if ('sections' in body) {
+    await replaceCommunitySections(id, body.sections)
+  }
 
   // normalizeStringArray returns null for an empty/absent list — an empty array
   // here means "clear this relation", which is a legitimate edit.
