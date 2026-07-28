@@ -1,21 +1,14 @@
 import { eq } from 'drizzle-orm'
-import {
-  communities,
-  communityModules,
-  communitySoughtModules,
-  communityExperiences,
-  communityHistoricalPeriods,
-  communityImages,
-  modules,
-  experiences,
-} from '#server/db/schema'
+import { communities } from '#server/db/schema'
+import type { RelationKind } from '#server/utils/community-write'
 
-async function requireAdmin(event: any) {
-  const session = await getUserSession(event)
-  if (!session?.user) {
-    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
-  }
-}
+const ALL_RELATIONS: RelationKind[] = [
+  'moduleNames',
+  'soughtModuleNames',
+  'experienceNames',
+  'historicalPeriods',
+  'images',
+]
 
 export default defineEventHandler(async (event) => {
   await requireAdmin(event)
@@ -27,7 +20,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Invalid ID' })
   }
 
-  // Update community
+  await snapshotCommunity(id, null)
+
   const [community] = await db.update(communities).set({
     name: body.name,
     slug: body.slug,
@@ -60,59 +54,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Community not found' })
   }
 
-  // Replace relations
-  await Promise.all([
-    db.delete(communityModules).where(eq(communityModules.communityId, id)),
-    db.delete(communitySoughtModules).where(eq(communitySoughtModules.communityId, id)),
-    db.delete(communityExperiences).where(eq(communityExperiences.communityId, id)),
-    db.delete(communityHistoricalPeriods).where(eq(communityHistoricalPeriods.communityId, id)),
-    db.delete(communityImages).where(eq(communityImages.communityId, id)),
-  ])
-
-  if (body.moduleNames?.length) {
-    const mods = await db.select().from(modules)
-    const modMap = new Map(mods.map(m => [m.name, m.id]))
-    const modValues = body.moduleNames
-      .filter((n: string) => modMap.has(n))
-      .map((n: string) => ({ communityId: id, moduleId: modMap.get(n)! }))
-    if (modValues.length) await db.insert(communityModules).values(modValues)
-  }
-
-  if (body.soughtModuleNames?.length) {
-    const mods = await db.select().from(modules)
-    const modMap = new Map(mods.map(m => [m.name, m.id]))
-    const modValues = body.soughtModuleNames
-      .filter((n: string) => modMap.has(n))
-      .map((n: string) => ({ communityId: id, moduleId: modMap.get(n)! }))
-    if (modValues.length) await db.insert(communitySoughtModules).values(modValues)
-  }
-
-  if (body.experienceNames?.length) {
-    const exps = await db.select().from(experiences)
-    const expMap = new Map(exps.map(e => [e.name, e.id]))
-    const expValues = body.experienceNames
-      .filter((n: string) => expMap.has(n))
-      .map((n: string) => ({ communityId: id, experienceId: expMap.get(n)! }))
-    if (expValues.length) await db.insert(communityExperiences).values(expValues)
-  }
-
-  if (body.historicalPeriods?.length) {
-    const periodValues = body.historicalPeriods.map((p: string) => ({
-      communityId: id,
-      period: p,
-    }))
-    await db.insert(communityHistoricalPeriods).values(periodValues)
-  }
-
-  if (body.images?.length) {
-    const imageValues = body.images.map((img: { url: string; alt?: string }, i: number) => ({
-      communityId: id,
-      url: img.url,
-      alt: img.alt || null,
-      sortOrder: i,
-    }))
-    await db.insert(communityImages).values(imageValues)
-  }
+  await syncCommunityRelations(id, body, ALL_RELATIONS)
 
   return community
 })
