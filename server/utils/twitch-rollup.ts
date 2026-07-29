@@ -252,6 +252,7 @@ export async function runDailyMaintenance(): Promise<void> {
   await rollupDay(yesterday)
   await rollupDay(today)
   await refreshProfilesAndLanguage()
+  await linkStreamersToCommunities()
   await syncFollowers()
   await matchVods()
   await purgeOldSamples()
