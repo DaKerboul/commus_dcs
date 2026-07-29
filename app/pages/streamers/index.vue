@@ -7,6 +7,16 @@
         <p class="mt-1 text-gray-500 dark:text-gray-400">
           Les streameurs francophones DCS World, détectés automatiquement via Twitch.
         </p>
+        <UButton
+          to="/streamers/stats"
+          icon="i-heroicons-chart-bar"
+          variant="outline"
+          color="primary"
+          size="sm"
+          class="mt-3"
+        >
+          Classements et statistiques
+        </UButton>
       </div>
       <div v-if="liveCount > 0" class="flex items-center gap-2">
         <span class="relative flex h-3 w-3">
