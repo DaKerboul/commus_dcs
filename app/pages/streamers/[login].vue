@@ -85,20 +85,33 @@
       </div>
 
       <!-- Stats -->
-      <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-10">
-        <div class="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-4 text-center">
-          <div class="text-2xl font-bold text-purple-400">{{ streamer.dcsDays }}</div>
-          <div class="text-xs text-gray-500">Jours DCS détectés</div>
-        </div>
-        <div class="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-4 text-center">
-          <div class="text-2xl font-bold text-green-400">{{ streamer.isLive ? 'En direct' : 'Hors ligne' }}</div>
-          <div class="text-xs text-gray-500">Statut actuel</div>
-        </div>
-        <div class="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-4 text-center">
-          <div class="text-2xl font-bold text-yellow-400">{{ lastStreamAgo }}</div>
-          <div class="text-xs text-gray-500">Dernier stream DCS</div>
-        </div>
-      </div>
+      <StreamerStatTiles :tiles="statTiles" class="mb-10" />
+
+      <!-- Sessions -->
+      <section class="mb-10">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-1">
+          <UIcon name="i-heroicons-signal" class="mr-1" />
+          Sessions récentes
+        </h2>
+        <p class="text-sm text-gray-500 mb-4">
+          Durées et audiences relevées en direct toutes les 5 minutes.
+        </p>
+        <StreamerSessionList :sessions="streamer.sessions || []" />
+      </section>
+
+      <!-- Follower curve -->
+      <section v-if="(streamer.followerCurve?.length || 0) > 1" class="mb-10">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-1">
+          <UIcon name="i-heroicons-arrow-trending-up" class="mr-1" />
+          Followers
+        </h2>
+        <p class="text-sm text-gray-500 mb-4">
+          {{ streamer.followers?.toLocaleString('fr-FR') }} aujourd'hui
+          <span v-if="followerDelta !== null" :class="followerDelta >= 0 ? 'text-emerald-500' : 'text-red-500'">
+            ({{ followerDelta >= 0 ? '+' : '' }}{{ followerDelta }} depuis le début du suivi)
+          </span>
+        </p>
+      </section>
 
       <!-- Calendar Heatmap -->
       <section class="mb-10">
@@ -145,6 +158,50 @@ useSeoMeta({
   description: computed(() => streamer.value ? `${streamer.value.displayName} : ${streamer.value.dcsDays} jours d'activité DCS détectés.` : ''),
   ogDescription: computed(() => streamer.value ? `Profil de ${streamer.value.displayName} sur Commus DCS FR` : ''),
   twitterCard: 'summary',
+})
+
+function formatHours(minutes: number) {
+  if (!minutes) return '0 h'
+  const h = Math.floor(minutes / 60)
+  const m = minutes % 60
+  if (h === 0) return `${m} min`
+  return m === 0 ? `${h} h` : `${h} h ${String(m).padStart(2, '0')}`
+}
+
+const statTiles = computed(() => {
+  const s = (streamer.value as any)?.stats
+  if (!s) return []
+
+  return [
+    {
+      label: 'Heures DCS (90 j)',
+      value: formatHours(s.dcsMinutes90d),
+      hint: s.totalMinutes90d > 0
+        ? `${Math.round((s.dcsMinutes90d / s.totalMinutes90d) * 100)}% de son temps d'antenne`
+        : undefined,
+    },
+    {
+      label: 'Sessions (90 j)',
+      value: s.sessions90d,
+      hint: s.activeDays > 0 ? `sur ${s.activeDays} jours actifs` : undefined,
+    },
+    {
+      label: 'Pic de spectateurs',
+      value: s.peakViewers90d,
+      hint: s.avgViewers90d > 0 ? `${s.avgViewers90d} en moyenne` : undefined,
+    },
+    {
+      label: 'Régularité',
+      value: `${s.regularity}%`,
+      hint: s.trackedDays > 0 ? `${s.activeDays}/${s.trackedDays} jours suivis` : undefined,
+    },
+  ]
+})
+
+const followerDelta = computed(() => {
+  const curve = (streamer.value as any)?.followerCurve
+  if (!curve || curve.length < 2) return null
+  return curve[curve.length - 1].followers - curve[0].followers
 })
 
 const lastStreamAgo = computed(() => {
