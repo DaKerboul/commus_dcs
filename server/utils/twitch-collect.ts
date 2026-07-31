@@ -217,9 +217,12 @@ export async function collectSamples(): Promise<{ discovered: number; live: numb
 
       await db.update(streamers).set({
         isLive: true,
+        currentGameId: stream.game_id || null,
         currentViewers: stream.viewer_count ?? 0,
         lastStreamTitle: stream.title || null,
-        lastStreamStartedAt: new Date(stream.started_at),
+        // Only advance the "last DCS stream" marker on an actual DCS stream,
+        // otherwise a racing stream would look like recent DCS activity.
+        ...(isDcs ? { lastStreamStartedAt: new Date(stream.started_at) } : {}),
         updatedAt: observedAt,
       }).where(eq(streamers.id, streamer.id))
 
@@ -239,7 +242,7 @@ export async function collectSamples(): Promise<{ discovered: number; live: numb
     const stillFlaggedLive = tracked.filter(s => s.isLive && !liveStreamerIds.includes(s.id))
     if (stillFlaggedLive.length) {
       await db.update(streamers)
-        .set({ isLive: false, currentViewers: 0, updatedAt: observedAt })
+        .set({ isLive: false, currentGameId: null, currentViewers: 0, updatedAt: observedAt })
         .where(inArray(streamers.id, stillFlaggedLive.map(s => s.id)))
     }
 

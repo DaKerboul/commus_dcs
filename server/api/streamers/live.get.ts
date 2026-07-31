@@ -1,8 +1,14 @@
 /**
- * GET /api/streamers/live — Quick endpoint for currently live DCS FR streamers.
+ * GET /api/streamers/live — streamers currently live *on DCS*.
+ *
+ * We poll our streamers by user id so we can tell DCS time from total airtime,
+ * which means `isLive` is true for any game. This is a DCS directory, so the
+ * live list must match on the game too — otherwise a sim-racing stream shows up
+ * as a live DCS stream.
  */
-import { eq } from 'drizzle-orm'
+import { and, desc, eq } from 'drizzle-orm'
 import { streamers } from '#server/db/schema'
+import { DCS_GAME_ID } from '#server/utils/twitch'
 
 export default defineEventHandler(async () => {
   const db = useDB()
@@ -17,8 +23,11 @@ export default defineEventHandler(async () => {
       lastStreamStartedAt: streamers.lastStreamStartedAt,
     })
     .from(streamers)
-    .where(eq(streamers.isLive, true))
-    .orderBy(streamers.currentViewers)
+    .where(and(
+      eq(streamers.isLive, true),
+      eq(streamers.currentGameId, DCS_GAME_ID),
+    ))
+    .orderBy(desc(streamers.currentViewers))
 
   return {
     count: live.length,

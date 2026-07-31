@@ -473,7 +473,11 @@ export const streamers = pgTable('streamers', {
   displayName: varchar('display_name', { length: 255 }).notNull(),
   description: text('description'),
   profileImageUrl: text('profile_image_url'),
+  // Live on Twitch, whatever the game. Since we poll our streamers by user id
+  // (to separate DCS time from total airtime), this alone no longer means
+  // "live on DCS" — pair it with currentGameId for that.
   isLive: boolean('is_live').default(false),
+  currentGameId: varchar('current_game_id', { length: 32 }),
   lastStreamTitle: text('last_stream_title'),
   lastStreamStartedAt: timestamp('last_stream_started_at'),
   currentViewers: integer('current_viewers').default(0),
