@@ -1,0 +1,1 @@
+ALTER TABLE "streamers" ADD COLUMN "current_game_id" varchar(32);

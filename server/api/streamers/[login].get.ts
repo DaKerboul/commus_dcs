@@ -11,6 +11,7 @@ import {
   communities,
 } from '#server/db/schema'
 import { computeSessionMetrics } from '#server/utils/twitch-metrics'
+import { DCS_GAME_ID } from '#server/utils/twitch'
 
 export default defineEventHandler(async (event) => {
   const login = getRouterParam(event, 'login')
@@ -126,7 +127,10 @@ export default defineEventHandler(async (event) => {
     displayName: streamer.displayName,
     description: streamer.description,
     profileImageUrl: streamer.profileImageUrl,
-    isLive: streamer.isLive ?? false,
+    // "En direct" on a DCS site means live on DCS; streaming another game is
+    // surfaced separately so the page stays honest without hiding activity.
+    isLive: (streamer.isLive ?? false) && streamer.currentGameId === DCS_GAME_ID,
+    isLiveOffTopic: (streamer.isLive ?? false) && streamer.currentGameId !== DCS_GAME_ID,
     currentViewers: streamer.currentViewers ?? 0,
     lastStreamTitle: streamer.lastStreamTitle,
     lastStreamStartedAt: streamer.lastStreamStartedAt?.toISOString() ?? null,
