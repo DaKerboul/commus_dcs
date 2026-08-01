@@ -28,7 +28,9 @@ export default defineEventHandler(async (event) => {
     shortDescription: body.shortDescription || null,
     description: body.description || null,
     objectives: body.objectives || null,
-    logoUrl: body.logoUrl || null,
+    // Accepts an http(s) URL or an uploaded base64 image, and nothing else —
+    // notably not javascript: URLs.
+    logoUrl: normalizeImageUrl(body.logoUrl),
     sizeCategory: body.sizeCategory || 'unknown',
     communityType: body.communityType || 'other',
     recruitmentStatus: body.recruitmentStatus || 'unknown',

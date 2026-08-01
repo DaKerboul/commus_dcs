@@ -260,6 +260,39 @@
             <UInput v-model="form.name" class="w-full" />
           </UFormField>
 
+          <UFormField label="Logo" hint="Carré, recadré automatiquement">
+            <div class="flex items-center gap-4">
+              <div class="h-20 w-20 shrink-0 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-100 dark:bg-gray-900 overflow-hidden flex items-center justify-center">
+                <img v-if="form.logoUrl" :src="form.logoUrl" alt="Logo" class="h-full w-full object-cover" />
+                <UIcon v-else name="i-heroicons-photo" class="text-2xl text-gray-400" />
+              </div>
+              <div class="flex flex-col gap-2">
+                <input ref="logoInputRef" type="file" accept="image/*" class="hidden" @change="onLogoFileChange">
+                <UButton icon="i-heroicons-arrow-up-tray" variant="outline" color="neutral" size="sm" @click="logoInputRef?.click()">
+                  {{ form.logoUrl ? 'Changer le logo' : 'Ajouter un logo' }}
+                </UButton>
+                <UButton
+                  v-if="form.logoUrl"
+                  icon="i-heroicons-trash"
+                  variant="ghost"
+                  color="error"
+                  size="sm"
+                  @click="form.logoUrl = ''"
+                >
+                  Retirer
+                </UButton>
+              </div>
+            </div>
+          </UFormField>
+
+          <ClientOnly>
+            <LogoCropModal
+              v-model:open="cropModalOpen"
+              :image-src="cropImageSrc"
+              @cropped="(url: string) => (form.logoUrl = url)"
+            />
+          </ClientOnly>
+
           <div class="grid gap-4 sm:grid-cols-2">
             <UFormField v-for="link in LINK_FIELDS" :key="link.key" :label="link.label">
               <UInput
@@ -395,6 +428,22 @@ const SENSITIVE_LABELS: Record<string, string> = {
 }
 
 const MAX_SECTIONS = 4
+
+// Logo upload — same crop-then-base64 flow as the public submission form.
+const logoInputRef = ref<HTMLInputElement | null>(null)
+const cropModalOpen = ref(false)
+const cropImageSrc = ref('')
+
+function onLogoFileChange(e: Event) {
+  const input = e.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (file?.type.startsWith('image/')) {
+    cropImageSrc.value = URL.createObjectURL(file)
+    cropModalOpen.value = true
+  }
+  // Reset so picking the same file twice still fires a change event.
+  input.value = ''
+}
 
 // Mirrors the server-side palette in server/utils/community-theme.ts.
 const ACCENT_COLORS = [
@@ -554,6 +603,7 @@ const form = reactive({
   instagramUrl: '',
   facebookUrl: '',
   twitterUrl: '',
+  logoUrl: '',
   accentColor: null as string | null,
   historicalPeriods: [] as string[],
   moduleNames: [] as string[],
@@ -647,6 +697,9 @@ onMounted(async () => {
       instagramUrl: proposed.instagramUrl ?? data.instagramUrl ?? '',
       facebookUrl: proposed.facebookUrl ?? data.facebookUrl ?? '',
       twitterUrl: proposed.twitterUrl ?? data.twitterUrl ?? '',
+      // A pending logo change shows instead of the published one, like the
+      // other fields awaiting review.
+      logoUrl: proposed.logoUrl ?? data.logoUrl ?? '',
       accentColor: data.accentColor ?? null,
       historicalPeriods: data.historicalPeriods ?? [],
       moduleNames: data.moduleNames ?? [],

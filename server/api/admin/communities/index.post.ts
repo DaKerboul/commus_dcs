@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
     shortDescription: body.shortDescription || null,
     description: body.description || null,
     objectives: body.objectives || null,
-    logoUrl: body.logoUrl || null,
+    logoUrl: normalizeImageUrl(body.logoUrl),
     sizeCategory: body.sizeCategory || 'unknown',
     communityType: body.communityType || 'other',
     recruitmentStatus: body.recruitmentStatus || 'unknown',

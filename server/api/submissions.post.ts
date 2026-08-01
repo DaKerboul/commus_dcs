@@ -33,7 +33,11 @@ export default defineEventHandler(async (event) => {
     shortDescription: trimText(body?.shortDescription, MAX_SHORT_TEXT),
     description: trimText(body?.description, MAX_LONG_TEXT),
     objectives: trimText(body?.objectives, MAX_LONG_TEXT),
-    logoUrl: normalizeUrl(body?.logoUrl),
+    // The form uploads a cropped logo as a base64 data URI (see LogoCropModal),
+    // so this must accept data: — normalizeUrl only allows http(s) and was
+    // silently discarding every uploaded logo. Screenshots were fixed the same
+    // way earlier; the logo field was missed.
+    logoUrl: normalizeImageUrl(body?.logoUrl),
     communityType: trimText(body?.communityType, 64),
     sizeCategory: trimText(body?.sizeCategory, 64),
     recruitmentStatus: trimText(body?.recruitmentStatus, 64),
