@@ -34,6 +34,41 @@
       </div>
     </div>
 
+    <!--
+      Signing in is required: the submitter becomes owner of the page once it is
+      approved, so they can maintain it themselves without claiming it later.
+    -->
+    <div
+      v-else-if="!account.isSignedIn.value"
+      class="mx-auto max-w-lg rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-8 text-center"
+    >
+      <UIcon name="i-simple-icons-discord" class="text-4xl text-[#5865F2] mb-3" />
+      <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
+        Connectez-vous pour proposer une communauté
+      </h2>
+      <p class="text-gray-600 dark:text-gray-400 mb-6">
+        La fiche sera rattachée à votre compte&nbsp;: vous pourrez la modifier vous-même
+        dès qu'elle sera validée, sans rien avoir à demander.
+      </p>
+
+      <UButton size="lg" icon="i-simple-icons-discord" @click="account.signIn('/soumettre')">
+        Se connecter avec Discord
+      </UButton>
+
+      <p class="mt-6 text-xs text-gray-500 dark:text-gray-400">
+        Nous ne récupérons que votre pseudo et votre avatar.
+        <NuxtLink to="/confidentialite" class="underline hover:text-gray-700 dark:hover:text-gray-300">
+          En savoir plus
+        </NuxtLink>
+      </p>
+      <NuxtLink
+        to="/contact?sujet=soumission-sans-discord"
+        class="mt-3 inline-block text-xs text-gray-400 dark:text-gray-600 underline hover:text-gray-600 dark:hover:text-gray-400"
+      >
+        Je n'ai pas de compte Discord
+      </NuxtLink>
+    </div>
+
     <form v-else @submit.prevent="submit">
       <!-- Progress bar with completion % -->
       <div class="mb-10">
@@ -624,6 +659,12 @@
             {{ step === steps.length - 2 ? 'Récapitulatif' : 'Suivant' }}
           </UButton>
           <div v-else class="flex flex-col items-end gap-2">
+            <p class="text-xs text-emerald-600 dark:text-emerald-400 text-right max-w-xs">
+              <UIcon name="i-heroicons-check-badge" class="align-text-bottom" />
+              Cette fiche sera rattachée à votre compte
+              <strong>{{ account.user.value?.displayName }}</strong>&nbsp;: vous pourrez la
+              modifier vous-même une fois validée.
+            </p>
             <p class="text-xs text-gray-500 dark:text-gray-400 text-right max-w-xs">
               En soumettant ce formulaire, vous acceptez que les informations de contact fournies soient publiées sur la fiche publique de votre communauté.
               <NuxtLink to="/confidentialite" class="underline underline-offset-2 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">Politique de confidentialité</NuxtLink>.
@@ -650,6 +691,7 @@ import { SIZE_LABELS, TYPE_LABELS, RECRUITMENT_LABELS, FREQUENCY_LABELS, PERIOD_
 useHead({ title: 'Soumettre — Commus DCS FR' })
 
 const toast = useToast()
+const account = useAccount()
 
 // ── Steps ──────────────────────────────────────────────
 const step = ref(0)
@@ -1000,7 +1042,15 @@ async function submit() {
       icon: 'i-heroicons-check-circle',
     })
   } catch (e: any) {
-    error.value = e?.data?.statusMessage || 'Erreur lors de l\'envoi.'
+    // A 401 means the session lapsed mid-form. The draft is already saved, so
+    // sending them back through Discord loses nothing.
+    if (e?.statusCode === 401) {
+      await account.refresh()
+      error.value = 'Votre session a expiré. Reconnectez-vous, votre brouillon est conservé.'
+    } else {
+      error.value = e?.data?.statusMessage || 'Erreur lors de l\'envoi.'
+    }
+
     toast.add({
       title: 'Échec de l\'envoi',
       description: error.value,

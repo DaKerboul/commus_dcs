@@ -2,6 +2,9 @@ import { eq } from 'drizzle-orm'
 import { communities, communityMembers, submissions } from '#server/db/schema'
 import type { RelationKind } from '#server/utils/community-write'
 
+/** Mirrors submissionStatusEnum; validated before it reaches Postgres. */
+const SUBMISSION_STATUSES = ['pending', 'approved', 'rejected']
+
 const ALL_RELATIONS: RelationKind[] = [
   'moduleNames',
   'soughtModuleNames',
@@ -13,11 +16,18 @@ const ALL_RELATIONS: RelationKind[] = [
 export default defineEventHandler(async (event) => {
   await requireAdmin(event)
   const db = useDB()
-  const id = parseInt(getRouterParam(event, 'id')!)
+  const id = parseInt(getRouterParam(event, 'id') || '', 10)
   const body = await readBody(event)
 
-  if (!id || !body.status) {
-    throw createError({ statusCode: 400, statusMessage: 'Invalid request' })
+  if (!Number.isInteger(id) || id <= 0) {
+    throw createError({ statusCode: 400, statusMessage: 'Identifiant invalide' })
+  }
+
+  // `status` feeds a pg enum: an unexpected value would surface as a 500 from
+  // Postgres instead of a clear rejection.
+  const status = body?.status
+  if (!SUBMISSION_STATUSES.includes(status)) {
+    throw createError({ statusCode: 400, statusMessage: 'Statut invalide' })
   }
 
   const [submission] = await db.select().from(submissions).where(eq(submissions.id, id)).limit(1)
@@ -25,13 +35,23 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Soumission non trouvée' })
   }
 
+  // Approving creates a community, a permanent slug and an ownership grant.
+  // Without this guard, flipping an approved submission back to pending and
+  // approving it again produced a duplicate community.
+  if (status === 'approved' && submission.status === 'approved') {
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'Cette soumission a déjà été approuvée.',
+    })
+  }
+
   const [updated] = await db.update(submissions).set({
-    status: body.status,
-    adminNotes: body.adminNotes || null,
+    status,
+    adminNotes: trimText(body?.adminNotes, 2000),
     updatedAt: new Date(),
   }).where(eq(submissions.id, id)).returning()
 
-  if (body.status === 'approved') {
+  if (status === 'approved') {
     const slug = await generateUniqueSlug(submission.communityName)
 
     const [community] = await db.insert(communities).values({
