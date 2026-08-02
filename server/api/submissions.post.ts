@@ -1,4 +1,10 @@
-import { submissions } from '#server/db/schema'
+import {
+  communityTypeEnum,
+  eventFrequencyEnum,
+  recruitmentStatusEnum,
+  sizeCategoryEnum,
+  submissions,
+} from '#server/db/schema'
 import {
   trimText,
   normalizeUrl,
@@ -10,7 +16,36 @@ import {
 const MAX_SHORT_TEXT = 280
 const MAX_LONG_TEXT = 8_000
 
+/** Three submissions a day is generous for a directory this size. */
+const SUBMIT_LIMIT = {
+  max: 3,
+  windowMs: 24 * 60 * 60 * 1000,
+  blockMs: 24 * 60 * 60 * 1000,
+}
+
+/**
+ * Keeps a value only if it belongs to its enum, else null.
+ *
+ * These columns are `text` in the submissions table but feed real pg enums when
+ * the submission is approved, so an unexpected value would only blow up later,
+ * on the admin's approval click.
+ */
+function pickEnum(allowed: readonly string[], value: unknown): string | null {
+  const text = trimText(value, 64)
+  return text && allowed.includes(text) ? text : null
+}
+
 export default defineEventHandler(async (event) => {
+  // Signing in is required: the submitter becomes owner of the page once it is
+  // approved, which removes the need to claim it afterwards.
+  const user = await requireUser(event)
+
+  enforceRateLimit(
+    `submission:${user.id}`,
+    SUBMIT_LIMIT,
+    'Vous avez déjà envoyé plusieurs propositions aujourd’hui. Réessayez demain.',
+  )
+
   const db = useDB()
   const body = await readBody(event)
 
@@ -21,11 +56,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Le nom de la communauté et le contact sont obligatoires.' })
   }
 
-  // Signing in is optional here; when present, the submitter becomes owner of
-  // the page once the admin approves it.
-  const session = await getUserSession(event)
-  const sessionUser = (session as { user?: { role?: string; id?: number } } | null)?.user
-  const submittedByUserId = sessionUser?.role === 'member' && sessionUser.id ? sessionUser.id : null
+  const submittedByUserId = user.id
 
   const [submission] = await db.insert(submissions).values({
     communityName,
@@ -38,10 +69,10 @@ export default defineEventHandler(async (event) => {
     // silently discarding every uploaded logo. Screenshots were fixed the same
     // way earlier; the logo field was missed.
     logoUrl: normalizeImageUrl(body?.logoUrl),
-    communityType: trimText(body?.communityType, 64),
-    sizeCategory: trimText(body?.sizeCategory, 64),
-    recruitmentStatus: trimText(body?.recruitmentStatus, 64),
-    eventFrequency: trimText(body?.eventFrequency, 64),
+    communityType: pickEnum(communityTypeEnum.enumValues, body?.communityType),
+    sizeCategory: pickEnum(sizeCategoryEnum.enumValues, body?.sizeCategory),
+    recruitmentStatus: pickEnum(recruitmentStatusEnum.enumValues, body?.recruitmentStatus),
+    eventFrequency: pickEnum(eventFrequencyEnum.enumValues, body?.eventFrequency),
     founder: trimText(body?.founder, 255),
     entryConditions: trimText(body?.entryConditions, MAX_LONG_TEXT),
     sizeText: trimText(body?.sizeText, 255),
