@@ -15,11 +15,30 @@
       </UButton>
     </div>
 
-    <div v-if="!filteredSubmissions.length" class="text-gray-500 text-center py-12">
-      Aucune soumission {{ statusFilter === 'all' ? '' : statusFilter === 'pending' ? 'en attente' : statusFilter === 'approved' ? 'approuvée' : 'rejetée' }}.
-    </div>
+    <AdminConfirmDialog
+      v-model:open="approveOpen"
+      title="Approuver cette soumission ?"
+      :description="`« ${approveTarget?.communityName} » sera publiée immédiatement dans l'annuaire.`"
+      :consequences="[
+        'Une fiche publique est créée avec une adresse définitive',
+        'Le soumetteur en devient propriétaire et pourra la modifier',
+        'La fiche apparaît aussitôt dans les listes et les statistiques',
+      ]"
+      confirm-label="Approuver et publier"
+      confirm-color="success"
+      confirm-icon="i-heroicons-check"
+      @confirm="confirmApprove"
+    />
 
-    <div v-else class="space-y-4">
+    <AdminDataState
+      :pending="pending"
+      :error="error"
+      :empty="!filteredSubmissions.length"
+      :empty-label="`Aucune soumission ${statusFilter === 'all' ? '' : statusFilter === 'pending' ? 'en attente' : statusFilter === 'approved' ? 'approuvée' : 'rejetée'}.`"
+      empty-icon="i-heroicons-inbox"
+      @retry="refresh()"
+    >
+    <div class="space-y-4">
       <div
         v-for="sub in filteredSubmissions"
         :key="sub.id"
@@ -157,7 +176,7 @@
               variant="solid"
               size="sm"
               :loading="loadingIds.has(sub.id)"
-              @click="updateStatus(sub.id, 'approved')"
+              @click="askApprove(sub)"
             >
               Approuver → créer la communauté
             </UButton>
@@ -187,6 +206,7 @@
         </div>
       </div>
     </div>
+    </AdminDataState>
   </div>
 </template>
 
@@ -211,7 +231,7 @@ const statusTabs = [
   { value: 'rejected', label: 'Rejetées', color: 'error' },
 ]
 
-const { data: submissions, refresh } = await useFetch<any[]>('/api/admin/submissions')
+const { data: submissions, refresh, pending, error } = await useFetch<any[]>('/api/admin/submissions')
 
 // Pre-fill admin notes from existing data
 watch(submissions, (subs) => {
@@ -240,18 +260,47 @@ function toggleExpand(id: number) {
   expandedIds.has(id) ? expandedIds.delete(id) : expandedIds.add(id)
 }
 
+const { run } = useAdminAction()
+const { refresh: refreshCounts } = useAdminCounts()
+
+const LABELS: Record<string, string> = {
+  approved: 'Soumission approuvée, la communauté est créée',
+  rejected: 'Soumission rejetée',
+  pending: 'Soumission remise en attente',
+}
+
 async function updateStatus(id: number, status: string) {
   loadingIds.add(id)
-  try {
-    await $fetch(`/api/admin/submissions/${id}`, {
-      method: 'PUT',
-      body: { status, adminNotes: adminNotes[id] || null },
-    })
-    await refresh()
-  } catch (e: any) {
-    console.error('Update failed:', e)
-  } finally {
-    loadingIds.delete(id)
-  }
+
+  // Failures used to go to console.error only — the admin saw nothing at all.
+  const result = await run(id, () => $fetch(`/api/admin/submissions/${id}`, {
+    method: 'PUT',
+    body: { status, adminNotes: adminNotes[id] || null },
+  }), {
+    success: LABELS[status] ?? 'Soumission mise à jour',
+    error: "La mise à jour a échoué",
+  })
+
+  loadingIds.delete(id)
+  if (result) await Promise.all([refresh(), refreshCounts()])
+}
+
+// ── Approbation ────────────────────────────────────────
+// Crée une fiche publiée, un slug définitif et accorde la propriété : à
+// confirmer explicitement.
+const approveTarget = ref<any>(null)
+const approveOpen = ref(false)
+
+function askApprove(sub: any) {
+  approveTarget.value = sub
+  approveOpen.value = true
+}
+
+async function confirmApprove() {
+  const target = approveTarget.value
+  if (!target) return
+  approveOpen.value = false
+  await updateStatus(target.id, 'approved')
+  approveTarget.value = null
 }
 </script>
