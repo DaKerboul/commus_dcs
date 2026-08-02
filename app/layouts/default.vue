@@ -45,9 +45,6 @@
                     <UButton to="/infographie" variant="ghost" color="neutral" size="sm" block class="justify-start" icon="i-heroicons-chart-pie">
                       DCS en chiffres
                     </UButton>
-                    <UButton to="/modules" variant="ghost" color="neutral" size="sm" block class="justify-start" icon="i-heroicons-table-cells">
-                      Tableau des modules
-                    </UButton>
                     <UButton to="/timeline" variant="ghost" color="neutral" size="sm" block class="justify-start" icon="i-heroicons-clock">
                       Timeline
                     </UButton>
@@ -172,9 +169,6 @@
           </UButton>
           <UButton to="/infographie" variant="ghost" color="neutral" block @click="mobileOpen = false">
             DCS en chiffres
-          </UButton>
-          <UButton to="/modules" variant="ghost" color="neutral" block @click="mobileOpen = false">
-            Tableau des modules
           </UButton>
           <UButton to="/timeline" variant="ghost" color="neutral" block @click="mobileOpen = false">
             Timeline
