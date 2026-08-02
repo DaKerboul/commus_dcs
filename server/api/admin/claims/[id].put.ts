@@ -1,5 +1,5 @@
 import { eq } from 'drizzle-orm'
-import { claimRequests, communityMembers } from '#server/db/schema'
+import { claimRequests, communityMembers, users } from '#server/db/schema'
 
 /**
  * Approve or reject a claim request.
@@ -23,6 +23,29 @@ export default defineEventHandler(async (event) => {
   const [claim] = await db.select().from(claimRequests).where(eq(claimRequests.id, id)).limit(1)
   if (!claim) {
     throw createError({ statusCode: 404, statusMessage: 'Demande introuvable' })
+  }
+
+  // Approving hands over ownership of a page. Without this guard a settled
+  // request could be re-approved indefinitely.
+  if (claim.status !== 'pending') {
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'Cette demande a déjà été traitée.',
+    })
+  }
+
+  // The UI shows a "suspended" badge but nothing stopped granting ownership to
+  // a blocked account.
+  if (status === 'approved') {
+    const [claimant] = await db.select({ isBlocked: users.isBlocked })
+      .from(users).where(eq(users.id, claim.userId)).limit(1)
+
+    if (claimant?.isBlocked) {
+      throw createError({
+        statusCode: 409,
+        statusMessage: 'Ce compte est suspendu : débloquez-le avant d’accorder la fiche.',
+      })
+    }
   }
 
   const [updated] = await db.update(claimRequests).set({

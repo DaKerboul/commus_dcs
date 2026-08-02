@@ -8,7 +8,15 @@
     </div>
 
     <!-- List -->
-    <div v-if="communities" class="space-y-2">
+    <AdminDataState
+      :pending="pending"
+      :error="error"
+      :empty="!communities?.length"
+      empty-label="Aucune communauté enregistrée."
+      empty-icon="i-heroicons-user-group"
+      @retry="refresh()"
+    >
+    <div class="space-y-2">
       <div
         v-for="c in communities"
         :key="c.id"
@@ -45,11 +53,48 @@
             variant="ghost"
             color="error"
             size="xs"
-            @click="deleteCommunity(c)"
+            :loading="isPending(c.id)"
+            @click="askDelete(c)"
           />
         </div>
       </div>
     </div>
+    </AdminDataState>
+
+    <!-- Suppression : irréversible, snapshots compris -->
+    <AdminConfirmDialog
+      v-model:open="deleteOpen"
+      title="Supprimer cette communauté ?"
+      :description="`« ${deleteTarget?.name} » et toutes ses données seront définitivement effacées.`"
+      :consequences="[
+        'Modules, expériences, périodes et galerie',
+        'Membres gestionnaires, réclamations et modifications en attente',
+        'Votes et statistiques accumulés',
+        'Historique de sauvegardes — la restauration ne sera plus possible',
+      ]"
+      :confirm-text="deleteTarget?.slug"
+      confirm-label="Supprimer définitivement"
+      confirm-icon="i-heroicons-trash"
+      :loading="isPending(deleteTarget?.id)"
+      @confirm="confirmDelete"
+    >
+      <div class="mt-4 rounded-lg border border-gray-200 dark:border-gray-800 p-3">
+        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+          Récupérez une copie avant de supprimer — c'est le seul moyen de revenir en arrière.
+        </p>
+        <UButton
+          v-if="deleteTarget"
+          :to="`/api/admin/communities/${deleteTarget.id}/export`"
+          external
+          icon="i-heroicons-arrow-down-tray"
+          variant="outline"
+          color="neutral"
+          size="sm"
+        >
+          Télécharger la sauvegarde JSON
+        </UButton>
+      </div>
+    </AdminConfirmDialog>
 
     <!-- Create/Edit Modal -->
     <UModal v-model:open="showModal">
@@ -174,7 +219,7 @@ import { SIZE_LABELS, TYPE_LABELS, RECRUITMENT_LABELS, FREQUENCY_LABELS } from '
 definePageMeta({ layout: 'admin' })
 useHead({ title: 'Admin Communautés — Commus DCS FR' })
 
-const { data: communities, refresh } = await useFetch<any[]>('/api/admin/communities')
+const { data: communities, refresh, pending, error } = await useFetch<any[]>('/api/admin/communities')
 
 const showModal = ref(false)
 const showCreate = ref(false)
@@ -225,26 +270,55 @@ function editCommunity(c: any) {
   showModal.value = true
 }
 
+const { run, isPending } = useAdminAction()
+const { refresh: refreshCounts } = useAdminCounts()
+
 async function saveCommunity() {
   saving.value = true
-  try {
-    if (editingId.value) {
-      await $fetch(`/api/admin/communities/${editingId.value}`, { method: 'PUT', body: form })
-    } else {
-      await $fetch('/api/admin/communities', { method: 'POST', body: form })
-    }
-    showModal.value = false
-    await refresh()
-  } catch (e: any) {
-    alert(e?.data?.statusMessage || 'Erreur')
-  } finally {
-    saving.value = false
-  }
+  const isEdit = !!editingId.value
+
+  const result = await run(editingId.value ?? 'new', () => (
+    isEdit
+      ? $fetch(`/api/admin/communities/${editingId.value}`, { method: 'PUT', body: form })
+      : $fetch('/api/admin/communities', { method: 'POST', body: form })
+  ), {
+    success: isEdit ? 'Fiche mise à jour' : 'Communauté créée',
+    error: isEdit ? 'La mise à jour a échoué' : 'La création a échoué',
+  })
+
+  saving.value = false
+  if (!result) return
+
+  showModal.value = false
+  await Promise.all([refresh(), refreshCounts()])
 }
 
-async function deleteCommunity(c: any) {
-  if (!confirm(`Supprimer "${c.name}" ?`)) return
-  await $fetch(`/api/admin/communities/${c.id}`, { method: 'DELETE' })
-  await refresh()
+// ── Suppression ────────────────────────────────────────
+// Cascades over ~15 tables, snapshots included, so it cannot be undone from
+// the app. The dialog offers a JSON export and demands the slug be typed.
+const deleteTarget = ref<any>(null)
+const deleteOpen = ref(false)
+
+function askDelete(c: any) {
+  deleteTarget.value = c
+  deleteOpen.value = true
+}
+
+async function confirmDelete() {
+  const target = deleteTarget.value
+  if (!target) return
+
+  const result = await run(target.id, () => (
+    $fetch<{ name: string }>(`/api/admin/communities/${target.id}`, { method: 'DELETE' })
+  ), {
+    success: `« ${target.name} » a été supprimée`,
+    error: 'La suppression a échoué',
+  })
+
+  if (!result) return
+
+  deleteOpen.value = false
+  deleteTarget.value = null
+  await Promise.all([refresh(), refreshCounts()])
 }
 </script>

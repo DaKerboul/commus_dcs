@@ -28,11 +28,15 @@
       </UButton>
     </div>
 
-    <div v-if="!visible.length" class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-8 text-center text-gray-500">
-      Aucune modification {{ filter === 'all' ? '' : STATUS_LABELS[filter] }} pour le moment.
-    </div>
-
-    <div v-else class="space-y-4">
+    <AdminDataState
+      :pending="pending"
+      :error="error"
+      :empty="!visible.length"
+      :empty-label="`Aucune modification ${filter === 'all' ? '' : STATUS_LABELS[filter]} pour le moment.`"
+      empty-icon="i-heroicons-document-check"
+      @retry="refresh()"
+    >
+    <div class="space-y-4">
       <div
         v-for="rev in visible"
         :key="rev.id"
@@ -63,13 +67,26 @@
             <div class="grid gap-2 sm:grid-cols-2 text-sm">
               <div class="rounded bg-red-50 dark:bg-red-950/30 p-2">
                 <span class="text-[10px] uppercase text-red-600 dark:text-red-400 font-medium">Actuel</span>
-                <p class="text-gray-700 dark:text-gray-300 line-through break-words mt-0.5">
+                <!-- Approving a logo change blind was impossible to judge. -->
+                <img
+                  v-if="isImage(change.from)"
+                  :src="String(change.from)"
+                  alt=""
+                  class="mt-1 h-20 w-20 rounded object-cover border border-gray-200 dark:border-gray-800"
+                />
+                <p v-else class="text-gray-700 dark:text-gray-300 line-through break-words mt-0.5">
                   {{ display(change.from) }}
                 </p>
               </div>
               <div class="rounded bg-emerald-50 dark:bg-emerald-950/30 p-2">
                 <span class="text-[10px] uppercase text-emerald-600 dark:text-emerald-400 font-medium">Proposé</span>
-                <p class="text-gray-900 dark:text-white break-words mt-0.5">
+                <img
+                  v-if="isImage(change.to)"
+                  :src="String(change.to)"
+                  alt=""
+                  class="mt-1 h-20 w-20 rounded object-cover border border-gray-200 dark:border-gray-800"
+                />
+                <p v-else class="text-gray-900 dark:text-white break-words mt-0.5">
                   {{ display(change.to) }}
                 </p>
               </div>
@@ -89,6 +106,10 @@
 
         <p v-if="rev.adminNote" class="mt-3 text-xs text-gray-500 italic">Note : {{ rev.adminNote }}</p>
 
+        <UFormField v-if="rev.status === 'pending'" class="mt-4" label="Note interne (facultative)">
+          <UTextarea v-model="notes[rev.id]" :rows="2" :maxlength="1000" class="w-full" />
+        </UFormField>
+
         <div v-if="rev.status === 'pending'" class="mt-4 flex items-center gap-2">
           <UButton color="success" size="sm" icon="i-heroicons-check" :loading="acting === rev.id" @click="resolve(rev.id, 'approved')">
             Publier
@@ -99,8 +120,7 @@
         </div>
       </div>
     </div>
-
-    <p v-if="actionError" class="mt-4 text-sm text-red-500">{{ actionError }}</p>
+    </AdminDataState>
   </div>
 </template>
 
@@ -153,9 +173,8 @@ const filters = [
 
 const filter = ref('pending')
 const acting = ref<number | null>(null)
-const actionError = ref('')
 
-const { data, pending, refresh } = await useFetch<Revision[]>('/api/admin/revisions')
+const { data, pending, refresh, error } = await useFetch<Revision[]>('/api/admin/revisions')
 
 const revisions = computed(() => data.value ?? [])
 const visible = computed(() =>
@@ -181,21 +200,34 @@ function isExternalLink(value: unknown): boolean {
   return typeof value === 'string' && /^https?:\/\//i.test(value)
 }
 
+/** Renderable image: an uploaded data URI or an http(s) image URL. */
+function isImage(value: unknown): boolean {
+  if (typeof value !== 'string' || !value) return false
+  return value.startsWith('data:image/') || /^https?:\/\/\S+\.(png|jpe?g|webp|gif)(\?|$)/i.test(value)
+}
+
 function formatDate(value: string) {
   return new Date(value).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })
 }
 
+const { run } = useAdminAction()
+const { refresh: refreshCounts } = useAdminCounts()
+
+/** Internal note per revision; the API accepted one but nothing could enter it. */
+const notes = reactive<Record<number, string>>({})
+
 async function resolve(id: number, status: 'approved' | 'rejected') {
   acting.value = id
-  actionError.value = ''
-  try {
-    await $fetch(`/api/admin/revisions/${id}`, { method: 'PUT', body: { status } })
-    await refresh()
-  } catch (error: any) {
-    actionError.value = error?.data?.statusMessage || "L'action a échoué. Réessayez."
-  } finally {
-    acting.value = null
-  }
+
+  const result = await run(id, () => $fetch(`/api/admin/revisions/${id}`, {
+    method: 'PUT',
+    body: { status, adminNote: notes[id] || null },
+  }), {
+    success: status === 'approved' ? 'Modification publiée' : 'Modification refusée',
+  })
+
+  acting.value = null
+  if (result) await Promise.all([refresh(), refreshCounts()])
 }
 
 useHead({ title: 'Modifications à valider — Admin' })

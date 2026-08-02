@@ -28,11 +28,15 @@
       </UButton>
     </div>
 
-    <div v-if="!visible.length" class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-8 text-center text-gray-500">
-      Aucune demande {{ filter === 'all' ? '' : STATUS_LABELS[filter] }} pour le moment.
-    </div>
-
-    <div v-else class="space-y-3">
+    <AdminDataState
+      :pending="pending"
+      :error="error"
+      :empty="!visible.length"
+      :empty-label="`Aucune demande ${filter === 'all' ? '' : STATUS_LABELS[filter]} pour le moment.`"
+      empty-icon="i-heroicons-hand-raised"
+      @retry="refresh()"
+    >
+    <div class="space-y-3">
       <div
         v-for="claim in visible"
         :key="claim.id"
@@ -80,12 +84,24 @@
               Note : {{ claim.adminNote }}
             </p>
 
+            <UFormField v-if="claim.status === 'pending'" class="mt-4" label="Note interne (facultative)">
+              <UTextarea
+                v-model="notes[claim.id]"
+                :rows="2"
+                :maxlength="1000"
+                placeholder="Pourquoi cette décision ?"
+                class="w-full"
+              />
+            </UFormField>
+
             <div v-if="claim.status === 'pending'" class="mt-4 flex items-center gap-2">
               <UButton
                 color="success"
                 size="sm"
                 icon="i-heroicons-check"
                 :loading="acting === claim.id"
+                :disabled="claim.userIsBlocked"
+                :title="claim.userIsBlocked ? 'Ce compte est suspendu' : undefined"
                 @click="resolve(claim.id, 'approved')"
               >
                 Approuver
@@ -94,7 +110,6 @@
                 color="error"
                 variant="outline"
                 size="sm"
-                icon="i-heroicons-x-mark"
                 :loading="acting === claim.id"
                 @click="resolve(claim.id, 'rejected')"
               >
@@ -105,8 +120,7 @@
         </div>
       </div>
     </div>
-
-    <p v-if="actionError" class="mt-4 text-sm text-red-500">{{ actionError }}</p>
+    </AdminDataState>
   </div>
 </template>
 
@@ -151,9 +165,8 @@ const filters = [
 
 const filter = ref('pending')
 const acting = ref<number | null>(null)
-const actionError = ref('')
 
-const { data, pending, refresh } = await useFetch<Claim[]>('/api/admin/claims')
+const { data, pending, refresh, error } = await useFetch<Claim[]>('/api/admin/claims')
 
 const claims = computed(() => data.value ?? [])
 const visible = computed(() =>
@@ -168,18 +181,26 @@ function formatDate(value: string) {
   return new Date(value).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
+const { run } = useAdminAction()
+const { refresh: refreshCounts } = useAdminCounts()
+
+/** Internal note per claim; the API accepted one but nothing could enter it. */
+const notes = reactive<Record<number, string>>({})
+
 async function resolve(id: number, status: 'approved' | 'rejected') {
   acting.value = id
-  actionError.value = ''
 
-  try {
-    await $fetch(`/api/admin/claims/${id}`, { method: 'PUT', body: { status } })
-    await refresh()
-  } catch (error: any) {
-    actionError.value = error?.data?.statusMessage || "L'action a échoué. Réessayez."
-  } finally {
-    acting.value = null
-  }
+  const result = await run(id, () => $fetch(`/api/admin/claims/${id}`, {
+    method: 'PUT',
+    body: { status, adminNote: notes[id] || null },
+  }), {
+    success: status === 'approved'
+      ? 'Réclamation approuvée — la personne gère désormais cette fiche'
+      : 'Réclamation rejetée',
+  })
+
+  acting.value = null
+  if (result) await Promise.all([refresh(), refreshCounts()])
 }
 
 useHead({ title: 'Réclamations — Admin' })

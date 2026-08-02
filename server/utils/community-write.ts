@@ -113,6 +113,42 @@ export async function syncCommunityRelations(
 }
 
 /**
+ * The full current state of a community — columns plus every relation.
+ *
+ * Shared by the snapshot mechanism and the admin export, so a downloaded copy
+ * and a restore point always describe the same thing.
+ */
+export async function buildCommunitySnapshot(communityId: number) {
+  const db = useDB()
+
+  const [community] = await db.select().from(communities).where(eq(communities.id, communityId)).limit(1)
+  if (!community) return null
+
+  const [moduleRows, soughtRows, experienceRows, periodRows, imageRows] = await Promise.all([
+    db.select({ name: modules.name }).from(communityModules)
+      .innerJoin(modules, eq(communityModules.moduleId, modules.id))
+      .where(eq(communityModules.communityId, communityId)),
+    db.select({ name: modules.name }).from(communitySoughtModules)
+      .innerJoin(modules, eq(communitySoughtModules.moduleId, modules.id))
+      .where(eq(communitySoughtModules.communityId, communityId)),
+    db.select({ name: experiences.name }).from(communityExperiences)
+      .innerJoin(experiences, eq(communityExperiences.experienceId, experiences.id))
+      .where(eq(communityExperiences.communityId, communityId)),
+    db.select().from(communityHistoricalPeriods).where(eq(communityHistoricalPeriods.communityId, communityId)),
+    db.select().from(communityImages).where(eq(communityImages.communityId, communityId)),
+  ])
+
+  return {
+    community,
+    moduleNames: moduleRows.map(r => r.name),
+    soughtModuleNames: soughtRows.map(r => r.name),
+    experienceNames: experienceRows.map(r => r.name),
+    historicalPeriods: periodRows.map(r => r.period),
+    images: imageRows.map(r => ({ url: r.url, alt: r.alt, sortOrder: r.sortOrder })),
+  }
+}
+
+/**
  * Stores the full current state of a community before it is modified, so an
  * edit can be undone. Best-effort: a snapshot failure must never block a save.
  */
@@ -120,35 +156,10 @@ export async function snapshotCommunity(communityId: number, userId: number | nu
   const db = useDB()
 
   try {
-    const [community] = await db.select().from(communities).where(eq(communities.id, communityId)).limit(1)
-    if (!community) return
+    const data = await buildCommunitySnapshot(communityId)
+    if (!data) return
 
-    const [moduleRows, soughtRows, experienceRows, periodRows, imageRows] = await Promise.all([
-      db.select({ name: modules.name }).from(communityModules)
-        .innerJoin(modules, eq(communityModules.moduleId, modules.id))
-        .where(eq(communityModules.communityId, communityId)),
-      db.select({ name: modules.name }).from(communitySoughtModules)
-        .innerJoin(modules, eq(communitySoughtModules.moduleId, modules.id))
-        .where(eq(communitySoughtModules.communityId, communityId)),
-      db.select({ name: experiences.name }).from(communityExperiences)
-        .innerJoin(experiences, eq(communityExperiences.experienceId, experiences.id))
-        .where(eq(communityExperiences.communityId, communityId)),
-      db.select().from(communityHistoricalPeriods).where(eq(communityHistoricalPeriods.communityId, communityId)),
-      db.select().from(communityImages).where(eq(communityImages.communityId, communityId)),
-    ])
-
-    await db.insert(communitySnapshots).values({
-      communityId,
-      userId,
-      data: {
-        community,
-        moduleNames: moduleRows.map(r => r.name),
-        soughtModuleNames: soughtRows.map(r => r.name),
-        experienceNames: experienceRows.map(r => r.name),
-        historicalPeriods: periodRows.map(r => r.period),
-        images: imageRows.map(r => ({ url: r.url, alt: r.alt, sortOrder: r.sortOrder })),
-      },
-    })
+    await db.insert(communitySnapshots).values({ communityId, userId, data })
 
     // Trim to the newest N, keeping the table from growing without bound.
     const stale = await db.select({ id: communitySnapshots.id })
