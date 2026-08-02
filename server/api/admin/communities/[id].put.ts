@@ -2,13 +2,25 @@ import { eq } from 'drizzle-orm'
 import { communities } from '#server/db/schema'
 import type { RelationKind } from '#server/utils/community-write'
 
-const ALL_RELATIONS: RelationKind[] = [
+const RELATION_KINDS: RelationKind[] = [
   'moduleNames',
   'soughtModuleNames',
   'experienceNames',
   'historicalPeriods',
   'images',
 ]
+
+/**
+ * Only the relations the caller actually sent.
+ *
+ * syncCommunityRelations deletes before it re-inserts, so naming a kind whose
+ * payload is absent wipes it. The admin form posts no relation field at all,
+ * which meant every edit from the panel silently erased the community's
+ * modules, experiences, historical periods and gallery.
+ */
+function relationsPresentIn(body: Record<string, unknown>): RelationKind[] {
+  return RELATION_KINDS.filter(kind => Array.isArray(body?.[kind]))
+}
 
 export default defineEventHandler(async (event) => {
   await requireAdmin(event)
@@ -56,7 +68,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Community not found' })
   }
 
-  await syncCommunityRelations(id, body, ALL_RELATIONS)
+  await syncCommunityRelations(id, body, relationsPresentIn(body))
 
   return community
 })

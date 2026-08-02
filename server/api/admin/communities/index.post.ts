@@ -1,13 +1,18 @@
 import { communities } from '#server/db/schema'
 import type { RelationKind } from '#server/utils/community-write'
 
-const ALL_RELATIONS: RelationKind[] = [
+const RELATION_KINDS: RelationKind[] = [
   'moduleNames',
   'soughtModuleNames',
   'experienceNames',
   'historicalPeriods',
   'images',
 ]
+
+/** Only the relations actually sent — see the note in [id].put.ts. */
+function relationsPresentIn(body: Record<string, unknown>): RelationKind[] {
+  return RELATION_KINDS.filter(kind => Array.isArray(body?.[kind]))
+}
 
 export default defineEventHandler(async (event) => {
   await requireAdmin(event)
@@ -45,7 +50,7 @@ export default defineEventHandler(async (event) => {
     published: body.published !== false,
   }).returning()
 
-  await syncCommunityRelations(community.id, body, ALL_RELATIONS)
+  await syncCommunityRelations(community.id, body, relationsPresentIn(body))
 
   return community
 })
