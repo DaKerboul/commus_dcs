@@ -376,7 +376,6 @@ const heroStats = computed(() => {
 
 const discoverCards = [
   { to: '/infographie', icon: 'i-heroicons-chart-pie', color: 'text-green-400', title: 'Infographie', subtitle: 'DCS en chiffres' },
-  { to: '/modules', icon: 'i-heroicons-table-cells', color: 'text-purple-400', title: 'Modules', subtitle: 'Tableau périodique' },
   { to: '/timeline', icon: 'i-heroicons-clock', color: 'text-amber-400', title: 'Timeline', subtitle: 'Histoire DCS FR' },
   { to: '/pulse', icon: 'i-heroicons-signal', color: 'text-red-400', title: 'Pulse', subtitle: 'Activité en direct' },
   { to: '/mon-profil', icon: 'i-heroicons-user-circle', color: 'text-cyan-400', title: 'Profil', subtitle: 'Mon profil pilote' },

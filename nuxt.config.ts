@@ -76,7 +76,6 @@ export default defineNuxtConfig({
       '/api/rss.xml': { swr: 600 },               // 10 min SWR
       '/api/communities/graph': { swr: 300 },     // 5 min SWR
       '/api/pulse': { swr: 60 },                  // 1 min SWR
-      '/api/modules/periodic': { swr: 300 },      // 5 min SWR
       '/api/infographie': { swr: 300 },            // 5 min SWR
     },
   },
