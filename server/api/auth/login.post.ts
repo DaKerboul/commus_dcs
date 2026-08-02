@@ -17,7 +17,25 @@ function safeEqual(a: string, b: string) {
   return crypto.timingSafeEqual(left, right)
 }
 
+/**
+ * Password sign-in — break-glass only.
+ *
+ * Authelia (OIDC + TOTP) is the sole admin authentication path. This route
+ * stays for the case where CT134 is unreachable and the admin panel would
+ * otherwise be locked out entirely, but it is refused unless explicitly turned
+ * on. Enable by setting NUXT_ADMIN_PASSWORD_FALLBACK=true in Coolify, sign in,
+ * then remove it again.
+ */
+export function isPasswordFallbackEnabled(): boolean {
+  return process.env.NUXT_ADMIN_PASSWORD_FALLBACK === 'true'
+}
+
 export default defineEventHandler(async (event) => {
+  if (!isPasswordFallbackEnabled()) {
+    // 404 rather than 403: an attacker learns nothing about the route existing.
+    throw createError({ statusCode: 404, statusMessage: 'Not Found' })
+  }
+
   const body = await readBody(event)
   const config = useRuntimeConfig()
   const ip = (getRequestIP(event, { xForwardedFor: true }) || 'unknown').toLowerCase().slice(0, 128)

@@ -15,7 +15,10 @@ services:
       # Override ALL variables below in Coolify — fallbacks are insecure placeholders only
       - NUXT_SESSION_PASSWORD=${NUXT_SESSION_PASSWORD:-change-me-to-a-32-char-secret!!}
       - NUXT_SESSION_SECRET=${NUXT_SESSION_SECRET:-}
+      # Break-glass only — Authelia is the normal admin sign-in. The password
+      # route answers 404 unless the fallback below is explicitly turned on.
       - NUXT_ADMIN_PASSWORD=${NUXT_ADMIN_PASSWORD:-admin}
+      - NUXT_ADMIN_PASSWORD_FALLBACK=${NUXT_ADMIN_PASSWORD_FALLBACK:-false}
       - NUXT_PUBLIC_SITE_URL=${NUXT_PUBLIC_SITE_URL:-http://localhost:3050}
       - NUXT_TWITCH_CLIENT_ID=${NUXT_TWITCH_CLIENT_ID:-}
       - NUXT_TWITCH_CLIENT_SECRET=${NUXT_TWITCH_CLIENT_SECRET:-}
