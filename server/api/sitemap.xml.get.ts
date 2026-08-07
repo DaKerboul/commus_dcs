@@ -3,21 +3,29 @@
  */
 import { eq } from 'drizzle-orm'
 import { communities, streamers } from '#server/db/schema'
+import { listModulesWithSlugs } from '#server/utils/module-slug'
 
 export default defineEventHandler(async (event) => {
   const db = useDB()
-  const siteUrl = 'https://commus.kerboul.me'
+  const config = useRuntimeConfig()
+  const siteUrl = (config.public.siteUrl as string) || 'https://commus.kerboul.me'
 
-  // Static pages
+  // Static pages. Personal pages (/mes-favoris, /mon-profil, /ma-communaute)
+  // are deliberately absent — they are per-visitor and have nothing to index.
   const staticPages = [
     { loc: '/', priority: '1.0', changefreq: 'daily' },
     { loc: '/communautes', priority: '0.9', changefreq: 'daily' },
     { loc: '/streamers', priority: '0.8', changefreq: 'daily' },
     { loc: '/trouver', priority: '0.7', changefreq: 'weekly' },
     { loc: '/stats', priority: '0.6', changefreq: 'weekly' },
+    { loc: '/streamers/stats', priority: '0.6', changefreq: 'daily' },
+    { loc: '/timeline', priority: '0.6', changefreq: 'weekly' },
+    { loc: '/infographie', priority: '0.5', changefreq: 'weekly' },
+    { loc: '/pulse', priority: '0.5', changefreq: 'daily' },
     { loc: '/soumettre', priority: '0.5', changefreq: 'monthly' },
     { loc: '/a-propos', priority: '0.4', changefreq: 'monthly' },
     { loc: '/contact', priority: '0.3', changefreq: 'monthly' },
+    { loc: '/confidentialite', priority: '0.2', changefreq: 'yearly' },
     { loc: '/changelog', priority: '0.3', changefreq: 'weekly' },
     { loc: '/api-docs', priority: '0.3', changefreq: 'monthly' },
     { loc: '/communautes/comparer', priority: '0.5', changefreq: 'weekly' },
@@ -33,6 +41,9 @@ export default defineEventHandler(async (event) => {
   const streamerRows = await db
     .select({ twitchLogin: streamers.twitchLogin })
     .from(streamers)
+
+  // One landing page per module — "escadron F-16C français" is a real search.
+  const moduleRows = await listModulesWithSlugs()
 
   const urls = [
     ...staticPages.map(p => `
@@ -53,6 +64,12 @@ export default defineEventHandler(async (event) => {
     <loc>${siteUrl}/streamers/${s.twitchLogin}</loc>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
+  </url>`),
+    ...moduleRows.map(m => `
+  <url>
+    <loc>${siteUrl}/modules/${m.slug}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>`),
   ]
 
