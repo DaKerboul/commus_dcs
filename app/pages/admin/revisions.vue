@@ -32,10 +32,24 @@
       :pending="pending"
       :error="error"
       :empty="!visible.length"
-      :empty-label="`Aucune modification ${filter === 'all' ? '' : STATUS_LABELS[filter]} pour le moment.`"
+      :empty-label="emptyLabel"
       empty-icon="i-heroicons-document-check"
       @retry="refresh()"
     >
+      <!-- Une file entièrement traitée ne doit pas ressembler à une file vide. -->
+      <template #empty>
+        <UButton
+          v-if="filter !== 'all' && revisions.length"
+          variant="outline"
+          color="neutral"
+          size="sm"
+          class="mt-3"
+          icon="i-heroicons-arrow-right"
+          @click="filter = 'all'"
+        >
+          Voir les {{ revisions.length }} modifications déjà traitées
+        </UButton>
+      </template>
     <div class="space-y-4">
       <div
         v-for="rev in visible"
@@ -171,7 +185,14 @@ const filters = [
   { value: 'all', label: 'Toutes' },
 ]
 
-const filter = ref('pending')
+// Le filtre vient de l'URL quand elle en porte un, pour que le lien d'une
+// notification reste valable et partageable.
+const route = useRoute()
+const filter = ref(
+  typeof route.query.status === 'string' && ['pending', 'approved', 'rejected', 'all'].includes(route.query.status)
+    ? route.query.status
+    : 'pending',
+)
 const acting = ref<number | null>(null)
 
 const { data, pending, refresh, error } = await useFetch<Revision[]>('/api/admin/revisions')
@@ -184,6 +205,12 @@ const visible = computed(() =>
 function countBy(status: string) {
   return status === 'all' ? revisions.value.length : revisions.value.filter(r => r.status === status).length
 }
+
+const emptyLabel = computed(() => {
+  if (filter.value === 'all') return 'Aucune modification proposée à ce jour.'
+  if (filter.value === 'pending' && revisions.value.length) return 'Tout est traité — aucune modification en attente.'
+  return `Aucune modification ${STATUS_LABELS[filter.value] ?? ''} pour le moment.`
+})
 
 /** Renders a field value compactly; base64 images would otherwise flood the page. */
 function display(value: unknown): string {

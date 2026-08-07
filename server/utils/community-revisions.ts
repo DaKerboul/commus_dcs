@@ -115,7 +115,7 @@ export async function queueSensitiveChanges(
       title: 'Modification à valider',
       subject: current.name,
       detail: pendingFields.map(f => SENSITIVE_FIELD_LABELS[f] ?? f).join(', '),
-      path: '/admin/revisions',
+      path: '/admin/revisions?status=pending',
     })
   }
 

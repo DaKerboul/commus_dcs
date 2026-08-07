@@ -32,10 +32,25 @@
       :pending="pending"
       :error="error"
       :empty="!visible.length"
-      :empty-label="`Aucune demande ${filter === 'all' ? '' : STATUS_LABELS[filter]} pour le moment.`"
+      :empty-label="emptyLabel"
       empty-icon="i-heroicons-hand-raised"
       @retry="refresh()"
     >
+      <!-- Sans ça, une file entièrement traitée ressemble à une file vide, et
+           on croit que les demandes ont disparu. -->
+      <template #empty>
+        <UButton
+          v-if="filter !== 'all' && claims.length"
+          variant="outline"
+          color="neutral"
+          size="sm"
+          class="mt-3"
+          icon="i-heroicons-arrow-right"
+          @click="filter = 'all'"
+        >
+          Voir les {{ claims.length }} demandes déjà traitées
+        </UButton>
+      </template>
     <div class="space-y-3">
       <div
         v-for="claim in visible"
@@ -163,7 +178,14 @@ const filters = [
   { value: 'all', label: 'Toutes' },
 ]
 
-const filter = ref('pending')
+// Le filtre vient de l'URL quand elle en porte un, pour que le lien d'une
+// notification reste valable et partageable.
+const route = useRoute()
+const filter = ref(
+  typeof route.query.status === 'string' && ['pending', 'approved', 'rejected', 'all'].includes(route.query.status)
+    ? route.query.status
+    : 'pending',
+)
 const acting = ref<number | null>(null)
 
 const { data, pending, refresh, error } = await useFetch<Claim[]>('/api/admin/claims')
@@ -176,6 +198,12 @@ const visible = computed(() =>
 function countBy(status: string) {
   return status === 'all' ? claims.value.length : claims.value.filter(c => c.status === status).length
 }
+
+const emptyLabel = computed(() => {
+  if (filter.value === 'all') return 'Aucune demande de réclamation à ce jour.'
+  if (filter.value === 'pending' && claims.value.length) return 'Tout est traité — aucune demande en attente.'
+  return `Aucune demande ${STATUS_LABELS[filter.value] ?? ''} pour le moment.`
+})
 
 function formatDate(value: string) {
   return new Date(value).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })

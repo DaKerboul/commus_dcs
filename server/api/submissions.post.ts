@@ -105,7 +105,7 @@ export default defineEventHandler(async (event) => {
     title: 'Nouvelle soumission',
     subject: communityName,
     detail: `par ${user.discordUsername}`,
-    path: '/admin/submissions',
+    path: '/admin/submissions?status=pending',
   })
 
   return submission
