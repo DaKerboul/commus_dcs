@@ -18,9 +18,15 @@ export default defineNuxtConfig({
     databaseUrl: '',
     twitchClientId: '',
     twitchClientSecret: '',
+    // Shared with SENTINEL's Gjallarhorn bot — send only, never getUpdates.
+    telegramBotToken: '',
+    telegramChatId: '',
     public: {
       siteName: 'Commus DCS FR',
       siteDescription: 'Annuaire des communautés francophones DCS World',
+      // Was read from the env but never declared here, so absolute links had
+      // no reliable source.
+      siteUrl: 'https://commus.kerboul.me',
     },
   },
 

@@ -92,5 +92,21 @@ export default defineEventHandler(async (event) => {
     submittedByUserId,
   }).returning()
 
+  // This flow had no structured log at all — the only pending queue without one.
+  console.log(JSON.stringify({
+    event: 'submission.created',
+    submissionId: submission.id,
+    communityName,
+    userId: user.id,
+  }))
+
+  notifyAdminAsync({
+    emoji: '📥',
+    title: 'Nouvelle soumission',
+    subject: communityName,
+    detail: `par ${user.discordUsername}`,
+    path: '/admin/submissions',
+  })
+
   return submission
 })
