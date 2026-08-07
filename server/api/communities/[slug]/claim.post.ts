@@ -85,7 +85,7 @@ export default defineEventHandler(async (event) => {
     title: existingRequest ? 'Réclamation rouverte' : 'Réclamation de fiche',
     subject: community.name,
     detail: `par ${user.discordUsername}`,
-    path: '/admin/reclamations',
+    path: '/admin/reclamations?status=pending',
   })
 
   return { ok: true, status: claim.status }

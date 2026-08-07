@@ -219,7 +219,14 @@ import {
 definePageMeta({ layout: 'admin' })
 useHead({ title: 'Admin Soumissions — Commus DCS FR' })
 
-const statusFilter = ref<string>('all')
+// Le filtre vient de l'URL quand elle en porte un, pour que le lien d'une
+// notification pointe bien sur la file concernée.
+const route = useRoute()
+const statusFilter = ref<string>(
+  typeof route.query.status === 'string' && ['pending', 'approved', 'rejected', 'all'].includes(route.query.status)
+    ? route.query.status
+    : 'all',
+)
 const expandedIds = reactive(new Set<number>())
 const adminNotes = reactive<Record<number, string>>({})
 const loadingIds = reactive(new Set<number>())
