@@ -79,6 +79,9 @@ export default defineNuxtConfig({
       '/api/streamers': { swr: false },            // live data — no cache
       '/api/streamers/live': { swr: false },       // live data — no cache
       '/api/sitemap.xml': { swr: 3600 },          // 1 hour SWR
+      '/api/modules/**': { swr: 600 },             // 10 min SWR — pages par module
+      '/llms.txt': { swr: 3600 },                  // 1 hour SWR
+      '/llms-full.txt': { swr: 3600 },             // 1 hour SWR — corpus complet
       '/api/rss.xml': { swr: 600 },               // 10 min SWR
       '/api/communities/graph': { swr: 300 },     // 5 min SWR
       '/api/pulse': { swr: 60 },                  // 1 min SWR

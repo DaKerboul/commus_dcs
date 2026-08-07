@@ -169,10 +169,11 @@
         <section v-if="community.moduleNames?.length">
           <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Modules DCS</h2>
           <div class="flex flex-wrap gap-2">
+            <!-- Vers la page du module : c'est ce qui la rend indexable. -->
             <NuxtLink
               v-for="mod in community.moduleNames"
               :key="mod"
-              :to="`/communautes?modules=${encodeURIComponent(mod)}`"
+              :to="`/modules/${moduleSlug(mod)}`"
             >
               <UBadge variant="subtle" color="primary" size="md">{{ mod }}</UBadge>
             </NuxtLink>
