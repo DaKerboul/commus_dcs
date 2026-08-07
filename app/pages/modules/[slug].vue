@@ -113,7 +113,17 @@
 const route = useRoute()
 const slug = route.params.slug as string
 
-const { data, pending } = await useFetch<any>(`/api/modules/${slug}`)
+const { data, pending, error } = await useFetch<any>(`/api/modules/${slug}`)
+
+// Sans ça la page répondait 200 avec un message d'erreur : un « soft 404 »,
+// que les moteurs indexent comme du contenu valide.
+if (error.value) {
+  throw createError({
+    statusCode: error.value.statusCode === 404 ? 404 : 500,
+    statusMessage: 'Module introuvable',
+    fatal: true,
+  })
+}
 
 const title = computed(() =>
   data.value
