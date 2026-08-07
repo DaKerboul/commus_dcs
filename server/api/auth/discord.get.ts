@@ -36,6 +36,13 @@ const oauthHandler = defineOAuthDiscordEventHandler({
     const avatar = avatarUrl(discordId, discordUser.avatar)
     const now = new Date()
 
+    // The upsert alone cannot tell a first sign-in from a returning one, and
+    // comparing timestamps would be fragile (app clock vs database clock).
+    // One indexed lookup per login is cheap and unambiguous.
+    const [before] = await db.select({ id: users.id }).from(users)
+      .where(eq(users.discordId, discordId)).limit(1)
+    const isNewAccount = !before
+
     const [account] = await db.insert(users).values({
       discordId,
       discordUsername: displayName.slice(0, 100),
@@ -49,6 +56,15 @@ const oauthHandler = defineOAuthDiscordEventHandler({
         lastLoginAt: now,
       },
     }).returning()
+
+    if (isNewAccount && !account.isBlocked) {
+      notifyAdminAsync({
+        emoji: '👤',
+        title: 'Nouveau compte',
+        subject: account.discordUsername,
+        path: '/admin/reclamations',
+      })
+    }
 
     if (account.isBlocked) {
       console.log(JSON.stringify({ event: 'auth.discord', result: 'blocked', userId: account.id }))

@@ -107,6 +107,16 @@ export async function queueSensitiveChanges(
       userId,
       fieldsPatch: patch,
     })
+
+    // Only on creation. A manager tweaking the same pending revision several
+    // times in a row should not produce a notification per save.
+    notifyAdminAsync({
+      emoji: '✏️',
+      title: 'Modification à valider',
+      subject: current.name,
+      detail: pendingFields.map(f => SENSITIVE_FIELD_LABELS[f] ?? f).join(', '),
+      path: '/admin/revisions',
+    })
   }
 
   return pendingFields

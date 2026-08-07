@@ -63,5 +63,13 @@ export default defineEventHandler(async (event) => {
     role: invite.grantsRole,
   }))
 
+  notifyAdminAsync({
+    emoji: '🤝',
+    title: 'Invitation acceptée',
+    subject: community?.name,
+    detail: `${user.discordUsername} · ${invite.grantsRole === 'owner' ? 'responsable' : 'éditeur'}`,
+    path: `/communautes/${community?.slug ?? ''}`,
+  })
+
   return { ok: true, community, role: invite.grantsRole }
 })

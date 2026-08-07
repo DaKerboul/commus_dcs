@@ -73,10 +73,20 @@ export default defineEventHandler(async (event) => {
 
   console.log(JSON.stringify({
     event: 'community.claim',
-    result: 'requested',
+    result: existingRequest ? 'reopened' : 'requested',
     communityId: community.id,
+    communityName: community.name,
     userId: user.id,
+    userName: user.discordUsername,
   }))
+
+  notifyAdminAsync({
+    emoji: '🙋',
+    title: existingRequest ? 'Réclamation rouverte' : 'Réclamation de fiche',
+    subject: community.name,
+    detail: `par ${user.discordUsername}`,
+    path: '/admin/reclamations',
+  })
 
   return { ok: true, status: claim.status }
 })

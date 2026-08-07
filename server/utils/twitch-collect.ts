@@ -98,6 +98,16 @@ async function discoverFrenchStreamers(streams: TwitchStream[]): Promise<number>
       created,
       logins: french.map(s => s.user_login),
     }))
+
+    // One grouped message per pass — a busy evening could otherwise fire a
+    // dozen notifications in a row.
+    notifyAdminAsync({
+      emoji: '🎥',
+      title: created > 1 ? `${created} nouveaux streameurs` : 'Nouveau streameur',
+      subject: french.slice(0, 5).map(s => s.user_login).join(', '),
+      detail: created > 5 ? `et ${created - 5} autre(s)` : undefined,
+      path: '/streamers',
+    })
   }
 
   return created
