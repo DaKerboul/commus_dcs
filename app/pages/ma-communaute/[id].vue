@@ -94,6 +94,13 @@
             <UFormField label="Effectif (texte libre)" hint="Ex : 16 membres actifs">
               <UInput v-model="form.sizeText" class="w-full" />
             </UFormField>
+            <UFormField
+              label="Contact"
+              hint="Affiché publiquement"
+              description="Qui contacter pour rejoindre ou poser une question. Ex : un pseudo Discord."
+            >
+              <UInput v-model="form.contact" :maxlength="255" class="w-full" />
+            </UFormField>
           </div>
         </section>
 
@@ -592,6 +599,7 @@ const form = reactive({
   entryConditions: '',
   sizeText: '',
   founder: '',
+  contact: '',
   communityType: 'other',
   sizeCategory: 'unknown',
   recruitmentStatus: 'unknown',
@@ -686,6 +694,7 @@ onMounted(async () => {
       entryConditions: data.entryConditions ?? '',
       sizeText: data.sizeText ?? '',
       founder: data.founder ?? '',
+      contact: data.contact ?? '',
       communityType: data.communityType ?? 'other',
       sizeCategory: data.sizeCategory ?? 'unknown',
       recruitmentStatus: data.recruitmentStatus ?? 'unknown',

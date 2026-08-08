@@ -74,6 +74,9 @@ export default defineEventHandler(async (event) => {
     entryConditions: trimText(body?.entryConditions, 2_000),
     sizeText: trimText(body?.sizeText, 255),
     founder: trimText(body?.founder, 255),
+    // Un pseudo de référent, affiché tel quel (texte échappé) sur la fiche : pas
+    // un lien, donc pas de vecteur d'hameçonnage justifiant la file de revue.
+    contact: trimText(body?.contact, 255),
     sizeCategory: pickEnum(sizeCategoryEnum.enumValues, body?.sizeCategory, current.sizeCategory ?? 'unknown'),
     communityType: pickEnum(communityTypeEnum.enumValues, body?.communityType, current.communityType ?? 'other'),
     recruitmentStatus: pickEnum(recruitmentStatusEnum.enumValues, body?.recruitmentStatus, current.recruitmentStatus ?? 'unknown'),
