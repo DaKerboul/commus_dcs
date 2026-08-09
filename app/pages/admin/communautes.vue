@@ -158,6 +158,9 @@
               <UFormField label="Contact">
                 <UInput v-model="form.contact" />
               </UFormField>
+              <UFormField label="Date de fondation" hint="AAAA, AAAA-MM ou AAAA-MM-JJ">
+                <UInput v-model="form.foundedDate" placeholder="2003" :maxlength="10" />
+              </UFormField>
             </div>
 
             <UFormField label="Conditions d'entrée">
@@ -230,7 +233,7 @@ const emptyForm = () => ({
   name: '', slug: '', shortDescription: '', description: '', objectives: '',
   logoUrl: '', communityType: 'other', sizeCategory: 'unknown',
   recruitmentStatus: 'unknown', eventFrequency: 'unknown',
-  sizeText: '', founder: '', contact: '', entryConditions: '',
+  sizeText: '', founder: '', contact: '', foundedDate: '', entryConditions: '',
   discordUrl: '', websiteUrl: '', youtubeUrl: '', twitchUrl: '',
   instagramUrl: '', facebookUrl: '', twitterUrl: '',
   published: true, featured: false,
@@ -261,6 +264,7 @@ function editCommunity(c: any) {
     communityType: c.communityType || 'other', sizeCategory: c.sizeCategory || 'unknown',
     recruitmentStatus: c.recruitmentStatus || 'unknown', eventFrequency: c.eventFrequency || 'unknown',
     sizeText: c.sizeText || '', founder: c.founder || '', contact: c.contact || '',
+    foundedDate: c.foundedDate || '',
     entryConditions: c.entryConditions || '',
     discordUrl: c.discordUrl || '', websiteUrl: c.websiteUrl || '',
     youtubeUrl: c.youtubeUrl || '', twitchUrl: c.twitchUrl || '',

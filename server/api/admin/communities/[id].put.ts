@@ -49,6 +49,10 @@ export default defineEventHandler(async (event) => {
     eventFrequency: body.eventFrequency || 'unknown',
     founder: body.founder || null,
     contact: body.contact || null,
+    // Absent du corps ⇒ inchangé. Écraser par null effacerait la date des 35
+    // fiches qui en ont une dès qu'un appel omettrait le champ — même piège que
+    // les relations plus haut.
+    ...('foundedDate' in body ? { foundedDate: normalizeFoundedDate(body.foundedDate) } : {}),
     entryConditions: body.entryConditions || null,
     sizeText: body.sizeText || null,
     discordUrl: body.discordUrl || null,

@@ -95,6 +95,13 @@
               <UInput v-model="form.sizeText" class="w-full" />
             </UFormField>
             <UFormField
+              label="Date de fondation"
+              hint="Affichée sur la timeline"
+              description="AAAA, AAAA-MM ou AAAA-MM-JJ. Ex : 2003 si vous ne connaissez que l'année."
+            >
+              <UInput v-model="form.foundedDate" placeholder="2003" :maxlength="10" class="w-full" />
+            </UFormField>
+            <UFormField
               label="Contact"
               hint="Affiché publiquement"
               description="Qui contacter pour rejoindre ou poser une question. Ex : un pseudo Discord."
@@ -600,6 +607,7 @@ const form = reactive({
   sizeText: '',
   founder: '',
   contact: '',
+  foundedDate: '',
   communityType: 'other',
   sizeCategory: 'unknown',
   recruitmentStatus: 'unknown',
@@ -695,6 +703,7 @@ onMounted(async () => {
       sizeText: data.sizeText ?? '',
       founder: data.founder ?? '',
       contact: data.contact ?? '',
+      foundedDate: data.foundedDate ?? '',
       communityType: data.communityType ?? 'other',
       sizeCategory: data.sizeCategory ?? 'unknown',
       recruitmentStatus: data.recruitmentStatus ?? 'unknown',

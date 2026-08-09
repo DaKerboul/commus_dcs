@@ -36,6 +36,7 @@ export default defineEventHandler(async (event) => {
     eventFrequency: body.eventFrequency || 'unknown',
     founder: body.founder || null,
     contact: body.contact || null,
+    foundedDate: normalizeFoundedDate(body.foundedDate),
     entryConditions: body.entryConditions || null,
     sizeText: body.sizeText || null,
     discordUrl: body.discordUrl || null,

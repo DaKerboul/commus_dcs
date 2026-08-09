@@ -64,6 +64,19 @@ export default defineEventHandler(async (event) => {
 
   const body = await readBody(event)
 
+  // Refusé explicitement plutôt que remplacé par null : une saisie mal formée
+  // effacerait sinon en silence une date de fondation correcte.
+  let foundedDate = current.foundedDate
+  if ('foundedDate' in body) {
+    foundedDate = normalizeFoundedDate(body.foundedDate)
+    if (!foundedDate && trimText(body.foundedDate, 50)) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Date de fondation invalide. Utilisez AAAA, AAAA-MM ou AAAA-MM-JJ.',
+      })
+    }
+  }
+
   await snapshotCommunity(id, user?.id ?? null)
 
   // ── Published immediately ────────────────────────────
@@ -77,6 +90,7 @@ export default defineEventHandler(async (event) => {
     // Un pseudo de référent, affiché tel quel (texte échappé) sur la fiche : pas
     // un lien, donc pas de vecteur d'hameçonnage justifiant la file de revue.
     contact: trimText(body?.contact, 255),
+    foundedDate,
     sizeCategory: pickEnum(sizeCategoryEnum.enumValues, body?.sizeCategory, current.sizeCategory ?? 'unknown'),
     communityType: pickEnum(communityTypeEnum.enumValues, body?.communityType, current.communityType ?? 'other'),
     recruitmentStatus: pickEnum(recruitmentStatusEnum.enumValues, body?.recruitmentStatus, current.recruitmentStatus ?? 'unknown'),
