@@ -30,7 +30,7 @@
             <p>
               <strong class="text-gray-900 dark:text-white">Commus DCS FR</strong> est un annuaire communautaire
               non commercial des groupes de simulation aérienne DCS World francophones, opéré bénévolement par
-              Ethan Puyaubreau (alias DaKerboul).
+              DaKerboul, pour la communauté Kerboulistan.
             </p>
             <p>
               Pour toute question relative à vos données, vous pouvez nous contacter via la
@@ -224,12 +224,13 @@
             <UIcon name="i-heroicons-user-circle" class="text-blue-400 text-2xl shrink-0" />
             <h2 class="text-xl font-bold text-gray-900 dark:text-white">Responsable du traitement</h2>
           </div>
-          <div class="text-gray-600 dark:text-gray-300 text-sm space-y-1">
-            <p><strong class="text-gray-900 dark:text-white">Ethan Puyaubreau</strong></p>
+          <div class="text-gray-600 dark:text-gray-300 text-sm space-y-2">
+            <p><strong class="text-gray-900 dark:text-white">DaKerboul</strong>, pour la communauté Kerboulistan.</p>
             <p>
-              <a href="mailto:ethan.puyaubreau@gmail.com" class="text-blue-400 hover:text-blue-300 underline underline-offset-4">
-                ethan.puyaubreau@gmail.com
-              </a>
+              Éditeur non professionnel au sens de la LCEN. Pour toute demande relative à vos données,
+              écrivez-nous via la
+              <NuxtLink to="/contact" class="text-blue-400 hover:text-blue-300 underline underline-offset-4">page Contact</NuxtLink> ;
+              nous répondons sur le serveur Discord du Kerboulistan.
             </p>
           </div>
         </div>
