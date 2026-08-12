@@ -155,9 +155,9 @@
               <p class="text-xs font-mono uppercase tracking-widest text-emerald-500 mb-1">Certification RLPDK — Décret 2024-DCS-42</p>
               <p class="text-gray-900 dark:text-white font-semibold">
                 Service certifié conforme par la
-                <a href="https://gov.kerboul.me" target="_blank" class="text-emerald-400 hover:text-emerald-300 underline decoration-emerald-500/30 underline-offset-4">
+                <span class="text-emerald-400">
                   République Libre Populaire Démocratique du Kerboulistan
-                </a>
+                </span>
               </p>
               <p class="mt-2 text-sm text-gray-500">
                 Conformément au Code Mémétique de la RLPDK, cet annuaire est reconnu comme service d'utilité publique.
