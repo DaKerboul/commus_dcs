@@ -74,20 +74,59 @@
         </div>
       </section>
 
-      <!-- By type -->
-      <section>
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Par type de communauté</h2>
-        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <div
-            v-for="item in stats.communityByType"
-            :key="item.type"
-            class="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-4 flex items-center justify-between"
-          >
-            <span class="text-sm text-gray-600 dark:text-gray-300">{{ TYPE_LABELS[item.type] || item.type }}</span>
-            <UBadge variant="subtle" color="primary">{{ item.count }}</UBadge>
+      <!-- Interactive charts (ex-infographie) -->
+      <ClientOnly>
+        <div v-if="infographie" class="space-y-10">
+          <!-- Treemap: Modules by category -->
+          <section class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-6">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+              Carte des modules par catégorie
+            </h2>
+            <p class="text-sm text-gray-500 mb-4">Chaque bloc représente un module. La taille indique le nombre de communautés qui l'utilisent.</p>
+            <div ref="treemapRef" style="height: 400px;" />
+          </section>
+
+          <!-- Pie: Community types + Bar: Top modules -->
+          <div class="grid gap-8 lg:grid-cols-2">
+            <section class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-6">
+              <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                Répartition par type
+              </h2>
+              <div ref="typePieRef" style="height: 320px;" />
+            </section>
+
+            <section class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-6">
+              <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                Top modules
+              </h2>
+              <div ref="moduleBarRef" style="height: 320px;" />
+            </section>
           </div>
+
+          <!-- Experiences bar -->
+          <section class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-6">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+              Expériences proposées
+            </h2>
+            <div ref="experienceBarRef" style="height: 300px;" />
+          </section>
+
+          <!-- Periods -->
+          <section v-if="infographie.periodDistribution.length" class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-6">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+              Périodes historiques
+            </h2>
+            <div ref="periodBarRef" style="height: 260px;" />
+          </section>
         </div>
-      </section>
+
+        <template #fallback>
+          <div class="text-center py-20 text-gray-500">
+            <UIcon name="i-heroicons-arrow-path" class="animate-spin text-2xl mb-2" />
+            <p>Chargement des graphiques...</p>
+          </div>
+        </template>
+      </ClientOnly>
 
       <!-- By size -->
       <section>
@@ -109,73 +148,37 @@
           </div>
         </div>
       </section>
-
-      <!-- Top modules -->
-      <section>
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Modules les plus populaires</h2>
-        <div class="space-y-2">
-          <div
-            v-for="(mod, i) in stats.topModules"
-            :key="mod.name"
-            class="flex items-center gap-4"
-          >
-            <span class="w-8 text-sm text-gray-600 text-right">{{ i + 1 }}.</span>
-            <NuxtLink
-              :to="`/communautes?modules=${encodeURIComponent(mod.name)}`"
-              class="w-32 text-sm text-blue-400 hover:text-blue-300 shrink-0"
-            >
-              {{ mod.name }}
-            </NuxtLink>
-            <div class="flex-1 h-6 rounded bg-gray-200 dark:bg-gray-800 overflow-hidden">
-              <div
-                class="h-full bg-green-500/60 rounded transition-all duration-500"
-                :style="{ width: `${(mod.count / maxModule) * 100}%` }"
-              />
-            </div>
-            <span class="text-sm font-medium text-gray-900 dark:text-white w-12">{{ mod.count }} commu{{ mod.count > 1 ? 's' : '' }}</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- Top experiences -->
-      <section>
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Expériences les plus proposées</h2>
-        <div class="space-y-2">
-          <div
-            v-for="(exp, i) in stats.topExperiences"
-            :key="exp.name"
-            class="flex items-center gap-4"
-          >
-            <span class="w-8 text-sm text-gray-600 text-right">{{ i + 1 }}.</span>
-            <span class="w-64 text-sm text-gray-600 dark:text-gray-300 shrink-0 truncate">{{ exp.name }}</span>
-            <div class="flex-1 h-6 rounded bg-gray-200 dark:bg-gray-800 overflow-hidden">
-              <div
-                class="h-full bg-purple-500/60 rounded transition-all duration-500"
-                :style="{ width: `${(exp.count / maxExperience) * 100}%` }"
-              />
-            </div>
-            <span class="text-sm font-medium text-gray-900 dark:text-white w-8">{{ exp.count }}</span>
-          </div>
-        </div>
-      </section>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { SIZE_LABELS, TYPE_LABELS } from '#shared/types'
+import { SIZE_LABELS, TYPE_LABELS, PERIOD_LABELS } from '#shared/types'
 import type { StatsData } from '#shared/types'
 
 useSeoMeta({
   title: 'Statistiques — Commus DCS FR',
   ogTitle: 'Statistiques des communautés DCS World francophones',
-  description: 'Statistiques sur les communautés francophones DCS World : modules populaires, types de groupes, taux de recrutement, streaming et tendances.',
-  ogDescription: 'Statistiques sur les communautés francophones DCS World : modules populaires, types de groupes, taux de recrutement, streaming et tendances.',
+  description: 'Statistiques et infographies des communautés francophones DCS World : modules populaires, types de groupes, taux de recrutement, streaming et tendances.',
+  ogDescription: 'Statistiques et infographies des communautés francophones DCS World : modules populaires, types de groupes, taux de recrutement, streaming et tendances.',
   ogType: 'website',
   twitterCard: 'summary',
 })
 
+interface InfographieData {
+  totalCommunities: number
+  totalModules: number
+  modulesByCategory: { category: string; count: number }[]
+  moduleUsage: { name: string; category: string; count: number }[]
+  experienceDistribution: { name: string; count: number }[]
+  typeDistribution: { type: string; count: number }[]
+  sizeDistribution: { size: string; count: number }[]
+  periodDistribution: { period: string; count: number }[]
+  moduleToCommunities: { module: string; category: string; community: string }[]
+}
+
 const { data: stats } = await useFetch<StatsData>('/api/stats')
+const { data: infographie } = await useFetch<InfographieData>('/api/infographie')
 
 const overviewStats = computed(() => {
   if (!stats.value) return []
@@ -188,9 +191,177 @@ const overviewStats = computed(() => {
 })
 
 const maxSize = computed(() => Math.max(...(stats.value?.communityBySize.map((s: { count: number }) => s.count) || [1])))
-const maxModule = computed(() => Math.max(...(stats.value?.topModules.map((m: { count: number }) => m.count) || [1])))
-const maxExperience = computed(() => Math.max(...(stats.value?.topExperiences.map((e: { count: number }) => e.count) || [1])))
 const maxStreamerDays = computed(() => Math.max(...(stats.value?.topStreamers?.map((s) => s.daysCount) || [1])))
+
+// ── Interactive charts (ECharts, client-only) ──────────────
+const treemapRef = ref<HTMLDivElement>()
+const typePieRef = ref<HTMLDivElement>()
+const moduleBarRef = ref<HTMLDivElement>()
+const experienceBarRef = ref<HTMLDivElement>()
+const periodBarRef = ref<HTMLDivElement>()
+
+const CATEGORY_COLORS: Record<string, string> = {
+  western_fixed: '#3b82f6',
+  eastern_fixed: '#ef4444',
+  helicopter: '#22c55e',
+  ww2: '#f59e0b',
+  other: '#a855f7',
+}
+
+const CATEGORY_LABELS: Record<string, string> = {
+  western_fixed: 'Occidentaux',
+  eastern_fixed: 'Orientaux',
+  helicopter: 'Hélicoptères',
+  ww2: 'WW2',
+  other: 'Autres / Cartes',
+}
+
+let charts: any[] = []
+
+onMounted(async () => {
+  // ClientOnly delays rendering, so chart refs aren't available until nextTick
+  await nextTick()
+  if (!infographie.value) return
+
+  const { init, use } = await import('echarts/core')
+  const { BarChart, PieChart, TreemapChart } = await import('echarts/charts')
+  const { TooltipComponent, GridComponent } = await import('echarts/components')
+  const { CanvasRenderer } = await import('echarts/renderers')
+  use([BarChart, PieChart, TreemapChart, TooltipComponent, GridComponent, CanvasRenderer])
+
+  const initChart = (el: HTMLDivElement | undefined, option: any) => {
+    if (!el) return
+    const chart = init(el, 'dark')
+    chart.setOption(option)
+    charts.push(chart)
+  }
+
+  // Treemap
+  const treemapData = Object.entries(
+    infographie.value.moduleUsage.reduce((acc, m) => {
+      const cat = m.category || 'other'
+      if (!acc[cat]) acc[cat] = []
+      acc[cat].push({ name: m.name, value: m.count })
+      return acc
+    }, {} as Record<string, { name: string; value: number }[]>),
+  ).map(([cat, children]) => ({
+    name: CATEGORY_LABELS[cat] || cat,
+    itemStyle: { color: CATEGORY_COLORS[cat] || '#6b7280', borderColor: '#1a1a2e' },
+    children,
+  }))
+
+  initChart(treemapRef.value, {
+    backgroundColor: 'transparent',
+    tooltip: { formatter: (p: any) => `<b>${p.name}</b><br/>${p.value} communauté${p.value > 1 ? 's' : ''}` },
+    series: [{
+      type: 'treemap',
+      data: treemapData,
+      roam: false,
+      nodeClick: false,
+      breadcrumb: { show: false },
+      label: {
+        show: true,
+        formatter: '{b}',
+        fontSize: 11,
+        color: '#fff',
+      },
+      itemStyle: { borderColor: '#1a1a2e', borderWidth: 2, gapWidth: 2 },
+      levels: [
+        { itemStyle: { borderColor: '#333', borderWidth: 3, gapWidth: 4 } },
+        { colorSaturation: [0.3, 0.7], itemStyle: { borderColorSaturation: 0.6, gapWidth: 2 } },
+      ],
+    }],
+  })
+
+  // Type pie
+  initChart(typePieRef.value, {
+    backgroundColor: 'transparent',
+    tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+    series: [{
+      type: 'pie',
+      radius: ['35%', '70%'],
+      avoidLabelOverlap: true,
+      itemStyle: { borderRadius: 6, borderColor: '#1a1a2e', borderWidth: 2 },
+      label: { show: true, color: '#ccc', fontSize: 11 },
+      emphasis: { label: { show: true, fontSize: 14, fontWeight: 'bold' } },
+      data: infographie.value.typeDistribution.map(t => ({
+        name: TYPE_LABELS[t.type] || t.type,
+        value: t.count,
+      })),
+    }],
+  })
+
+  // Module bar
+  const topModules = infographie.value.moduleUsage.slice(0, 15)
+  initChart(moduleBarRef.value, {
+    backgroundColor: 'transparent',
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    grid: { left: 120, right: 20, top: 10, bottom: 20 },
+    xAxis: { type: 'value', axisLabel: { color: '#888' }, splitLine: { lineStyle: { color: '#333' } } },
+    yAxis: { type: 'category', data: topModules.map(m => m.name).reverse(), axisLabel: { color: '#ccc', fontSize: 11 } },
+    series: [{
+      type: 'bar',
+      data: topModules.map(m => ({
+        value: m.count,
+        itemStyle: { color: CATEGORY_COLORS[m.category] || '#6b7280' },
+      })).reverse(),
+      barWidth: '60%',
+      itemStyle: { borderRadius: [0, 4, 4, 0] },
+    }],
+  })
+
+  // Experience bar
+  initChart(experienceBarRef.value, {
+    backgroundColor: 'transparent',
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    grid: { left: 200, right: 20, top: 10, bottom: 20 },
+    xAxis: { type: 'value', axisLabel: { color: '#888' }, splitLine: { lineStyle: { color: '#333' } } },
+    yAxis: {
+      type: 'category',
+      data: infographie.value.experienceDistribution.map(e => e.name).reverse(),
+      axisLabel: { color: '#ccc', fontSize: 11 },
+    },
+    series: [{
+      type: 'bar',
+      data: infographie.value.experienceDistribution.map(e => e.count).reverse(),
+      barWidth: '60%',
+      itemStyle: { color: '#a855f7', borderRadius: [0, 4, 4, 0] },
+    }],
+  })
+
+  // Period bar
+  if (infographie.value.periodDistribution.length) {
+    initChart(periodBarRef.value, {
+      backgroundColor: 'transparent',
+      tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+      grid: { left: 180, right: 20, top: 10, bottom: 20 },
+      xAxis: { type: 'value', axisLabel: { color: '#888' }, splitLine: { lineStyle: { color: '#333' } } },
+      yAxis: {
+        type: 'category',
+        data: infographie.value.periodDistribution.map(p => PERIOD_LABELS[p.period] || p.period).reverse(),
+        axisLabel: { color: '#ccc', fontSize: 11 },
+      },
+      series: [{
+        type: 'bar',
+        data: infographie.value.periodDistribution.map(p => p.count).reverse(),
+        barWidth: '60%',
+        itemStyle: { color: '#f59e0b', borderRadius: [0, 4, 4, 0] },
+      }],
+    })
+  }
+
+  // Resize observer
+  const resizeObserver = new ResizeObserver(() => {
+    for (const chart of charts) chart.resize()
+  })
+  if (treemapRef.value) resizeObserver.observe(treemapRef.value)
+
+  onUnmounted(() => {
+    resizeObserver.disconnect()
+    for (const chart of charts) chart.dispose()
+    charts = []
+  })
+})
 </script>
 
 <style scoped>

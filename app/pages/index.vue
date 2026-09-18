@@ -1,7 +1,8 @@
 <template>
   <div>
-    <!-- Hero section with background image -->
-    <section class="relative overflow-hidden">
+    <!-- Hero section with background image — pulled up under the floating nav pill
+         (-mt = header height) so the image fills behind it instead of leaving a gap -->
+    <section class="relative overflow-hidden -mt-[4.25rem]">
       <div class="absolute inset-0">
         <img src="/bck1.png" alt="" class="h-full w-full object-cover" />
         <div class="absolute inset-0 bg-white/70 dark:bg-gray-950/70" />
@@ -12,7 +13,7 @@
       <div class="hero-orb hero-orb-2" />
       <div class="hero-orb hero-orb-3" />
 
-      <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24 sm:py-40 text-center">
+      <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-40 pb-24 sm:pt-56 sm:pb-40 text-center">
         <template v-if="!isRlpdk">
           <h1 class="hero-title text-4xl sm:text-6xl font-extrabold tracking-tight text-gray-900 dark:text-white drop-shadow-lg">
             Communautés <span class="hero-gradient-text">DCS World</span> Francophones
@@ -334,10 +335,10 @@ const heroStats = computed(() => {
 })
 
 const discoverCards = [
-  { to: '/infographie', icon: 'i-heroicons-chart-pie', color: 'text-green-400', title: 'Infographie', subtitle: 'DCS en chiffres' },
+  { to: '/stats', icon: 'i-heroicons-chart-pie', color: 'text-green-400', title: 'Statistiques', subtitle: 'DCS en chiffres' },
   { to: '/timeline', icon: 'i-heroicons-clock', color: 'text-amber-400', title: 'Timeline', subtitle: 'Histoire DCS FR' },
-  { to: '/pulse', icon: 'i-heroicons-signal', color: 'text-red-400', title: 'Pulse', subtitle: 'Activité en direct' },
-  { to: '/mon-profil', icon: 'i-heroicons-user-circle', color: 'text-cyan-400', title: 'Profil', subtitle: 'Mon profil pilote' },
+  { to: '/communautes/comparer', icon: 'i-heroicons-scale', color: 'text-blue-400', title: 'Comparer', subtitle: 'Face à face' },
+  { to: '/trouver', icon: 'i-heroicons-sparkles', color: 'text-purple-400', title: 'Trouver', subtitle: 'Ta commu idéale' },
 ]
 
 const galleryImages = [

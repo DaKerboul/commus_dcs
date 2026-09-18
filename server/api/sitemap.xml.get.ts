@@ -20,8 +20,6 @@ export default defineEventHandler(async (event) => {
     { loc: '/stats', priority: '0.6', changefreq: 'weekly' },
     { loc: '/streamers/stats', priority: '0.6', changefreq: 'daily' },
     { loc: '/timeline', priority: '0.6', changefreq: 'weekly' },
-    { loc: '/infographie', priority: '0.5', changefreq: 'weekly' },
-    { loc: '/pulse', priority: '0.5', changefreq: 'daily' },
     { loc: '/soumettre', priority: '0.5', changefreq: 'monthly' },
     { loc: '/a-propos', priority: '0.4', changefreq: 'monthly' },
     { loc: '/contact', priority: '0.3', changefreq: 'monthly' },

@@ -38,31 +38,9 @@
               <UButton to="/stats" variant="ghost" color="neutral" size="sm">
                 Statistiques
               </UButton>
-              <UPopover>
-                <UButton variant="ghost" color="neutral" size="sm" trailing-icon="i-heroicons-chevron-down">
-                  Découvrir
-                </UButton>
-                <template #content>
-                  <div class="p-2 space-y-0.5 w-52">
-                    <UButton to="/infographie" variant="ghost" color="neutral" size="sm" block class="justify-start" icon="i-heroicons-chart-pie">
-                      DCS en chiffres
-                    </UButton>
-                    <UButton to="/timeline" variant="ghost" color="neutral" size="sm" block class="justify-start" icon="i-heroicons-clock">
-                      Timeline
-                    </UButton>
-                    <UButton to="/pulse" variant="ghost" color="neutral" size="sm" block class="justify-start" icon="i-heroicons-signal">
-                      Pulse DCS FR
-                    </UButton>
-                    <UButton to="/mon-profil" variant="ghost" color="neutral" size="sm" block class="justify-start" icon="i-heroicons-user-circle">
-                      Mon profil pilote
-                    </UButton>
-                    <USeparator class="my-1" />
-                    <UButton to="/a-propos" variant="ghost" color="neutral" size="sm" block class="justify-start" icon="i-heroicons-information-circle">
-                      À propos
-                    </UButton>
-                  </div>
-                </template>
-              </UPopover>
+              <UButton to="/timeline" variant="ghost" color="neutral" size="sm">
+                Timeline
+              </UButton>
             </div>
           </div>
           <div class="flex items-center gap-2">
@@ -177,17 +155,8 @@
           <UButton to="/stats" variant="ghost" color="neutral" block @click="mobileOpen = false">
             Statistiques
           </UButton>
-          <UButton to="/infographie" variant="ghost" color="neutral" block @click="mobileOpen = false">
-            DCS en chiffres
-          </UButton>
           <UButton to="/timeline" variant="ghost" color="neutral" block @click="mobileOpen = false">
             Timeline
-          </UButton>
-          <UButton to="/pulse" variant="ghost" color="neutral" block @click="mobileOpen = false">
-            Pulse DCS FR
-          </UButton>
-          <UButton to="/mon-profil" variant="ghost" color="neutral" block @click="mobileOpen = false">
-            Mon profil pilote
           </UButton>
           <UButton to="/soumettre" variant="ghost" color="neutral" block @click="mobileOpen = false">
             Soumettre

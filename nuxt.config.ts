@@ -84,7 +84,6 @@ export default defineNuxtConfig({
       '/llms-full.txt': { swr: 3600 },             // 1 hour SWR — corpus complet
       '/api/rss.xml': { swr: 600 },               // 10 min SWR
       '/api/communities/graph': { swr: 300 },     // 5 min SWR
-      '/api/pulse': { swr: 60 },                  // 1 min SWR
       '/api/infographie': { swr: 300 },            // 5 min SWR
     },
   },
