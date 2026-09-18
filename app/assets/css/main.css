@@ -1,6 +1,11 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
 
+/* Body/UI typeface — self-hosted by @nuxt/fonts, which scans this declaration */
+@theme {
+  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
 /* Custom DCS theme overrides */
 :root {
   --color-primary: #3b82f6;
@@ -38,10 +43,43 @@ html {
 
 /* Custom card hover animation */
 .community-card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1),
+    box-shadow 0.35s ease, border-color 0.35s ease;
 }
 .community-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px -12px rgba(0, 0, 0, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .community-card {
+    transition: border-color 0.2s ease;
+  }
+  .community-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+/* ── Mobile nav reveal ──────────────────── */
+.mobile-nav-enter-active,
+.mobile-nav-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.mobile-nav-enter-from,
+.mobile-nav-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .mobile-nav-enter-active,
+  .mobile-nav-leave-active {
+    transition: none;
+  }
+  .mobile-nav-enter-from,
+  .mobile-nav-leave-to {
+    transform: none;
+  }
 }
 
 /* ── RLPDK Easter Egg Theme ──────────────────── */
@@ -54,8 +92,9 @@ html {
   display: flex !important;
 }
 
-.rlpdk-theme header {
-  border-bottom-color: #065f46 !important;
+/* Header is now a transparent wrapper; the visible surface is the inner nav pill */
+.rlpdk-theme header nav {
+  border-color: #065f46 !important;
   background: linear-gradient(180deg, #064e3b 0%, #022c22 100%) !important;
 }
 

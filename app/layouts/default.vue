@@ -8,10 +8,10 @@
       <button class="text-emerald-500 hover:text-emerald-300 text-xs ml-2" @click="disableRlpdk">✕</button>
     </div>
 
-    <!-- Navbar -->
-    <header class="sticky top-0 z-50 border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-950/80 backdrop-blur-lg">
-      <nav class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="flex h-16 items-center justify-between">
+    <!-- Navbar — floating glass pill detached from the top -->
+    <header class="sticky top-0 z-50 px-4 pt-3">
+      <nav class="mx-auto max-w-7xl rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-950/80 backdrop-blur-lg shadow-sm px-4 sm:px-6">
+        <div class="flex h-14 items-center justify-between">
           <div class="flex items-center gap-6">
             <NuxtLink to="/" class="flex items-center gap-2">
               <img src="/logo.png" alt="Commus DCS FR" class="h-8 w-8" />
@@ -19,9 +19,14 @@
               <span v-else class="text-lg font-bold text-emerald-300 font-serif tracking-wide">ROCA-DK</span>
             </NuxtLink>
             <div class="hidden md:flex items-center gap-1">
+              <!-- Primary destinations -->
               <UButton to="/communautes" variant="ghost" color="neutral" size="sm">
                 Communautés
               </UButton>
+              <UButton to="/trouver" variant="ghost" color="neutral" size="sm">
+                Trouver ma commu
+              </UButton>
+              <!-- Secondary destinations -->
               <UButton to="/streamers" variant="ghost" color="neutral" size="sm" class="relative">
                 <UIcon name="i-simple-icons-twitch" class="mr-0.5" />
                 Streameurs
@@ -29,9 +34,6 @@
                   <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
                   <span class="relative">{{ liveCount }}</span>
                 </span>
-              </UButton>
-              <UButton to="/trouver" variant="ghost" color="neutral" size="sm">
-                Trouver ma commu
               </UButton>
               <UButton to="/stats" variant="ghost" color="neutral" size="sm">
                 Statistiques
@@ -54,24 +56,27 @@
                     <UButton to="/mon-profil" variant="ghost" color="neutral" size="sm" block class="justify-start" icon="i-heroicons-user-circle">
                       Mon profil pilote
                     </UButton>
+                    <USeparator class="my-1" />
+                    <UButton to="/a-propos" variant="ghost" color="neutral" size="sm" block class="justify-start" icon="i-heroicons-information-circle">
+                      À propos
+                    </UButton>
                   </div>
                 </template>
               </UPopover>
-              <UButton to="/soumettre" variant="ghost" color="neutral" size="sm">
-                Soumettre
-              </UButton>
-              <UButton to="/a-propos" variant="ghost" color="neutral" size="sm">
-                À propos
-              </UButton>
-              <UButton to="/mes-favoris" variant="ghost" color="neutral" size="sm" class="relative">
-                <UIcon name="i-heroicons-bookmark" />
-                <UBadge v-if="favCount > 0" color="warning" size="xs" class="absolute -top-1 -right-1 min-w-4 h-4 flex items-center justify-center text-[10px]">
-                  {{ favCount }}
-                </UBadge>
-              </UButton>
             </div>
           </div>
           <div class="flex items-center gap-2">
+            <!-- Primary action: submitting a community is a CTA, not a nav link -->
+            <UButton to="/soumettre" color="primary" size="sm" icon="i-heroicons-plus" class="hidden sm:flex">
+              Soumettre
+            </UButton>
+            <!-- Favorites -->
+            <UButton to="/mes-favoris" variant="ghost" color="neutral" size="sm" class="relative hidden sm:flex" aria-label="Mes favoris">
+              <UIcon name="i-heroicons-bookmark" />
+              <UBadge v-if="favCount > 0" color="warning" size="xs" class="absolute -top-1 -right-1 min-w-4 h-4 flex items-center justify-center text-[10px]">
+                {{ favCount }}
+              </UBadge>
+            </UButton>
             <!-- Account -->
             <UPopover v-if="account.isSignedIn.value">
               <UButton variant="ghost" color="neutral" size="sm" class="gap-1.5">
@@ -127,6 +132,7 @@
             </UButton>
             <UButton
               :icon="colorMode.value === 'dark' ? 'i-heroicons-sun' : 'i-heroicons-moon'"
+              :aria-label="colorMode.value === 'dark' ? 'Passer en thème clair' : 'Passer en thème sombre'"
               variant="ghost"
               color="neutral"
               size="sm"
@@ -136,6 +142,7 @@
               to="https://github.com/DaKerboul/commus_dcs"
               target="_blank"
               icon="i-simple-icons-github"
+              aria-label="Code source sur GitHub"
               variant="ghost"
               color="neutral"
               size="sm"
@@ -144,6 +151,8 @@
             <UButton
               class="md:hidden"
               icon="i-heroicons-bars-3"
+              :aria-label="mobileOpen ? 'Fermer le menu' : 'Ouvrir le menu'"
+              :aria-expanded="mobileOpen"
               variant="ghost"
               color="neutral"
               size="sm"
@@ -152,6 +161,7 @@
           </div>
         </div>
         <!-- Mobile nav -->
+        <Transition name="mobile-nav">
         <div v-if="mobileOpen" class="md:hidden pb-4 space-y-1">
           <UButton to="/communautes" variant="ghost" color="neutral" block @click="mobileOpen = false">
             Communautés
@@ -212,6 +222,7 @@
             Connexion Discord
           </UButton>
         </div>
+        </Transition>
       </nav>
     </header>
 
