@@ -77,6 +77,12 @@ export default defineEventHandler(async (event) => {
     }
   }
 
+  // Validated before anything is written, so a bad link never half-saves the form.
+  if ('discordUrl' in body) {
+    const discordUrl = normalizeUrl(body.discordUrl)
+    if (discordUrl && discordUrl !== current.discordUrl) await assertUsableDiscordInvite(discordUrl)
+  }
+
   await snapshotCommunity(id, user?.id ?? null)
 
   // ── Published immediately ────────────────────────────

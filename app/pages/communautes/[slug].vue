@@ -17,7 +17,7 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row items-start gap-6 mb-8">
       <div class="shrink-0 h-24 w-24 rounded-xl bg-gray-200 dark:bg-gray-800 flex items-center justify-center overflow-hidden">
-        <NuxtImg v-if="community.logoUrl" :src="community.logoUrl" :alt="community.name" width="96" height="96" loading="lazy" class="h-full w-full object-cover" />
+        <NuxtImg v-if="community.logoUrl" :src="community.logoUrl" :provider="community.logoUrl.startsWith('/api/media/') ? 'none' : undefined" :alt="community.name" width="96" height="96" loading="lazy" class="h-full w-full object-cover" />
         <UIcon v-else name="i-heroicons-user-group" class="text-gray-500 text-4xl" />
       </div>
       <div class="flex-1">
@@ -210,7 +210,7 @@
               :key="i"
               class="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-800"
             >
-              <NuxtImg :src="img.url" :alt="img.alt || community.name" width="400" height="192" loading="lazy" class="w-full h-48 object-cover" />
+              <NuxtImg :src="img.url" :provider="img.url.startsWith('/api/media/') ? 'none' : undefined" :alt="img.alt || community.name" width="400" height="192" loading="lazy" class="w-full h-48 object-cover" />
             </div>
           </div>
         </section>
@@ -318,6 +318,7 @@
         <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5">
           <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Soutenir</h3>
           <UButton
+            v-if="account.isSignedIn.value || hasVoted"
             :icon="hasVoted ? 'i-heroicons-heart-solid' : 'i-heroicons-heart'"
             :color="hasVoted ? 'error' : 'neutral'"
             :variant="hasVoted ? 'soft' : 'outline'"
@@ -332,8 +333,22 @@
               <span class="text-xs font-mono">{{ voteCount }}</span>
             </template>
           </UButton>
+          <UButton
+            v-else
+            icon="i-simple-icons-discord"
+            color="neutral"
+            variant="outline"
+            size="sm"
+            block
+            @click="account.signIn(route.fullPath)"
+          >
+            Se connecter pour voter
+            <template #trailing>
+              <span class="text-xs font-mono">{{ voteCount }}</span>
+            </template>
+          </UButton>
           <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
-            Un court délai d'affichage et un contrôle serveur sont requis avant validation du vote.
+            Un vote par compte Discord. Aucun message ni serveur n'est lu.
           </p>
           <p v-if="voteError" class="mt-2 text-xs text-red-500">
             {{ voteError }}
@@ -453,16 +468,19 @@ if (!community.value) {
   throw createError({ statusCode: 404, statusMessage: 'Communauté introuvable' })
 }
 
+// Absolute: Discord, X and Facebook reject relative og:image URLs.
+const ogImageUrl = `${useRuntimeConfig().public.siteUrl.replace(/\/$/, '')}/api/og/${slug}`
+
 useHead({
   title: `${community.value.name} — Commus DCS FR`,
   meta: [
     { name: 'description', content: community.value.shortDescription || community.value.description?.slice(0, 160) || '' },
     { property: 'og:title', content: `${community.value.name} — Commus DCS FR` },
     { property: 'og:description', content: community.value.shortDescription || '' },
-    { property: 'og:image', content: `/api/og/${slug}` },
+    { property: 'og:image', content: `${ogImageUrl}` },
     { property: 'og:type', content: 'website' },
     { name: 'twitter:card', content: 'summary_large_image' },
-    { name: 'twitter:image', content: `/api/og/${slug}` },
+    { name: 'twitter:image', content: `${ogImageUrl}` },
   ],
   script: [
     {
@@ -549,18 +567,7 @@ const { data: similar } = await useFetch<{ data: CommunityCard[] }>('/api/commun
   query: { slug },
 })
 
-// Pilot profile visit tracking
-const { recordVisit } = usePilotProfile()
 onMounted(() => {
-  if (community.value) {
-    recordVisit({
-      slug: community.value.slug,
-      name: community.value.name,
-      moduleNames: community.value.moduleNames || [],
-      experienceNames: community.value.experienceNames || [],
-      communityType: community.value.communityType,
-    })
-    recordPageEvent('view')
-  }
+  if (community.value) recordPageEvent('view')
 })
 </script>

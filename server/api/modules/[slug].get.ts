@@ -67,7 +67,7 @@ export default defineEventHandler(async (event) => {
       recruiting: recruiting.length,
       soughtBy: soughtBy.length,
     },
-    communities: flownBy,
+    communities: flownBy.map(c => ({ ...c, logoUrl: mediaUrl('logo', c.id, c.logoUrl) })),
     soughtBy,
   }
 })

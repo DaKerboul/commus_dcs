@@ -94,7 +94,7 @@ const filters = ref<FilterOptions>({
   limit: 50,
 })
 
-const currentPage = ref(1)
+const currentPage = ref(Math.max(1, Number.parseInt(route.query.page as string) || 1))
 
 // Build query params from filters
 const queryParams = computed(() => {
@@ -141,12 +141,32 @@ watch(queryParams, (params) => {
   router.replace({ query: params })
 }, { deep: true })
 
+// Query strings are excluded from page views, so filter usage is sent as one
+// event once the visitor stops fiddling.
+const { track } = useUmami()
+let filterTimer: ReturnType<typeof setTimeout> | undefined
+watch(filters, (f) => {
+  clearTimeout(filterTimer)
+  filterTimer = setTimeout(() => {
+    const used = (['search', 'modules', 'communityType', 'sizeCategory', 'recruitmentStatus', 'eventFrequency', 'historicalPeriods', 'experiences'] as const)
+      .filter(k => (Array.isArray(f[k]) ? (f[k] as unknown[]).length : f[k]))
+    if (used.length) track('filter_change', { filters: used.join(','), sort: f.sort || 'votes' })
+  }, 2000)
+}, { deep: true })
+onBeforeUnmount(() => clearTimeout(filterTimer))
+
 function resetFilters() {
   filters.value = { sort: 'name', sortDir: 'asc', limit: 50 }
 }
 
 function exportCSV() {
   window.open('/api/communities/export?format=csv', '_blank')
+}
+
+// Names and fields come from submissions and community managers: the print window
+// shares this origin, so every value is escaped before it lands in the markup.
+function esc(value: unknown): string {
+  return String(value ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]!)
 }
 
 async function exportPDF() {
@@ -188,13 +208,13 @@ async function exportPDF() {
     </thead>
     <tbody>
       ${data.map(c => `<tr>
-        <td><strong>${c.name}</strong></td>
-        <td>${c.type}</td>
-        <td>${c.size}</td>
-        <td>${c.recruitment}</td>
-        <td>${c.frequency}</td>
-        <td>${c.modules}</td>
-        <td>${c.votes}</td>
+        <td><strong>${esc(c.name)}</strong></td>
+        <td>${esc(c.type)}</td>
+        <td>${esc(c.size)}</td>
+        <td>${esc(c.recruitment)}</td>
+        <td>${esc(c.frequency)}</td>
+        <td>${esc(c.modules)}</td>
+        <td>${esc(c.votes)}</td>
       </tr>`).join('')}
     </tbody>
   </table>

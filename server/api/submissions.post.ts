@@ -58,6 +58,9 @@ export default defineEventHandler(async (event) => {
 
   const submittedByUserId = user.id
 
+  const discordUrl = normalizeUrl(body?.discordUrl)
+  await assertUsableDiscordInvite(discordUrl)
+
   const [submission] = await db.insert(submissions).values({
     communityName,
     contactName,
@@ -76,7 +79,7 @@ export default defineEventHandler(async (event) => {
     founder: trimText(body?.founder, 255),
     entryConditions: trimText(body?.entryConditions, MAX_LONG_TEXT),
     sizeText: trimText(body?.sizeText, 255),
-    discordUrl: normalizeUrl(body?.discordUrl),
+    discordUrl,
     websiteUrl: normalizeUrl(body?.websiteUrl),
     youtubeUrl: normalizeUrl(body?.youtubeUrl),
     instagramUrl: normalizeUrl(body?.instagramUrl),

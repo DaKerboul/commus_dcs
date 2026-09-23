@@ -6,6 +6,7 @@ export default defineEventHandler(async () => {
 
   const rows = await db
     .select({
+      id: communities.id,
       slug: communities.slug,
       name: communities.name,
       shortDescription: communities.shortDescription,
@@ -18,8 +19,9 @@ export default defineEventHandler(async () => {
     .orderBy(desc(communities.updatedAt))
     .limit(30)
 
-  return rows.map((r) => ({
+  return rows.map(({ id, ...r }) => ({
     ...r,
+    logoUrl: mediaUrl('logo', id, r.logoUrl),
     createdAt: r.createdAt?.toISOString(),
     updatedAt: r.updatedAt?.toISOString(),
   }))

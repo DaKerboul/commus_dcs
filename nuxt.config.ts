@@ -48,7 +48,10 @@ export default defineNuxtConfig({
       ],
       script: [
         // Umami analytics (self-hosted, CT132 — stats.kerboul.me)
-        { src: 'https://stats.kerboul.me/script.js', defer: true, 'data-website-id': '5c362ada-70a8-4320-96bc-2cf32324ff8c' },
+        // data-domains: dev/preview hosts no longer pollute production stats.
+        // data-exclude-search: a filter change on /communautes is not a new page view
+        // (tracked as the filter_change event instead).
+        { src: 'https://stats.kerboul.me/script.js', defer: true, 'data-website-id': '5c362ada-70a8-4320-96bc-2cf32324ff8c', 'data-domains': 'commus.kerboul.me', 'data-exclude-search': 'true' },
       ],
     },
   },
@@ -60,6 +63,8 @@ export default defineNuxtConfig({
   image: {
     quality: 80,
     format: ['webp', 'png', 'jpg'],
+    // Source files never change in place, so resized variants can be cached for a year.
+    ipx: { maxAge: 60 * 60 * 24 * 365 },
   },
 
   nitro: {
@@ -83,7 +88,6 @@ export default defineNuxtConfig({
       '/llms.txt': { swr: 3600 },                  // 1 hour SWR
       '/llms-full.txt': { swr: 3600 },             // 1 hour SWR — corpus complet
       '/api/rss.xml': { swr: 600 },               // 10 min SWR
-      '/api/communities/graph': { swr: 300 },     // 5 min SWR
       '/api/infographie': { swr: 300 },            // 5 min SWR
     },
   },

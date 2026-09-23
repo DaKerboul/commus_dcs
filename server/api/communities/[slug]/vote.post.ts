@@ -9,7 +9,16 @@ import {
   validateVoteIntent,
 } from '#server/utils/vote-protection'
 
+/**
+ * One vote per Discord account and per community.
+ *
+ * Anonymous voting keyed on IP + browser fingerprint was farmed with rotating
+ * IPs in 2026-08/09 (70 votes voided on 06mhr on 2026-09-23), so the account is
+ * now the identity. The display delay and per-connection caps stay as a second
+ * line against scripted accounts.
+ */
 export default defineEventHandler(async (event) => {
+  const user = await requireUser(event)
   const db = useDB()
   const slug = getRouterParam(event, 'slug')
 
@@ -25,7 +34,6 @@ export default defineEventHandler(async (event) => {
 
   const { ipHash, fingerprintHash } = getVoteHashes(event, sessionId)
 
-  // Check community exists
   const [community] = await db
     .select({ id: communities.id, votes: communities.votes })
     .from(communities)
@@ -39,21 +47,13 @@ export default defineEventHandler(async (event) => {
   const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000)
   const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000)
 
-  const [existingSessionVote, existingFingerprintVote, hourlyIpUsage, dailyIpUsage] = await Promise.all([
+  const [existingUserVote, hourlyIpUsage, dailyIpUsage] = await Promise.all([
     db
       .select({ id: communityVotes.id })
       .from(communityVotes)
       .where(and(
         eq(communityVotes.communityId, community.id),
-        eq(communityVotes.sessionId, sessionId),
-      ))
-      .limit(1),
-    db
-      .select({ id: communityVotes.id })
-      .from(communityVotes)
-      .where(and(
-        eq(communityVotes.communityId, community.id),
-        eq(communityVotes.fingerprintHash, fingerprintHash),
+        eq(communityVotes.userId, user.id),
       ))
       .limit(1),
     db
@@ -72,20 +72,18 @@ export default defineEventHandler(async (event) => {
       )),
   ])
 
-  if (existingSessionVote[0] || existingFingerprintVote[0]) {
+  if (existingUserVote[0]) {
     throw createError({ statusCode: 429, statusMessage: 'Vous avez déjà soutenu cette communauté.' })
   }
 
-  const hourlyCount = Number(hourlyIpUsage[0]?.total || 0)
-  if (hourlyCount >= MAX_VOTES_PER_IP_PER_HOUR) {
+  if (Number(hourlyIpUsage[0]?.total || 0) >= MAX_VOTES_PER_IP_PER_HOUR) {
     throw createError({
       statusCode: 429,
       statusMessage: 'Trop de votes depuis cette connexion. Réessayez dans une heure.',
     })
   }
 
-  const dailyCount = Number(dailyIpUsage[0]?.total || 0)
-  if (dailyCount >= MAX_VOTES_PER_IP_PER_DAY) {
+  if (Number(dailyIpUsage[0]?.total || 0) >= MAX_VOTES_PER_IP_PER_DAY) {
     throw createError({
       statusCode: 429,
       statusMessage: 'Limite quotidienne de votes atteinte pour cette connexion.',
@@ -99,6 +97,7 @@ export default defineEventHandler(async (event) => {
         sessionId,
         ipHash,
         fingerprintHash,
+        userId: user.id,
       })
 
       await tx
@@ -107,6 +106,7 @@ export default defineEventHandler(async (event) => {
         .where(eq(communities.id, community.id))
     })
   } catch (error: any) {
+    // 23505: this account (or this browser session) already voted here.
     if (error?.code === '23505') {
       throw createError({ statusCode: 429, statusMessage: 'Vous avez déjà soutenu cette communauté.' })
     }

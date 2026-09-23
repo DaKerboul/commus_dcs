@@ -1,0 +1,3 @@
+ALTER TABLE "community_votes" ADD COLUMN "user_id" integer;--> statement-breakpoint
+ALTER TABLE "community_votes" ADD CONSTRAINT "community_votes_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_community_votes_user_unique" ON "community_votes" USING btree ("community_id","user_id");

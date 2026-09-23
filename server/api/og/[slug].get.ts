@@ -1,3 +1,4 @@
+import sharp from 'sharp'
 import { eq } from 'drizzle-orm'
 import { communities } from '#server/db/schema'
 
@@ -48,9 +49,12 @@ export default defineEventHandler(async (event) => {
   <text x="1120" y="560" font-family="sans-serif" font-size="14" fill="#374151" text-anchor="end">RLPDK Approved</text>
 </svg>`
 
-  setResponseHeader(event, 'Content-Type', 'image/svg+xml')
+  // Discord, X and Facebook ignore SVG previews, so the card is rasterised.
+  // The runtime image ships font-dejavu so the text actually renders.
+  const png = await sharp(Buffer.from(svg)).png({ compressionLevel: 9 }).toBuffer()
+  setResponseHeader(event, 'Content-Type', 'image/png')
   setResponseHeader(event, 'Cache-Control', 'public, max-age=86400')
-  return svg
+  return png
 })
 
 function escapeXml(str: string): string {

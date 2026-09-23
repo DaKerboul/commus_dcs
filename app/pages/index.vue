@@ -4,7 +4,7 @@
          (-mt = header height) so the image fills behind it instead of leaving a gap -->
     <section class="relative overflow-hidden -mt-[4.25rem]">
       <div class="absolute inset-0">
-        <img src="/bck1.png" alt="" class="h-full w-full object-cover" />
+        <NuxtImg src="/bck1.png" alt="" width="1920" format="webp" quality="70" preload fetchpriority="high" class="h-full w-full object-cover" />
         <div class="absolute inset-0 bg-white/70 dark:bg-gray-950/70" />
         <div class="absolute inset-0 bg-linear-to-b from-white/30 dark:from-gray-950/30 via-transparent to-white dark:to-gray-950" />
       </div>
@@ -195,8 +195,12 @@
           :class="{ 'gallery-item-visible': galleryVisible }"
           :style="{ transitionDelay: `${i * 50}ms` }"
         >
-          <img
+          <NuxtImg
             :src="img.src"
+            width="640"
+            height="360"
+            fit="cover"
+            format="webp"
             :alt="img.alt"
             class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
             loading="lazy"
@@ -336,8 +340,8 @@ const heroStats = computed(() => {
 
 const discoverCards = [
   { to: '/stats', icon: 'i-heroicons-chart-pie', color: 'text-green-400', title: 'Statistiques', subtitle: 'DCS en chiffres' },
-  { to: '/timeline', icon: 'i-heroicons-clock', color: 'text-amber-400', title: 'Timeline', subtitle: 'Histoire DCS FR' },
-  { to: '/communautes/comparer', icon: 'i-heroicons-scale', color: 'text-blue-400', title: 'Comparer', subtitle: 'Face à face' },
+  { to: '/streamers', icon: 'i-simple-icons-twitch', color: 'text-amber-400', title: 'Streameurs', subtitle: 'DCS en direct' },
+  { to: '/soumettre', icon: 'i-heroicons-plus-circle', color: 'text-blue-400', title: 'Soumettre', subtitle: 'Ajouter ta commu' },
   { to: '/trouver', icon: 'i-heroicons-sparkles', color: 'text-purple-400', title: 'Trouver', subtitle: 'Ta commu idéale' },
 ]
 

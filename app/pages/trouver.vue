@@ -120,6 +120,7 @@
       <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
         {{ results?.data?.length ? `${results.data.length} communauté(s) trouvée(s)` : 'Aucun résultat' }}
       </h2>
+      <p v-if="relaxedNote" class="text-sm text-gray-500 dark:text-gray-400">{{ relaxedNote }}</p>
       <div v-if="results?.data?.length" class="grid gap-4">
         <CommunityCard v-for="c in results.data" :key="c.id" :community="c" />
       </div>
@@ -184,6 +185,8 @@ const answers = reactive({
 })
 
 const results = ref<PaginatedResponse<CommunityCard> | null>(null)
+// Set when nothing matched every criterion and the search had to be broadened.
+const relaxedNote = ref('')
 
 const { data: modulesList } = await useFetch<{ id: number; name: string }[]>('/api/modules')
 const { data: experiencesList } = await useFetch<{ id: number; name: string; slug: string }[]>('/api/experiences')
@@ -208,7 +211,8 @@ const sizeOptions = [
   { value: 'very_large_150_plus', label: 'Très grande', desc: '+150 pilotes actifs' },
   { value: 'large_50_plus', label: 'Grande', desc: '+50 pilotes, bonne dynamique' },
   { value: 'medium_30_plus', label: 'Moyenne', desc: '~30 pilotes, ambiance familiale' },
-  { value: 'medium_under_30', label: 'Petite / Moyenne', desc: 'Petit groupe soudé' },
+  { value: 'medium_under_30', label: 'Petite / Moyenne', desc: 'Moins de 30 pilotes, groupe soudé' },
+  { value: 'small', label: 'Petite', desc: 'Quelques pilotes, comme entre amis' },
 ]
 
 function toggleAnswer(key: 'modules' | 'types' | 'sizes' | 'experiences', value: string) {
@@ -224,16 +228,36 @@ async function nextStep() {
     return
   }
   // Fetch results
-  const params: Record<string, string> = { limit: '50' }
-  if (answers.modules.length) params.modules = answers.modules.join(',')
-  if (answers.types.length) params.communityType = answers.types.join(',')
-  if (answers.sizes.length) params.sizeCategory = answers.sizes.join(',')
-  if (answers.experiences.length) params.experiences = answers.experiences.join(',')
-  if (answers.recruitmentOnly) params.recruitmentStatus = 'open'
+  const base: Record<string, string> = { limit: '50' }
+  if (answers.modules.length) base.modules = answers.modules.join(',')
+  if (answers.recruitmentOnly) base.recruitmentStatus = 'open'
+  // A fiche with no declared size must not vanish as soon as a size is picked.
+  const sizes = answers.sizes.length ? [...answers.sizes, 'unknown'].join(',') : ''
+  const types = answers.types.join(',')
+  const experiences = answers.experiences.join(',')
 
-  results.value = await $fetch<PaginatedResponse<CommunityCard>>('/api/communities', { query: params })
+  // Broaden step by step rather than end on an empty page (14 % of searches did).
+  const attempts: { params: Record<string, string>, note: string }[] = [
+    { params: { ...base, ...(types && { communityType: types }), ...(sizes && { sizeCategory: sizes }), ...(experiences && { experiences }) }, note: '' },
+    { params: { ...base, ...(types && { communityType: types }), ...(sizes && { sizeCategory: sizes }) }, note: 'Aucune communauté ne proposait ces expériences : voici celles qui correspondent au reste.' },
+    { params: { ...base, ...(types && { communityType: types }) }, note: 'Élargi : la taille de groupe a été ignorée.' },
+    { params: base, note: 'Élargi : seuls vos modules' + (answers.recruitmentOnly ? ' et le recrutement' : '') + ' ont été pris en compte.' },
+  ]
+
+  relaxedNote.value = ''
+  const seen = new Set<string>()
+  for (const attempt of attempts) {
+    const key = JSON.stringify(attempt.params)
+    if (seen.has(key)) continue
+    seen.add(key)
+    results.value = await $fetch<PaginatedResponse<CommunityCard>>('/api/communities', { query: attempt.params })
+    if (results.value?.data?.length) {
+      relaxedNote.value = attempt.note
+      break
+    }
+  }
   step.value = totalSteps + 1
-  track('finder_completion', { resultCount: results.value?.data?.length ?? 0 })
+  track('finder_completion', { resultCount: results.value?.data?.length ?? 0, relaxed: Boolean(relaxedNote.value) })
 }
 
 function restart() {
@@ -244,5 +268,6 @@ function restart() {
   answers.experiences = []
   answers.recruitmentOnly = false
   results.value = null
+  relaxedNote.value = ''
 }
 </script>

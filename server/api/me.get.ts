@@ -49,7 +49,7 @@ export default defineEventHandler(async (event) => {
         displayName: account.discordUsername,
         avatarUrl: account.discordAvatarUrl,
       },
-      communities: managed,
+      communities: managed.map(c => ({ ...c, logoUrl: mediaUrl('logo', c.id, c.logoUrl) })),
       isAdmin: admin,
     }
   } catch (error) {

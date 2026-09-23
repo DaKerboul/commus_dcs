@@ -1,5 +1,5 @@
-import { and, inArray, isNull, lt, notInArray, or } from 'drizzle-orm'
-import { communityMembers, users } from '#server/db/schema'
+import { and, inArray, isNull, lt, ne, notInArray, or } from 'drizzle-orm'
+import { communityMembers, communityVotes, users } from '#server/db/schema'
 
 /**
  * GDPR retention: drops accounts that are dormant and manage nothing.
@@ -52,6 +52,25 @@ export async function purgeDormantAccounts(): Promise<number> {
   return dormant.length
 }
 
+/**
+ * Vote IP/fingerprint hashes only serve the 1 h / 24 h rate limits, so they
+ * are wiped after 30 days (documented on /confidentialite).
+ */
+const VOTE_HASH_RETENTION_MS = 30 * 24 * 60 * 60 * 1000
+
+export async function purgeVoteHashes(): Promise<number> {
+  const db = useDB()
+  const cutoff = new Date(Date.now() - VOTE_HASH_RETENTION_MS)
+  const purged = await db.update(communityVotes)
+    .set({ ipHash: 'purged', fingerprintHash: 'purged' })
+    .where(and(lt(communityVotes.createdAt, cutoff), ne(communityVotes.ipHash, 'purged')))
+    .returning({ id: communityVotes.id })
+  if (purged.length) {
+    console.log(JSON.stringify({ event: 'privacy.purge', result: 'vote-hashes', rows: purged.length }))
+  }
+  return purged.length
+}
+
 export default defineNitroPlugin(() => {
   if (process.env.NUXT_RUN_PRIVACY_PURGE === 'false') {
     console.log('[privacy-purge] disabled via NUXT_RUN_PRIVACY_PURGE=false')
@@ -61,6 +80,7 @@ export default defineNitroPlugin(() => {
   const run = async () => {
     try {
       await purgeDormantAccounts()
+      await purgeVoteHashes()
     } catch (error) {
       // Never let retention housekeeping affect serving traffic.
       console.error(JSON.stringify({

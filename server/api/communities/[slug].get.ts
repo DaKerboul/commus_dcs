@@ -33,6 +33,12 @@ export default defineEventHandler(async (event) => {
   const sessionId = getOrCreateVoteSession(event)
   ensureVoteIntent(event, slug, sessionId)
 
+  // Signed-in members are identified by account; anonymous visitors cannot vote.
+  const session = await getUserSession(event)
+  const memberId = (session as { user?: { role?: string, id?: number } }).user?.role === 'member'
+    ? (session as { user?: { id?: number } }).user?.id ?? null
+    : null
+
   // Fetch all relations in parallel
   const [modRows, soughtModRows, expRows, periodRows, imageRows, existingVoteRows] = await Promise.all([
     db
@@ -55,7 +61,7 @@ export default defineEventHandler(async (event) => {
       .from(communityHistoricalPeriods)
       .where(eq(communityHistoricalPeriods.communityId, community.id)),
     db
-      .select({ url: communityImages.url, alt: communityImages.alt })
+      .select({ id: communityImages.id, url: communityImages.url, alt: communityImages.alt })
       .from(communityImages)
       .where(eq(communityImages.communityId, community.id))
       .orderBy(communityImages.sortOrder),
@@ -64,7 +70,7 @@ export default defineEventHandler(async (event) => {
       .from(communityVotes)
       .where(and(
         eq(communityVotes.communityId, community.id),
-        eq(communityVotes.sessionId, sessionId),
+        memberId ? eq(communityVotes.userId, memberId) : eq(communityVotes.sessionId, sessionId),
       ))
       .limit(1),
   ])
@@ -95,7 +101,7 @@ export default defineEventHandler(async (event) => {
     bannerUrl: community.bannerUrl,
     // Drives the "managed by the community" badge, the incentive for others to claim.
     isManagedByCommunity: memberCount > 0,
-    logoUrl: community.logoUrl,
+    logoUrl: mediaUrl('logo', community.id, community.logoUrl),
     sizeCategory: community.sizeCategory,
     communityType: community.communityType,
     recruitmentStatus: community.recruitmentStatus,
@@ -104,7 +110,7 @@ export default defineEventHandler(async (event) => {
     contact: community.contact,
     entryConditions: community.entryConditions,
     sizeText: community.sizeText,
-    discordUrl: community.discordUrl,
+    discordUrl: liveDiscordUrl(community),
     websiteUrl: community.websiteUrl,
     youtubeUrl: community.youtubeUrl,
     instagramUrl: community.instagramUrl,
@@ -123,6 +129,6 @@ export default defineEventHandler(async (event) => {
     soughtModuleNames: soughtModRows.map(r => r.moduleName),
     experienceNames: expRows.map(r => r.experienceName),
     historicalPeriods: periodRows.map(r => r.period),
-    images: imageRows,
+    images: imageRows.map(i => ({ url: mediaUrl('image', i.id, i.url)!, alt: i.alt })),
   }
 })

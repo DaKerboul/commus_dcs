@@ -43,7 +43,7 @@ export default defineEventHandler(async (event) => {
     slug: row.slug,
     name: row.name,
     shortDescription: row.short_description,
-    logoUrl: row.logo_url,
+    logoUrl: mediaUrl('logo', row.id, row.logo_url),
     sizeCategory: row.size_category,
     communityType: row.community_type,
     recruitmentStatus: row.recruitment_status,

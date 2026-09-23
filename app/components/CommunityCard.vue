@@ -17,6 +17,7 @@
           <NuxtImg
             v-if="community.logoUrl"
             :src="community.logoUrl"
+            :provider="community.logoUrl.startsWith('/api/media/') ? 'none' : undefined"
             :alt="community.name"
             width="56"
             height="56"

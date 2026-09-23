@@ -1,5 +1,5 @@
 # Multi-stage build for Nuxt 3
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
@@ -16,11 +16,15 @@ COPY . .
 RUN npm run build
 
 # ── Production stage ─────────────────────────────────
-FROM node:20-alpine AS runner
+FROM node:22-alpine AS runner
 
 WORKDIR /app
 
-# Switch to non-root user before any writes (node uid=1000 provided by node:20-alpine)
+# Fonts for server-side SVG rasterising (share cards on /api/og) — without them
+# librsvg renders the text as nothing. Installed before dropping root.
+RUN apk add --no-cache fontconfig font-dejavu
+
+# Switch to non-root user before any writes (node uid=1000 provided by node:22-alpine)
 RUN chown node:node /app
 USER node
 

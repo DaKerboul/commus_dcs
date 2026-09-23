@@ -135,12 +135,13 @@
               </div>
               <div class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
                 <p>
-                  Un identifiant de session anonyme (cookie
+                  Voter demande une connexion Discord : chaque vote est rattaché à votre compte, pour garantir
+                  un seul vote par personne et par communauté. Un identifiant de session (cookie
                   <code class="px-1.5 py-0.5 rounded bg-gray-200 dark:bg-gray-800 text-xs font-mono">commus_vote_session</code>,
-                  durée 1 an) est utilisé pour limiter les votes en double sur les fiches communautés.
-                  Un cookie technique temporaire (<code class="px-1.5 py-0.5 rounded bg-gray-200 dark:bg-gray-800 text-xs font-mono">commus_vote_intent</code>,
-                  durée 24 h) signe chaque intention de vote.
-                  Aucune donnée personnelle n'est associée à ces identifiants.
+                  durée 1 an) et un cookie technique temporaire (<code class="px-1.5 py-0.5 rounded bg-gray-200 dark:bg-gray-800 text-xs font-mono">commus_vote_intent</code>,
+                  durée 24 h) complètent ce contrôle.
+                  Pour limiter les abus, une empreinte chiffrée de votre adresse IP est enregistrée avec le vote,
+                  puis effacée au bout de 30 jours.
                 </p>
               </div>
             </div>

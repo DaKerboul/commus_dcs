@@ -86,6 +86,12 @@
 const toast = useToast()
 const { counts } = useAdminCounts()
 
+// Staff browsing (checks after each edit, moderation) skewed the public stats.
+// The Umami tracker honours this flag on every page of this browser.
+onMounted(() => {
+  try { localStorage.setItem('umami.disabled', '1') } catch {}
+})
+
 const menuOpen = ref(false)
 const loggingOut = ref(false)
 

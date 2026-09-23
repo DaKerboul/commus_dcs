@@ -26,7 +26,7 @@ Si vous préférez passer par GitHub, ouvrez une issue avec le label `nouvelle c
 
 ### Prérequis
 
-- Node.js 20+
+- Node.js 22+
 - PostgreSQL 16 (ou Docker)
 
 ### Installation locale

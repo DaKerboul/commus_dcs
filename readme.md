@@ -14,7 +14,7 @@ Annuaire web des communautés francophones de DCS World. Nuxt 3 full-stack avec 
 
 ### Prérequis
 
-- Node.js 20+
+- Node.js 22+
 - PostgreSQL 16 (ou Docker)
 
 ### Installation

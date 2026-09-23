@@ -130,6 +130,12 @@ export const communities = pgTable('communities', {
   twitterUrl: text('twitter_url'),
   otherLinks: jsonb('other_links').$type<{ label: string; url: string }[]>(),
 
+  // Weekly invite check (plugin discord-invite-check). The status only applies
+  // while discord_status_url still equals discord_url.
+  discordStatus: varchar('discord_status', { length: 16 }),
+  discordStatusUrl: text('discord_status_url'),
+  discordCheckedAt: timestamp('discord_checked_at'),
+
   // Meta
   featured: boolean('featured').default(false),
   published: boolean('published').default(true),
@@ -199,9 +205,13 @@ export const communityVotes = pgTable('community_votes', {
   sessionId: varchar('session_id', { length: 64 }).notNull(),
   ipHash: varchar('ip_hash', { length: 64 }).notNull(),
   fingerprintHash: varchar('fingerprint_hash', { length: 64 }).notNull(),
+  // Votes since 2026-09-23 require a Discord account (anonymous votes were
+  // farmed through rotating IPs); older rows keep user_id NULL.
+  userId: integer('user_id').references(() => users.id, { onDelete: 'set null' }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 }, table => ({
   uniqueSessionVote: uniqueIndex('idx_community_votes_session_unique').on(table.communityId, table.sessionId),
+  uniqueUserVote: uniqueIndex('idx_community_votes_user_unique').on(table.communityId, table.userId),
   communityLookup: index('idx_community_votes_community').on(table.communityId),
   ipCreatedLookup: index('idx_community_votes_ip_created').on(table.ipHash, table.createdAt),
   fingerprintCreatedLookup: index('idx_community_votes_fingerprint_created').on(table.fingerprintHash, table.createdAt),

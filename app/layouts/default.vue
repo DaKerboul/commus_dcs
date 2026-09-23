@@ -14,7 +14,7 @@
         <div class="flex h-14 items-center justify-between">
           <div class="flex items-center gap-6">
             <NuxtLink to="/" class="flex items-center gap-2">
-              <img src="/logo.png" alt="Commus DCS FR" class="h-8 w-8" />
+              <NuxtImg src="/logo.png" alt="Commus DCS FR" width="64" height="64" format="webp" class="h-8 w-8" />
               <span v-if="!isRlpdk" class="text-lg font-bold text-gray-900 dark:text-white">Commus DCS</span>
               <span v-else class="text-lg font-bold text-emerald-300 font-serif tracking-wide">ROCA-DK</span>
             </NuxtLink>
@@ -38,22 +38,12 @@
               <UButton to="/stats" variant="ghost" color="neutral" size="sm">
                 Statistiques
               </UButton>
-              <UButton to="/timeline" variant="ghost" color="neutral" size="sm">
-                Timeline
-              </UButton>
             </div>
           </div>
           <div class="flex items-center gap-2">
             <!-- Primary action: submitting a community is a CTA, not a nav link -->
             <UButton to="/soumettre" color="primary" size="sm" icon="i-heroicons-plus" class="hidden sm:flex">
               Soumettre
-            </UButton>
-            <!-- Favorites -->
-            <UButton to="/mes-favoris" variant="ghost" color="neutral" size="sm" class="relative hidden sm:flex" aria-label="Mes favoris">
-              <UIcon name="i-heroicons-bookmark" />
-              <UBadge v-if="favCount > 0" color="warning" size="xs" class="absolute -top-1 -right-1 min-w-4 h-4 flex items-center justify-center text-[10px]">
-                {{ favCount }}
-              </UBadge>
             </UButton>
             <!-- Account -->
             <UPopover v-if="account.isSignedIn.value">
@@ -155,19 +145,11 @@
           <UButton to="/stats" variant="ghost" color="neutral" block @click="mobileOpen = false">
             Statistiques
           </UButton>
-          <UButton to="/timeline" variant="ghost" color="neutral" block @click="mobileOpen = false">
-            Timeline
-          </UButton>
           <UButton to="/soumettre" variant="ghost" color="neutral" block @click="mobileOpen = false">
             Soumettre
           </UButton>
           <UButton to="/a-propos" variant="ghost" color="neutral" block @click="mobileOpen = false">
             À propos
-          </UButton>
-          <UButton to="/mes-favoris" variant="ghost" color="neutral" block @click="mobileOpen = false">
-            <UIcon name="i-heroicons-bookmark" class="mr-1" />
-            Favoris
-            <UBadge v-if="favCount > 0" color="warning" size="xs" class="ml-1">{{ favCount }}</UBadge>
           </UButton>
           <UButton
             v-if="account.isSignedIn.value"
@@ -205,11 +187,14 @@
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         <div class="flex flex-col md:flex-row items-center justify-between gap-4">
           <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-            <img src="/logo.png" alt="" class="h-5 w-5" />
+            <NuxtImg src="/logo.png" alt="" width="40" height="40" format="webp" class="h-5 w-5" />
             <span v-if="!isRlpdk">Commus DCS FR — Annuaire des communautés francophones DCS World</span>
             <span v-else class="font-serif tracking-wide">ROCA-DK — Registre Officiel des Communautés Aériennes du Kerboulistan</span>
           </div>
-          <div class="flex items-center gap-4 text-sm text-gray-500">
+          <div class="flex flex-wrap items-center justify-center md:justify-end gap-x-4 gap-y-2 text-sm text-gray-500">
+            <NuxtLink to="/timeline" class="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Timeline</NuxtLink>
+            <NuxtLink to="/communautes/comparer" class="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Comparer</NuxtLink>
+            <NuxtLink to="/mes-favoris" class="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Favoris<span v-if="favCount > 0" class="ml-1 font-mono text-xs">({{ favCount }})</span></NuxtLink>
             <NuxtLink to="/a-propos" class="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">À propos</NuxtLink>
             <NuxtLink to="/contact" class="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Contact</NuxtLink>
             <NuxtLink to="/changelog" class="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Changelog</NuxtLink>
