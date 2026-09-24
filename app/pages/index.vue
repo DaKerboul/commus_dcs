@@ -153,7 +153,7 @@
         <div
           v-for="(c, i) in featured.data"
           :key="c.id"
-          class="stagger-card"
+          class="stagger-card min-w-0"
           :class="{ 'stagger-card-visible': featuredVisible }"
           :style="{ transitionDelay: `${i * 80}ms` }"
         >
