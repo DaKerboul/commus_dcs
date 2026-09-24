@@ -1,0 +1,17 @@
+# Dependabot : alertes et PR de mise à jour groupées (maintenance du 2026-09-24).
+# Les montées majeures restent des PR séparées à valider à la main.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: monthly

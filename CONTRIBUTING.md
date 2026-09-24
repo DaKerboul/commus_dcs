@@ -36,8 +36,8 @@ git clone https://github.com/DaKerboul/commus_dcs
 cd commus_dcs
 npm install
 cp .env.example .env        # adapter DATABASE_URL si besoin
-npm run db:push
-npm run db:seed
+npm run db:migrate
+# Données : restaurer un dump de prod (le seed historique dépend d'un .archive/ qui n'existe plus)
 npm run dev
 ```
 
