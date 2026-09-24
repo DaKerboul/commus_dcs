@@ -32,8 +32,14 @@ USER node
 # --ignore-scripts skips `nuxt prepare` (postinstall) which requires the full source tree.
 # npm rebuild sharp runs sharp's native binary download separately (linuxmusl-x64 for Alpine).
 COPY --chown=node:node package.json package-lock.json* .npmrc ./
+# The rebuild downloads sharp's prebuilt binary from GitHub, which times out now
+# and then from this network (deploy 270, 2026-09-24): retry before failing.
 RUN npm ci --omit=dev --ignore-scripts --loglevel warn 2>&1 \
-    && npm rebuild sharp --loglevel warn 2>&1
+    && for attempt in 1 2 3 4; do \
+         npm rebuild sharp --loglevel warn 2>&1 && break; \
+         [ "$attempt" = 4 ] && exit 1; \
+         echo "sharp rebuild failed (attempt $attempt), retrying..."; sleep $((attempt * 10)); \
+       done
 
 # Copy built Nitro output and versioned migrations (needed by the startup migrate runner)
 COPY --chown=node:node --from=builder /app/.output .output
