@@ -65,6 +65,9 @@ export default defineNuxtConfig({
     format: ['webp', 'png', 'jpg'],
     // Source files never change in place, so resized variants can be cached for a year.
     ipx: { maxAge: 60 * 60 * 24 * 365 },
+    // Pass-through for /api/media URLs (already-optimised uploads): built-in
+    // providers are only registered when listed here.
+    none: {},
   },
 
   nitro: {

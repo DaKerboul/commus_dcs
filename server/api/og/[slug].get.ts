@@ -31,6 +31,12 @@ export default defineEventHandler(async (event) => {
   }
   const recruitLabel = recruitLabels[community.recruitmentStatus || 'unknown'] || ''
 
+  // The text area is 1040 px wide. DejaVu Sans Bold averages ~0.62 em per
+  // glyph, so long names shrink instead of running off the card.
+  const name = community.name
+  const titleSize = Math.max(30, Math.min(52, Math.floor(1040 / (name.length * 0.62))))
+  const rawDesc = (community.shortDescription || '').replace(/\s+/g, ' ').trim()
+  const desc = rawDesc.length > 82 ? `${rawDesc.slice(0, 81).trimEnd()}…` : rawDesc
   const svg = `<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
@@ -41,8 +47,8 @@ export default defineEventHandler(async (event) => {
   <rect width="1200" height="630" fill="url(#bg)"/>
   <rect x="0" y="0" width="1200" height="4" fill="#3b82f6"/>
   <text x="80" y="120" font-family="sans-serif" font-size="18" fill="#3b82f6" font-weight="bold" letter-spacing="3">COMMUS DCS FR</text>
-  <text x="80" y="200" font-family="sans-serif" font-size="52" fill="white" font-weight="bold">${escapeXml(community.name)}</text>
-  <text x="80" y="270" font-family="sans-serif" font-size="22" fill="#9ca3af">${escapeXml((community.shortDescription || '').slice(0, 100))}</text>
+  <text x="80" y="200" font-family="sans-serif" font-size="${titleSize}" fill="white" font-weight="bold">${escapeXml(name)}</text>
+  <text x="80" y="270" font-family="sans-serif" font-size="22" fill="#9ca3af">${escapeXml(desc)}</text>
   ${recruitLabel ? `<rect x="80" y="340" width="${recruitLabel.length * 12 + 40}" height="40" rx="8" fill="${community.recruitmentStatus === 'open' ? '#065f46' : '#7f1d1d'}"/>
   <text x="100" y="366" font-family="sans-serif" font-size="16" fill="${community.recruitmentStatus === 'open' ? '#6ee7b7' : '#fca5a5'}">${recruitLabel}</text>` : ''}
   <text x="80" y="560" font-family="sans-serif" font-size="16" fill="#4b5563">commus.kerboul.me/communautes/${slug}</text>
