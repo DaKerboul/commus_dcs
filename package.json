@@ -28,7 +28,7 @@
     "d3-force": "^3.0.0",
     "drizzle-orm": "^0.45.2",
     "echarts": "^6.0.0",
-    "markdown-it": "^14.3.0",
+    "markdown-it": "^15.0.2",
     "nuxt": "^3.16.0",
     "nuxt-auth-utils": "^0.5.30",
     "postgres": "^3.4.9",
