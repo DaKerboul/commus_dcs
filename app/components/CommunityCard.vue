@@ -1,7 +1,7 @@
 <template>
   <NuxtLink
     :to="`/communautes/${community.slug}`"
-    class="community-card group relative block overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5 pl-6 hover:border-primary/50 hover:bg-gray-100 dark:hover:bg-gray-900"
+    class="community-card group relative block overflow-hidden rounded-xl border border-line surface p-5 pl-6 hover:border-primary/50 hover:bg-gray-100 dark:hover:bg-gray-900"
   >
     <!-- Recruitment status rail: a colour signal that never competes with the text -->
     <span
@@ -30,7 +30,7 @@
       <!-- Content -->
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-2 flex-wrap">
-          <h3 class="text-base font-semibold text-gray-900 dark:text-white group-hover:text-primary transition-colors truncate">
+          <h3 class="text-base font-semibold text-strong group-hover:text-primary transition-colors truncate">
             {{ community.name }}
           </h3>
           <!-- Favorite toggle -->
@@ -41,7 +41,7 @@
           >
             <UIcon
               :name="isFav ? 'i-heroicons-bookmark-solid' : 'i-heroicons-bookmark'"
-              :class="isFav ? 'text-yellow-500' : 'text-gray-400 hover:text-yellow-400'"
+              :class="isFav ? 'text-yellow-500' : 'text-gray-400 hover:text-yellow-800 dark:hover:text-yellow-400'"
               class="text-sm"
             />
           </button>
@@ -51,15 +51,15 @@
           <UBadge v-if="contextBadge" :color="contextBadge.color" :variant="contextBadge.variant" size="xs">
             {{ contextBadge.label }}
           </UBadge>
-          <span v-if="community.votes > 0" class="inline-flex items-center gap-0.5 text-xs text-red-400">
+          <span v-if="community.votes > 0" class="inline-flex items-center gap-0.5 text-xs text-red-600 dark:text-red-400">
             <UIcon name="i-heroicons-heart-solid" class="text-xs" />
             {{ community.votes }}
           </span>
         </div>
-        <p v-if="community.shortDescription" class="mt-1 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+        <p v-if="community.shortDescription" class="mt-1 text-sm text-soft line-clamp-2">
           {{ community.shortDescription }}
         </p>
-        <p v-if="metaLine" class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+        <p v-if="metaLine" class="mt-2 text-xs text-soft">
           {{ metaLine }}
         </p>
         <div v-if="community.moduleNames?.length" class="mt-2 flex flex-wrap items-center gap-1">

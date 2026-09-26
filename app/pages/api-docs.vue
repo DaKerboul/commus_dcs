@@ -1,22 +1,22 @@
 <template>
   <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">API Publique</h1>
-      <p class="mt-2 text-gray-500 dark:text-gray-400">
+      <h1 class="text-3xl font-bold text-strong">API Publique</h1>
+      <p class="mt-2 text-soft">
         L'API de Commus DCS FR est ouverte et gratuite. Utilisez-la dans vos projets DCS francophones.
       </p>
       <p class="mt-1 text-sm text-gray-500">
-        Base URL : <code class="text-blue-400">{{ baseUrl }}/api</code>
+        Base URL : <code class="text-blue-600 dark:text-blue-400">{{ baseUrl }}/api</code>
       </p>
     </div>
 
     <div class="space-y-6">
-      <div v-for="endpoint in endpoints" :key="endpoint.path" class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 overflow-hidden">
-        <div class="flex items-center gap-3 p-4 border-b border-gray-200 dark:border-gray-800">
+      <div v-for="endpoint in endpoints" :key="endpoint.path" class="rounded-xl border border-line surface overflow-hidden">
+        <div class="flex items-center gap-3 p-4 border-b border-line">
           <UBadge :color="methodColor(endpoint.method)" variant="subtle" size="sm" class="font-mono">
             {{ endpoint.method }}
           </UBadge>
-          <code class="text-sm text-gray-900 dark:text-white font-mono flex-1">{{ endpoint.path }}</code>
+          <code class="text-sm text-strong font-mono flex-1">{{ endpoint.path }}</code>
           <UButton
             v-if="endpoint.method === 'GET' && endpoint.tryUrl"
             size="xs"
@@ -36,9 +36,9 @@
             <p class="text-xs font-medium text-gray-500 uppercase mb-2">Paramètres</p>
             <div class="space-y-1">
               <div v-for="param in endpoint.params" :key="param.name" class="flex items-start gap-2 text-sm">
-                <code class="text-blue-400 shrink-0">{{ param.name }}</code>
+                <code class="text-blue-600 dark:text-blue-400 shrink-0">{{ param.name }}</code>
                 <span class="text-gray-500">{{ param.type }}</span>
-                <span class="text-gray-500 dark:text-gray-400">— {{ param.desc }}</span>
+                <span class="text-soft">— {{ param.desc }}</span>
               </div>
             </div>
           </div>
@@ -46,7 +46,7 @@
           <div v-if="endpoint.example" class="mt-3">
             <p class="text-xs font-medium text-gray-500 uppercase mb-2">Exemple</p>
             <div class="bg-white dark:bg-gray-950 rounded-lg p-3 overflow-x-auto">
-              <code class="text-xs text-green-400 whitespace-pre">{{ endpoint.example }}</code>
+              <code class="text-xs text-green-700 dark:text-green-400 whitespace-pre">{{ endpoint.example }}</code>
             </div>
           </div>
 

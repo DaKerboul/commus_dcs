@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Soumissions</h1>
+    <h1 class="text-2xl font-bold text-strong mb-6">Soumissions</h1>
 
     <!-- Filter tabs -->
     <div class="flex gap-2 mb-6">
@@ -42,7 +42,7 @@
       <div
         v-for="sub in filteredSubmissions"
         :key="sub.id"
-        class="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 overflow-hidden"
+        class="rounded-lg border border-line surface overflow-hidden"
       >
         <!-- Header row -->
         <div class="flex items-center justify-between gap-4 p-4 cursor-pointer" @click="toggleExpand(sub.id)">
@@ -51,7 +51,7 @@
             <div class="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center shrink-0 text-xs font-bold" v-else>
               {{ sub.communityName?.charAt(0) }}
             </div>
-            <span class="font-semibold text-gray-900 dark:text-white truncate">{{ sub.communityName }}</span>
+            <span class="font-semibold text-strong truncate">{{ sub.communityName }}</span>
             <UBadge
               :color="sub.status === 'pending' ? 'warning' : sub.status === 'approved' ? 'success' : 'error'"
               variant="subtle" size="xs"
@@ -66,7 +66,7 @@
         </div>
 
         <!-- Expanded detail panel -->
-        <div v-if="expandedIds.has(sub.id)" class="border-t border-gray-200 dark:border-gray-800 p-5 space-y-5">
+        <div v-if="expandedIds.has(sub.id)" class="border-t border-line p-5 space-y-5">
           <!-- Section: Infos de base -->
           <div>
             <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Informations de base</h3>
@@ -132,20 +132,20 @@
           <div>
             <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Liens</h3>
             <div class="flex flex-wrap gap-3 text-sm">
-              <a v-if="sub.discordUrl" :href="sub.discordUrl" target="_blank" class="text-blue-400 hover:underline">Discord</a>
-              <a v-if="sub.websiteUrl" :href="sub.websiteUrl" target="_blank" class="text-blue-400 hover:underline">Site web</a>
-              <a v-if="sub.youtubeUrl" :href="sub.youtubeUrl" target="_blank" class="text-blue-400 hover:underline">YouTube</a>
-              <a v-if="sub.twitchUrl" :href="sub.twitchUrl" target="_blank" class="text-blue-400 hover:underline">Twitch</a>
-              <a v-if="sub.instagramUrl" :href="sub.instagramUrl" target="_blank" class="text-blue-400 hover:underline">Instagram</a>
-              <a v-if="sub.facebookUrl" :href="sub.facebookUrl" target="_blank" class="text-blue-400 hover:underline">Facebook</a>
-              <a v-if="sub.twitterUrl" :href="sub.twitterUrl" target="_blank" class="text-blue-400 hover:underline">Twitter/X</a>
+              <a v-if="sub.discordUrl" :href="sub.discordUrl" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">Discord</a>
+              <a v-if="sub.websiteUrl" :href="sub.websiteUrl" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">Site web</a>
+              <a v-if="sub.youtubeUrl" :href="sub.youtubeUrl" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">YouTube</a>
+              <a v-if="sub.twitchUrl" :href="sub.twitchUrl" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">Twitch</a>
+              <a v-if="sub.instagramUrl" :href="sub.instagramUrl" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">Instagram</a>
+              <a v-if="sub.facebookUrl" :href="sub.facebookUrl" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">Facebook</a>
+              <a v-if="sub.twitterUrl" :href="sub.twitterUrl" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">Twitter/X</a>
             </div>
             <div v-if="sub.otherLinks?.length" class="mt-2 flex flex-wrap gap-3 text-sm">
-              <a v-for="link in sub.otherLinks" :key="link.url" :href="link.url" target="_blank" class="text-blue-400 hover:underline">{{ link.label || link.url }}</a>
+              <a v-for="link in sub.otherLinks" :key="link.url" :href="link.url" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">{{ link.label || link.url }}</a>
             </div>
             <div v-if="sub.logoUrl" class="mt-2 text-sm">
               <span class="text-gray-500">Logo :</span>
-              <a :href="sub.logoUrl" target="_blank" class="text-blue-400 hover:underline ml-1">{{ sub.logoUrl }}</a>
+              <a :href="sub.logoUrl" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline ml-1">{{ sub.logoUrl }}</a>
             </div>
           </div>
 
@@ -168,7 +168,7 @@
           </div>
 
           <!-- Actions -->
-          <div class="flex gap-2 pt-2 border-t border-gray-200 dark:border-gray-800">
+          <div class="flex gap-2 pt-2 border-t border-line">
             <UButton
               v-if="sub.status !== 'approved'"
               icon="i-heroicons-check"

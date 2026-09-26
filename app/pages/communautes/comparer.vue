@@ -1,10 +1,10 @@
 <template>
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-        <span class="text-blue-400">VS</span> Comparateur
+      <h1 class="text-3xl font-bold text-strong flex items-center gap-3">
+        <span class="text-blue-600 dark:text-blue-400">VS</span> Comparateur
       </h1>
-      <p class="mt-2 text-gray-500 dark:text-gray-400">Sélectionnez 2 à 3 communautés pour les comparer côte à côte.</p>
+      <p class="mt-2 text-soft">Sélectionnez 2 à 3 communautés pour les comparer côte à côte.</p>
     </div>
 
     <!-- Selection -->
@@ -27,15 +27,15 @@
       <table class="w-full border-collapse">
         <thead>
           <tr>
-            <th class="text-left p-3 text-sm text-gray-500 dark:text-gray-400 font-medium border-b border-gray-200 dark:border-gray-800 w-48">Critère</th>
+            <th class="text-left p-3 text-sm text-soft font-medium border-b border-line w-48">Critère</th>
             <th
               v-for="c in comparedCommunities"
               :key="c.slug"
-              class="p-3 text-center border-b border-gray-200 dark:border-gray-800"
+              class="p-3 text-center border-b border-line"
             >
               <div class="flex flex-col items-center gap-2">
                 <img v-if="c.logoUrl" :src="c.logoUrl" :alt="c.name" class="h-10 w-10 rounded-lg object-cover" />
-                <NuxtLink :to="`/communautes/${c.slug}`" class="text-gray-900 dark:text-white font-semibold hover:text-blue-400">
+                <NuxtLink :to="`/communautes/${c.slug}`" class="text-strong font-semibold hover:text-blue-700 dark:hover:text-blue-400">
                   {{ c.name }}
                 </NuxtLink>
               </div>
@@ -45,30 +45,30 @@
         <tbody>
           <!-- Votes -->
           <tr class="border-b border-gray-200/50 dark:border-gray-800/50">
-            <td class="p-3 text-sm text-gray-500 dark:text-gray-400">
+            <td class="p-3 text-sm text-soft">
               <UIcon name="i-heroicons-heart" class="mr-1" />Votes
             </td>
             <td v-for="c in comparedCommunities" :key="c.slug" class="p-3 text-center text-sm">
-              <span :class="c.votes === maxVotes && maxVotes > 0 ? 'text-red-500 font-bold' : 'text-gray-900 dark:text-white'">
+              <span :class="c.votes === maxVotes && maxVotes > 0 ? 'text-red-500 font-bold' : 'text-strong'">
                 {{ c.votes || 0 }}
               </span>
               <UIcon v-if="c.votes === maxVotes && maxVotes > 0" name="i-heroicons-trophy" class="text-yellow-500 ml-1" />
             </td>
           </tr>
           <tr class="border-b border-gray-200/50 dark:border-gray-800/50">
-            <td class="p-3 text-sm text-gray-500 dark:text-gray-400">Type</td>
-            <td v-for="c in comparedCommunities" :key="c.slug" class="p-3 text-center text-sm text-gray-900 dark:text-white">
+            <td class="p-3 text-sm text-soft">Type</td>
+            <td v-for="c in comparedCommunities" :key="c.slug" class="p-3 text-center text-sm text-strong">
               {{ TYPE_LABELS[c.communityType] || c.communityType }}
             </td>
           </tr>
           <tr class="border-b border-gray-200/50 dark:border-gray-800/50">
-            <td class="p-3 text-sm text-gray-500 dark:text-gray-400">Taille</td>
-            <td v-for="c in comparedCommunities" :key="c.slug" class="p-3 text-center text-sm text-gray-900 dark:text-white">
+            <td class="p-3 text-sm text-soft">Taille</td>
+            <td v-for="c in comparedCommunities" :key="c.slug" class="p-3 text-center text-sm text-strong">
               {{ c.sizeText || SIZE_LABELS[c.sizeCategory] }}
             </td>
           </tr>
           <tr class="border-b border-gray-200/50 dark:border-gray-800/50">
-            <td class="p-3 text-sm text-gray-500 dark:text-gray-400">Recrutement</td>
+            <td class="p-3 text-sm text-soft">Recrutement</td>
             <td v-for="c in comparedCommunities" :key="c.slug" class="p-3 text-center">
               <UBadge :color="(RECRUITMENT_COLORS[c.recruitmentStatus] || 'neutral') as any" variant="subtle" size="xs">
                 {{ RECRUITMENT_LABELS[c.recruitmentStatus] }}
@@ -76,14 +76,14 @@
             </td>
           </tr>
           <tr class="border-b border-gray-200/50 dark:border-gray-800/50">
-            <td class="p-3 text-sm text-gray-500 dark:text-gray-400">Événements</td>
-            <td v-for="c in comparedCommunities" :key="c.slug" class="p-3 text-center text-sm text-gray-900 dark:text-white">
+            <td class="p-3 text-sm text-soft">Événements</td>
+            <td v-for="c in comparedCommunities" :key="c.slug" class="p-3 text-center text-sm text-strong">
               {{ FREQUENCY_LABELS[c.eventFrequency] }}
             </td>
           </tr>
           <!-- Modules with shared highlighting -->
           <tr class="border-b border-gray-200/50 dark:border-gray-800/50">
-            <td class="p-3 text-sm text-gray-500 dark:text-gray-400">
+            <td class="p-3 text-sm text-soft">
               Modules DCS
               <div v-if="sharedModules.length" class="mt-1 text-xs text-green-500">
                 {{ sharedModules.length }} en commun
@@ -105,7 +105,7 @@
             </td>
           </tr>
           <tr class="border-b border-gray-200/50 dark:border-gray-800/50">
-            <td class="p-3 text-sm text-gray-500 dark:text-gray-400">Expériences</td>
+            <td class="p-3 text-sm text-soft">Expériences</td>
             <td v-for="c in comparedCommunities" :key="c.slug" class="p-3 text-center">
               <div class="flex flex-wrap gap-1 justify-center">
                 <UBadge
@@ -121,13 +121,13 @@
             </td>
           </tr>
           <tr class="border-b border-gray-200/50 dark:border-gray-800/50">
-            <td class="p-3 text-sm text-gray-500 dark:text-gray-400">Périodes</td>
-            <td v-for="c in comparedCommunities" :key="c.slug" class="p-3 text-center text-sm text-gray-900 dark:text-white">
+            <td class="p-3 text-sm text-soft">Périodes</td>
+            <td v-for="c in comparedCommunities" :key="c.slug" class="p-3 text-center text-sm text-strong">
               {{ c.historicalPeriods?.map((p: string) => PERIOD_LABELS[p] || p).join(', ') || '—' }}
             </td>
           </tr>
           <tr class="border-b border-gray-200/50 dark:border-gray-800/50">
-            <td class="p-3 text-sm text-gray-500 dark:text-gray-400">Discord</td>
+            <td class="p-3 text-sm text-soft">Discord</td>
             <td v-for="c in comparedCommunities" :key="c.slug" class="p-3 text-center">
               <UButton v-if="c.discordUrl" :to="c.discordUrl" target="_blank" icon="i-simple-icons-discord" size="xs" color="primary" variant="soft">
                 Rejoindre
@@ -136,7 +136,7 @@
             </td>
           </tr>
           <tr>
-            <td class="p-3 text-sm text-gray-500 dark:text-gray-400">Site web</td>
+            <td class="p-3 text-sm text-soft">Site web</td>
             <td v-for="c in comparedCommunities" :key="c.slug" class="p-3 text-center">
               <UButton v-if="c.websiteUrl" :to="c.websiteUrl" target="_blank" icon="i-heroicons-globe-alt" size="xs" color="neutral" variant="soft">
                 Visiter
@@ -163,9 +163,9 @@
       <!-- VS Mode: Radar + Similarity -->
       <div class="mt-8 grid gap-6 lg:grid-cols-2">
         <!-- Radar chart -->
-        <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-6">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <UIcon name="i-heroicons-chart-bar" class="text-blue-400" />
+        <div class="rounded-xl border border-line surface p-6">
+          <h3 class="text-lg font-semibold text-strong mb-4 flex items-center gap-2">
+            <UIcon name="i-heroicons-chart-bar" class="text-blue-600 dark:text-blue-400" />
             Radar comparatif
           </h3>
           <div class="max-w-sm mx-auto">
@@ -180,15 +180,15 @@
         </div>
 
         <!-- Similarity score -->
-        <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-6">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <UIcon name="i-heroicons-scale" class="text-purple-400" />
+        <div class="rounded-xl border border-line surface p-6">
+          <h3 class="text-lg font-semibold text-strong mb-4 flex items-center gap-2">
+            <UIcon name="i-heroicons-scale" class="text-purple-600 dark:text-purple-400" />
             Score de similarité
           </h3>
           <div v-for="pair in similarityPairs" :key="pair.key" class="mb-4">
             <div class="flex items-center justify-between mb-1">
               <span class="text-sm text-gray-600 dark:text-gray-300">{{ pair.a }} vs {{ pair.b }}</span>
-              <span class="text-lg font-bold" :class="pair.score > 60 ? 'text-green-400' : pair.score > 30 ? 'text-yellow-400' : 'text-red-400'">
+              <span class="text-lg font-bold" :class="pair.score > 60 ? 'text-green-700 dark:text-green-400' : pair.score > 30 ? 'text-yellow-700 dark:text-yellow-400' : 'text-red-600 dark:text-red-400'">
                 {{ pair.score }}%
               </span>
             </div>
@@ -212,7 +212,7 @@
 
     <div v-else class="text-center py-16">
       <UIcon name="i-heroicons-scale" class="text-5xl text-gray-600" />
-      <p class="mt-4 text-gray-500 dark:text-gray-400">Sélectionnez au moins 2 communautés pour les comparer.</p>
+      <p class="mt-4 text-soft">Sélectionnez au moins 2 communautés pour les comparer.</p>
     </div>
   </div>
 </template>

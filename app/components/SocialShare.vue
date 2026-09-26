@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center gap-2">
-    <span class="text-sm text-gray-500 dark:text-gray-400">Partager :</span>
+    <span class="text-sm text-soft">Partager :</span>
     <UButton
       icon="i-simple-icons-twitter"
       variant="ghost"

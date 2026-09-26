@@ -3,8 +3,8 @@
     <div class="w-full max-w-sm">
       <div class="text-center mb-8">
         <img src="/logo.png" alt="" class="h-12 w-12 mx-auto mb-4" />
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Administration</h1>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Commus DCS FR</p>
+        <h1 class="text-2xl font-bold text-strong">Administration</h1>
+        <p class="text-sm text-soft mt-1">Commus DCS FR</p>
       </div>
 
       <div v-if="error" class="mb-4 rounded-lg border border-red-300 dark:border-red-900 bg-red-50 dark:bg-red-950/30 p-3 text-sm text-red-700 dark:text-red-400">
@@ -20,7 +20,7 @@
       >
         Connexion via Authelia
       </UButton>
-      <p class="mt-2 text-center text-xs text-gray-500 dark:text-gray-400">
+      <p class="mt-2 text-center text-xs text-soft">
         Authentification à deux facteurs
       </p>
 
@@ -28,7 +28,7 @@
       <template v-if="methods?.passwordFallback">
         <div class="relative my-6">
           <div class="absolute inset-0 flex items-center">
-            <div class="w-full border-t border-gray-200 dark:border-gray-800" />
+            <div class="w-full border-t border-line" />
           </div>
           <div class="relative flex justify-center">
             <span class="bg-white dark:bg-gray-950 px-2 text-xs text-amber-600 dark:text-amber-500">

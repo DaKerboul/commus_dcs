@@ -7,8 +7,8 @@
       ]"
     />
 
-    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Trouver ma communauté</h1>
-    <p class="text-gray-500 dark:text-gray-400 mb-8">
+    <h1 class="text-3xl font-bold text-strong mb-2">Trouver ma communauté</h1>
+    <p class="text-soft mb-8">
       Quelques questions, et on classe les {{ pool.length }} communautés selon ce qui vous correspond.
     </p>
 
@@ -34,7 +34,7 @@
       <section class="space-y-4" :aria-labelledby="`q-${step}`">
         <!-- Niveau -->
         <template v-if="step === 'level'">
-          <h2 :id="`q-${step}`" class="text-xl font-semibold text-gray-900 dark:text-white">Où en êtes-vous sur DCS ?</h2>
+          <h2 :id="`q-${step}`" class="text-xl font-semibold text-strong">Où en êtes-vous sur DCS ?</h2>
           <div class="grid gap-3 sm:grid-cols-3">
             <button
               v-for="o in LEVELS"
@@ -45,18 +45,18 @@
               @click="choose('level', o.value)"
             >
               <UIcon :name="o.icon" class="size-6 text-primary" />
-              <div class="mt-2 font-medium text-gray-900 dark:text-white">{{ o.label }}</div>
-              <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ o.desc }}</div>
+              <div class="mt-2 font-medium text-strong">{{ o.label }}</div>
+              <div class="mt-1 text-sm text-soft">{{ o.desc }}</div>
             </button>
           </div>
         </template>
 
         <!-- Modules -->
         <template v-else-if="step === 'modules'">
-          <h2 :id="`q-${step}`" class="text-xl font-semibold text-gray-900 dark:text-white">
+          <h2 :id="`q-${step}`" class="text-xl font-semibold text-strong">
             {{ answers.level === 'beginner' ? 'Quels modules avez-vous (ou voulez-vous apprendre) ?' : 'Sur quoi volez-vous ?' }}
           </h2>
-          <p class="text-sm text-gray-500 dark:text-gray-400">Les plus répandus dans les communautés :</p>
+          <p class="text-sm text-soft">Les plus répandus dans les communautés :</p>
           <div class="flex flex-wrap gap-2">
             <UButton
               v-for="m in popularModules"
@@ -81,7 +81,7 @@
 
         <!-- Ambiance -->
         <template v-else-if="step === 'vibe'">
-          <h2 :id="`q-${step}`" class="text-xl font-semibold text-gray-900 dark:text-white">Quelle ambiance recherchez-vous ?</h2>
+          <h2 :id="`q-${step}`" class="text-xl font-semibold text-strong">Quelle ambiance recherchez-vous ?</h2>
           <div class="grid gap-3 sm:grid-cols-2">
             <button
               v-for="o in VIBES"
@@ -91,15 +91,15 @@
               :class="choiceClass(answers.vibe === o.value)"
               @click="choose('vibe', o.value)"
             >
-              <div class="font-medium text-gray-900 dark:text-white">{{ o.label }}</div>
-              <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ o.desc }}</div>
+              <div class="font-medium text-strong">{{ o.label }}</div>
+              <div class="mt-1 text-sm text-soft">{{ o.desc }}</div>
             </button>
           </div>
         </template>
 
         <!-- Taille -->
         <template v-else-if="step === 'size'">
-          <h2 :id="`q-${step}`" class="text-xl font-semibold text-gray-900 dark:text-white">Quelle taille de groupe ?</h2>
+          <h2 :id="`q-${step}`" class="text-xl font-semibold text-strong">Quelle taille de groupe ?</h2>
           <div class="grid gap-3 sm:grid-cols-3">
             <button
               v-for="o in SIZES"
@@ -109,15 +109,15 @@
               :class="choiceClass(answers.size === o.value)"
               @click="choose('size', o.value)"
             >
-              <div class="font-medium text-gray-900 dark:text-white">{{ o.label }}</div>
-              <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ o.desc }}</div>
+              <div class="font-medium text-strong">{{ o.label }}</div>
+              <div class="mt-1 text-sm text-soft">{{ o.desc }}</div>
             </button>
           </div>
         </template>
 
         <!-- Envies -->
         <template v-else-if="step === 'wishes'">
-          <h2 :id="`q-${step}`" class="text-xl font-semibold text-gray-900 dark:text-white">
+          <h2 :id="`q-${step}`" class="text-xl font-semibold text-strong">
             {{ answers.level === 'beginner' ? 'De quoi avez-vous besoin pour progresser ?' : 'Qu\'aimez-vous faire ?' }}
           </h2>
           <div v-for="group in wishGroups" :key="group.label" class="space-y-2">
@@ -139,15 +139,15 @@
 
         <!-- Recrutement -->
         <template v-else-if="step === 'recruiting'">
-          <h2 :id="`q-${step}`" class="text-xl font-semibold text-gray-900 dark:text-white">Voulez-vous rejoindre un groupe maintenant ?</h2>
+          <h2 :id="`q-${step}`" class="text-xl font-semibold text-strong">Voulez-vous rejoindre un groupe maintenant ?</h2>
           <div class="grid gap-3 sm:grid-cols-2">
             <button type="button" :aria-pressed="answers.recruiting === true" :class="choiceClass(answers.recruiting === true)" @click="choose('recruiting', true)">
-              <div class="font-medium text-gray-900 dark:text-white">Oui, je cherche à entrer</div>
-              <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">Les communautés qui recrutent passent devant.</div>
+              <div class="font-medium text-strong">Oui, je cherche à entrer</div>
+              <div class="mt-1 text-sm text-soft">Les communautés qui recrutent passent devant.</div>
             </button>
             <button type="button" :aria-pressed="answers.recruiting === undefined && visited.has('recruiting')" :class="choiceClass(false)" @click="choose('recruiting', undefined)">
-              <div class="font-medium text-gray-900 dark:text-white">Je regarde juste</div>
-              <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">Le recrutement ne compte pas dans le classement.</div>
+              <div class="font-medium text-strong">Je regarde juste</div>
+              <div class="mt-1 text-sm text-soft">Le recrutement ne compte pas dans le classement.</div>
             </button>
           </div>
         </template>
@@ -196,7 +196,7 @@
           v-for="chip in summary"
           :key="chip.step"
           type="button"
-          class="inline-flex items-center gap-1 rounded-full border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:border-primary/60"
+          class="inline-flex items-center gap-1 rounded-full border border-line surface px-3 py-1 text-sm text-gray-700 dark:text-gray-300 hover:border-primary/60"
           :title="`Modifier : ${chip.text}`"
           @click="goTo(chip.step)"
         >
@@ -226,7 +226,7 @@
         </p>
       </div>
 
-      <h2 class="mt-8 mb-5 text-xl font-semibold text-gray-900 dark:text-white">Vos meilleures correspondances</h2>
+      <h2 class="mt-8 mb-5 text-xl font-semibold text-strong">Vos meilleures correspondances</h2>
       <div class="grid gap-6 md:grid-cols-3">
         <FinderMatchCard
           v-for="(c, i) in ranked.slice(0, 3)"
@@ -240,8 +240,8 @@
       </div>
 
       <template v-if="ranked.length > 3">
-        <h2 class="mt-10 mb-3 text-lg font-semibold text-gray-900 dark:text-white">Autres pistes</h2>
-        <ol class="divide-y divide-gray-200 dark:divide-gray-800 rounded-xl border border-gray-200 dark:border-gray-800">
+        <h2 class="mt-10 mb-3 text-lg font-semibold text-strong">Autres pistes</h2>
+        <ol class="divide-y divide-gray-200 dark:divide-gray-800 rounded-xl border border-line">
           <li v-for="(c, i) in ranked.slice(3, 3 + shownOthers)" :key="c.id">
             <NuxtLink
               :to="`/communautes/${c.slug}`"
@@ -254,7 +254,7 @@
                 <UIcon v-else name="i-heroicons-user-group" class="text-gray-500" />
               </div>
               <div class="min-w-0 flex-1">
-                <p class="truncate font-medium text-gray-900 dark:text-white">{{ c.name }}</p>
+                <p class="truncate font-medium text-strong">{{ c.name }}</p>
                 <p v-if="c.match.reasons[0]" class="truncate text-xs text-gray-500">{{ c.match.reasons[0].text }}</p>
               </div>
               <FinderScore :score="c.match.score" />
@@ -428,7 +428,7 @@ function choiceClass(selected: boolean) {
     'rounded-xl border p-4 text-left transition-colors',
     selected
       ? 'border-primary bg-primary/10'
-      : 'border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 hover:border-gray-300 dark:hover:border-gray-700',
+      : 'border-line surface hover:border-gray-300 dark:hover:border-gray-700',
   ]
 }
 

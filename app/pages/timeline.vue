@@ -1,10 +1,10 @@
 <template>
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
     <div class="text-center mb-12">
-      <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">
-        L'Histoire de la scène <span class="text-blue-400">DCS FR</span>
+      <h1 class="text-3xl sm:text-4xl font-bold text-strong">
+        L'Histoire de la scène <span class="text-blue-600 dark:text-blue-400">DCS FR</span>
       </h1>
-      <p class="mt-3 text-gray-500 dark:text-gray-400 max-w-xl mx-auto">
+      <p class="mt-3 text-soft max-w-xl mx-auto">
         Le parcours des communautés francophones DCS World, de la plus ancienne à la plus récente.
       </p>
     </div>
@@ -45,7 +45,7 @@
         >
           <div class="flex items-start gap-3">
             <div class="flex-1">
-              <div class="text-lg font-bold text-gray-900 dark:text-white">{{ entry.name }}</div>
+              <div class="text-lg font-bold text-strong">{{ entry.name }}</div>
               <div class="text-xs text-gray-500 mt-0.5">
                 {{ TYPE_LABELS[entry.communityType] || entry.communityType }}
                 <span v-if="entry.sizeText || SIZE_LABELS[entry.sizeCategory]">
@@ -84,7 +84,7 @@
               <UIcon name="i-heroicons-calendar" />
               {{ entry.dateLabel }}
             </span>
-            <span v-if="entry.foundedDate" class="flex items-center gap-1 text-blue-400">
+            <span v-if="entry.foundedDate" class="flex items-center gap-1 text-blue-600 dark:text-blue-400">
               <UIcon name="i-heroicons-flag" />
               Fondée
             </span>
@@ -98,7 +98,7 @@
 
       <!-- End marker -->
       <div class="timeline-end">
-        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-sm">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-600 dark:text-blue-400 text-sm">
           <UIcon name="i-heroicons-plus" />
           Et la suite s'écrit maintenant...
         </div>
@@ -230,6 +230,12 @@ onMounted(() => {
   transform: translateX(0) !important;
 }
 
+/* Light values; the dark theme keeps its original slate dot. */
+:global(html.dark .timeline-dot) {
+  background: #1f2937;
+  border-color: #374151;
+}
+
 .timeline-dot {
   position: absolute;
   left: 50%;
@@ -237,8 +243,8 @@ onMounted(() => {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #1f2937;
-  border: 3px solid #374151;
+  background: var(--color-white);
+  border: 3px solid var(--color-gray-300);
   display: flex;
   align-items: center;
   justify-content: center;

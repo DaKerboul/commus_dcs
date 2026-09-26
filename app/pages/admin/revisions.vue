@@ -2,7 +2,7 @@
   <div>
     <div class="flex items-center justify-between gap-4 flex-wrap mb-6">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Modifications à valider</h1>
+        <h1 class="text-2xl font-bold text-strong">Modifications à valider</h1>
         <p class="text-sm text-gray-500 mt-1">
           Changements de nom, de liens et d'images proposés par les gestionnaires de fiches.
         </p>
@@ -54,7 +54,7 @@
       <div
         v-for="rev in visible"
         :key="rev.id"
-        class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5"
+        class="rounded-xl border border-line surface p-5"
       >
         <div class="flex items-center gap-2 flex-wrap mb-3">
           <NuxtLink :to="`/communautes/${rev.communitySlug}`" target="_blank" class="font-semibold text-blue-500 hover:underline">
@@ -73,7 +73,7 @@
           <div
             v-for="change in rev.changes"
             :key="change.field"
-            class="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 p-3"
+            class="rounded-lg border border-line bg-white dark:bg-gray-950 p-3"
           >
             <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
               {{ FIELD_LABELS[change.field] || change.field }}
@@ -86,7 +86,7 @@
                   v-if="isImage(change.from)"
                   :src="String(change.from)"
                   alt=""
-                  class="mt-1 h-20 w-20 rounded object-cover border border-gray-200 dark:border-gray-800"
+                  class="mt-1 h-20 w-20 rounded object-cover border border-line"
                 />
                 <div v-else-if="isGallery(change.from)" class="mt-1 grid grid-cols-3 gap-1">
                   <img v-for="(img, i) in change.from" :key="i" :src="img.url" :alt="img.alt || ''" :title="img.alt || ''" class="aspect-video w-full rounded object-cover" />
@@ -101,12 +101,12 @@
                   v-if="isImage(change.to)"
                   :src="String(change.to)"
                   alt=""
-                  class="mt-1 h-20 w-20 rounded object-cover border border-gray-200 dark:border-gray-800"
+                  class="mt-1 h-20 w-20 rounded object-cover border border-line"
                 />
                 <div v-else-if="isGallery(change.to)" class="mt-1 grid grid-cols-3 gap-1">
                   <img v-for="(img, i) in change.to" :key="i" :src="img.url" :alt="img.alt || ''" :title="img.alt || ''" class="aspect-video w-full rounded object-cover" />
                 </div>
-                <p v-else class="text-gray-900 dark:text-white break-words mt-0.5">
+                <p v-else class="text-strong break-words mt-0.5">
                   {{ display(change.to) }}
                 </p>
               </div>

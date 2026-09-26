@@ -13,7 +13,7 @@
       </div>
       <span v-if="duration" class="absolute bottom-1.5 right-1.5 rounded bg-black/75 px-1.5 py-0.5 text-[11px] font-medium text-white">{{ duration }}</span>
     </a>
-    <p class="mt-2 line-clamp-2 text-sm font-medium text-gray-900 dark:text-white" :title="vod.title ?? ''">{{ vod.title || 'Rediffusion DCS' }}</p>
+    <p class="mt-2 line-clamp-2 text-sm font-medium text-strong" :title="vod.title ?? ''">{{ vod.title || 'Rediffusion DCS' }}</p>
     <div class="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-gray-500">
       <NuxtLink v-if="showStreamer" :to="`/streamers/${vod.streamerLogin}`" class="hover:text-primary">{{ vod.streamerName }}</NuxtLink>
       <span>{{ timeAgo(vod.startedAt) }}</span>

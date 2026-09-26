@@ -10,12 +10,12 @@
     <li
       v-for="session in sessions"
       :key="session.streamId"
-      class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-4"
+      class="rounded-xl border border-line surface p-4"
     >
       <div class="flex items-start justify-between gap-3 flex-wrap">
         <div class="min-w-0 flex-1">
           <div class="flex items-center gap-2 flex-wrap">
-            <span class="text-sm font-medium text-gray-900 dark:text-white">
+            <span class="text-sm font-medium text-strong">
               {{ formatDate(session.startedAt) }}
             </span>
             <UBadge v-if="session.isLive" color="error" variant="subtle" size="xs">
@@ -33,15 +33,15 @@
 
         <div class="flex items-center gap-4 text-sm shrink-0">
           <div class="text-right">
-            <p class="font-semibold text-gray-900 dark:text-white tabular-nums">{{ formatDuration(session.durationMinutes) }}</p>
+            <p class="font-semibold text-strong tabular-nums">{{ formatDuration(session.durationMinutes) }}</p>
             <p class="text-xs text-gray-500">durée</p>
           </div>
           <div class="text-right">
-            <p class="font-semibold text-gray-900 dark:text-white tabular-nums">{{ session.peakViewers }}</p>
+            <p class="font-semibold text-strong tabular-nums">{{ session.peakViewers }}</p>
             <p class="text-xs text-gray-500">pic</p>
           </div>
           <div class="text-right">
-            <p class="font-semibold text-gray-900 dark:text-white tabular-nums">{{ session.avgViewers }}</p>
+            <p class="font-semibold text-strong tabular-nums">{{ session.avgViewers }}</p>
             <p class="text-xs text-gray-500">moyenne</p>
           </div>
         </div>

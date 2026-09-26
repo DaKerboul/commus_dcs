@@ -33,7 +33,7 @@
         :key="img.url.slice(-48) + i"
         draggable="true"
         class="flex items-center gap-3 rounded-lg border bg-white dark:bg-gray-900 p-2 transition-colors"
-        :class="overIndex === i && dragIndex !== i ? 'border-primary' : 'border-gray-200 dark:border-gray-800'"
+        :class="overIndex === i && dragIndex !== i ? 'border-primary' : 'border-line'"
         @dragstart="onItemDragStart($event, i)"
         @dragover.prevent="dragIndex !== null && (overIndex = i)"
         @drop.prevent.stop="onItemDrop(i)"

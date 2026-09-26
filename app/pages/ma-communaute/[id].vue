@@ -21,7 +21,7 @@
             <UIcon v-else name="i-heroicons-user-group" class="text-gray-500 text-2xl" />
           </div>
           <div class="min-w-0">
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-white truncate">{{ managed.name }}</h1>
+            <h1 class="text-2xl font-bold text-strong truncate">{{ managed.name }}</h1>
             <p class="text-sm text-gray-500 mt-0.5">Tableau de bord de votre fiche.</p>
           </div>
         </div>
@@ -35,7 +35,7 @@
         </div>
       </div>
 
-      <p class="mt-6 rounded-lg bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 p-4 text-sm text-gray-600 dark:text-gray-400">
+      <p class="mt-6 rounded-lg surface border border-line p-4 text-sm text-gray-600 dark:text-gray-400">
         <UIcon name="i-heroicons-cursor-arrow-rays" class="align-text-bottom mr-1" />
         La fiche se modifie directement sur la page publique : cliquez sur un bloc, le résultat s'affiche en direct,
         puis publiez. Votre brouillon est conservé si vous fermez l'onglet.
@@ -43,11 +43,11 @@
 
       <!-- Stats -->
       <section class="mt-8">
-        <h2 class="font-semibold text-gray-900 dark:text-white mb-3">Audience</h2>
+        <h2 class="font-semibold text-strong mb-3">Audience</h2>
         <div v-if="stats" class="grid gap-3 grid-cols-2 sm:grid-cols-4">
-          <div v-for="s in statTiles" :key="s.label" class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-4">
-            <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ s.value }}</p>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ s.label }}</p>
+          <div v-for="s in statTiles" :key="s.label" class="rounded-xl border border-line surface p-4">
+            <p class="text-2xl font-bold text-strong">{{ s.value }}</p>
+            <p class="text-xs text-soft mt-0.5">{{ s.label }}</p>
           </div>
         </div>
         <p v-else class="text-sm text-gray-500">Statistiques indisponibles pour le moment.</p>
@@ -56,8 +56,8 @@
       <!-- Managers -->
       <section v-if="isOwner" class="mt-10 space-y-4">
         <div>
-          <h2 class="font-semibold text-gray-900 dark:text-white">Gestionnaires</h2>
-          <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <h2 class="font-semibold text-strong">Gestionnaires</h2>
+          <p class="text-xs text-soft mt-1">
             Invitez un co-gestionnaire avec un lien à usage unique valable 72&nbsp;h.
           </p>
         </div>
@@ -66,11 +66,11 @@
           <div
             v-for="m in members"
             :key="m.userId"
-            class="flex items-center gap-3 rounded-lg border border-gray-200 dark:border-gray-800 p-3"
+            class="flex items-center gap-3 rounded-lg border border-line p-3"
           >
             <img v-if="m.avatarUrl" :src="m.avatarUrl" alt="" class="h-8 w-8 rounded-full" />
             <UIcon v-else name="i-heroicons-user-circle" class="text-2xl text-gray-400" />
-            <span class="flex-1 min-w-0 truncate text-sm text-gray-900 dark:text-white">{{ m.displayName }}</span>
+            <span class="flex-1 min-w-0 truncate text-sm text-strong">{{ m.displayName }}</span>
             <UBadge :color="m.role === 'owner' ? 'primary' : 'neutral'" variant="subtle" size="xs">
               {{ m.role === 'owner' ? 'Responsable' : 'Éditeur' }}
             </UBadge>

@@ -2,8 +2,8 @@
   <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-10">
     <!-- Page header -->
     <div class="text-center mb-10">
-      <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">Soumettre une communauté</h1>
-      <p class="mt-3 text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
+      <h1 class="text-3xl sm:text-4xl font-bold text-strong">Soumettre une communauté</h1>
+      <p class="mt-3 text-soft max-w-2xl mx-auto">
         Remplissez les informations de votre communauté DCS francophone. Plus vous renseignez de détails, plus votre fiche sera complète.
       </p>
     </div>
@@ -11,9 +11,9 @@
     <!-- Draft banner -->
     <div v-if="hasDraft && !draftRestored && !submitted" class="mb-6 rounded-xl border border-amber-500/30 bg-amber-500/5 px-5 py-4 flex items-center justify-between gap-4">
       <div class="flex items-center gap-3">
-        <UIcon name="i-heroicons-document-text" class="text-amber-400 text-xl shrink-0" />
+        <UIcon name="i-heroicons-document-text" class="text-amber-700 dark:text-amber-400 text-xl shrink-0" />
         <div>
-          <p class="text-sm font-medium text-gray-900 dark:text-white">Brouillon trouvé</p>
+          <p class="text-sm font-medium text-strong">Brouillon trouvé</p>
           <p class="text-xs text-gray-500">Vous avez un brouillon sauvegardé automatiquement. Voulez-vous le reprendre ?</p>
         </div>
       </div>
@@ -25,9 +25,9 @@
 
     <!-- Success state with confetti -->
     <div v-if="submitted" class="max-w-lg mx-auto rounded-2xl border border-green-500/30 bg-green-500/5 p-10 text-center">
-      <UIcon name="i-heroicons-check-circle" class="text-green-400 text-5xl" />
-      <h2 class="mt-4 text-2xl font-bold text-gray-900 dark:text-white">Soumission envoyée !</h2>
-      <p class="mt-3 text-gray-500 dark:text-gray-400">Nous examinerons votre demande dans les meilleurs délais. Vous serez contacté si besoin.</p>
+      <UIcon name="i-heroicons-check-circle" class="text-green-700 dark:text-green-400 text-5xl" />
+      <h2 class="mt-4 text-2xl font-bold text-strong">Soumission envoyée !</h2>
+      <p class="mt-3 text-soft">Nous examinerons votre demande dans les meilleurs délais. Vous serez contacté si besoin.</p>
       <div class="mt-6 flex justify-center gap-3">
         <UButton to="/" variant="outline" color="neutral">Retour à l'accueil</UButton>
         <UButton to="/communautes" color="primary">Voir les communautés</UButton>
@@ -40,10 +40,10 @@
     -->
     <div
       v-else-if="!account.isSignedIn.value"
-      class="mx-auto max-w-lg rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-8 text-center"
+      class="mx-auto max-w-lg rounded-xl border border-line surface p-8 text-center"
     >
       <UIcon name="i-simple-icons-discord" class="text-4xl text-[#5865F2] mb-3" />
-      <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
+      <h2 class="text-xl font-bold text-strong mb-2">
         Connectez-vous pour proposer une communauté
       </h2>
       <p class="text-gray-600 dark:text-gray-400 mb-6">
@@ -55,7 +55,7 @@
         Se connecter avec Discord
       </UButton>
 
-      <p class="mt-6 text-xs text-gray-500 dark:text-gray-400">
+      <p class="mt-6 text-xs text-soft">
         Nous ne récupérons que votre pseudo et votre avatar.
         <NuxtLink to="/confidentialite" class="underline hover:text-gray-700 dark:hover:text-gray-300">
           En savoir plus
@@ -125,13 +125,13 @@
         <Transition :name="slideDirection" mode="out-in">
           <!-- Step 1: Infos de base -->
           <div v-if="step === 0" key="step-0">
-            <div class="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/50 p-6 sm:p-8">
+            <div class="rounded-2xl border border-line bg-white dark:bg-gray-900/50 p-6 sm:p-8">
               <div class="flex items-center gap-3 mb-6">
                 <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-blue-500/10">
                   <UIcon name="i-heroicons-information-circle" class="text-blue-500 text-xl" />
                 </div>
                 <div>
-                  <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Informations de base</h2>
+                  <h2 class="text-lg font-semibold text-strong">Informations de base</h2>
                   <p class="text-sm text-gray-500">Les informations essentielles de votre communauté.</p>
                 </div>
               </div>
@@ -166,7 +166,7 @@
                 <UFormField label="Description courte">
                   <UInput v-model="form.shortDescription" name="shortDescription" placeholder="Une phrase pour décrire votre communauté" size="lg" maxlength="200" class="w-full" />
                   <template #hint>
-                    <span :class="form.shortDescription.length > 180 ? 'text-orange-400' : 'text-gray-400'">
+                    <span :class="form.shortDescription.length > 180 ? 'text-orange-700 dark:text-orange-400' : 'text-gray-400'">
                       {{ form.shortDescription.length }}/200
                     </span>
                   </template>
@@ -201,13 +201,13 @@
 
           <!-- Step 2: Classification -->
           <div v-else-if="step === 1" key="step-1">
-            <div class="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/50 p-6 sm:p-8">
+            <div class="rounded-2xl border border-line bg-white dark:bg-gray-900/50 p-6 sm:p-8">
               <div class="flex items-center gap-3 mb-6">
                 <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-purple-500/10">
                   <UIcon name="i-heroicons-tag" class="text-purple-500 text-xl" />
                 </div>
                 <div>
-                  <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Classification</h2>
+                  <h2 class="text-lg font-semibold text-strong">Classification</h2>
                   <p class="text-sm text-gray-500">Catégorisez votre communauté pour faciliter sa découverte.</p>
                 </div>
               </div>
@@ -259,13 +259,13 @@
 
           <!-- Step 3: Modules & Expériences -->
           <div v-else-if="step === 2" key="step-2">
-            <div class="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/50 p-6 sm:p-8">
+            <div class="rounded-2xl border border-line bg-white dark:bg-gray-900/50 p-6 sm:p-8">
               <div class="flex items-center gap-3 mb-6">
                 <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-orange-500/10">
                   <UIcon name="i-heroicons-puzzle-piece" class="text-orange-500 text-xl" />
                 </div>
                 <div>
-                  <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Modules & Expériences</h2>
+                  <h2 class="text-lg font-semibold text-strong">Modules & Expériences</h2>
                   <p class="text-sm text-gray-500">Quels modules utilisez-vous et quelles expériences proposez-vous ?</p>
                 </div>
               </div>
@@ -279,7 +279,7 @@
                       <span v-if="form.moduleNames.length" class="ml-1 text-blue-500">({{ form.moduleNames.length }})</span>
                     </label>
                     <div class="flex items-center gap-2">
-                      <button type="button" class="text-xs text-blue-400 hover:text-blue-300 transition-colors" @click="selectAllModules('used')">Tout</button>
+                      <button type="button" class="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors" @click="selectAllModules('used')">Tout</button>
                       <span class="text-gray-600">·</span>
                       <button type="button" class="text-xs text-gray-400 hover:text-gray-300 transition-colors" @click="form.moduleNames = []">Aucun</button>
                       <UInput
@@ -292,7 +292,7 @@
                       />
                     </div>
                   </div>
-                  <div v-if="allModules" class="flex flex-wrap gap-1.5 max-h-56 overflow-y-auto p-3 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/30">
+                  <div v-if="allModules" class="flex flex-wrap gap-1.5 max-h-56 overflow-y-auto p-3 rounded-xl border border-line bg-gray-50 dark:bg-gray-900/30">
                     <button
                       v-for="m in filteredModules"
                       :key="m.id"
@@ -319,7 +319,7 @@
                       </UTooltip>
                     </label>
                     <div class="flex items-center gap-2">
-                      <button type="button" class="text-xs text-amber-400 hover:text-amber-300 transition-colors" @click="selectAllModules('sought')">Tout</button>
+                      <button type="button" class="text-xs text-amber-700 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-300 transition-colors" @click="selectAllModules('sought')">Tout</button>
                       <span class="text-gray-600">·</span>
                       <button type="button" class="text-xs text-gray-400 hover:text-gray-300 transition-colors" @click="form.soughtModuleNames = []">Aucun</button>
                       <UInput
@@ -332,7 +332,7 @@
                       />
                     </div>
                   </div>
-                  <div v-if="allModules" class="flex flex-wrap gap-1.5 max-h-56 overflow-y-auto p-3 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/30">
+                  <div v-if="allModules" class="flex flex-wrap gap-1.5 max-h-56 overflow-y-auto p-3 rounded-xl border border-line bg-gray-50 dark:bg-gray-900/30">
                     <button
                       v-for="m in filteredSoughtModules"
                       :key="m.id"
@@ -385,13 +385,13 @@
 
           <!-- Step 4: Liens & Réseaux -->
           <div v-else-if="step === 3" key="step-3">
-            <div class="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/50 p-6 sm:p-8">
+            <div class="rounded-2xl border border-line bg-white dark:bg-gray-900/50 p-6 sm:p-8">
               <div class="flex items-center gap-3 mb-6">
                 <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-green-500/10">
                   <UIcon name="i-heroicons-link" class="text-green-500 text-xl" />
                 </div>
                 <div>
-                  <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Liens & Réseaux</h2>
+                  <h2 class="text-lg font-semibold text-strong">Liens & Réseaux</h2>
                   <p class="text-sm text-gray-500">Ajoutez les liens de votre communauté. Seul Discord est recommandé, le reste est optionnel.</p>
                 </div>
               </div>
@@ -404,12 +404,12 @@
                     <span v-if="form.discordUrl" class="absolute right-3 top-1/2 -translate-y-1/2">
                       <UIcon
                         :name="isDiscordValid ? 'i-heroicons-check-circle' : 'i-heroicons-exclamation-triangle'"
-                        :class="isDiscordValid ? 'text-green-400' : 'text-orange-400'"
+                        :class="isDiscordValid ? 'text-green-700 dark:text-green-400' : 'text-orange-700 dark:text-orange-400'"
                       />
                     </span>
                   </div>
                   <template v-if="form.discordUrl && !isDiscordValid" #hint>
-                    <span class="text-orange-400 text-xs">Format attendu : https://discord.gg/... ou https://discord.com/invite/...</span>
+                    <span class="text-orange-700 dark:text-orange-400 text-xs">Format attendu : https://discord.gg/... ou https://discord.com/invite/...</span>
                   </template>
                 </UFormField>
 
@@ -482,20 +482,20 @@
 
           <!-- Step 5: Récapitulatif -->
           <div v-else-if="step === 4" key="step-4">
-            <div class="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/50 p-6 sm:p-8">
+            <div class="rounded-2xl border border-line bg-white dark:bg-gray-900/50 p-6 sm:p-8">
               <div class="flex items-center gap-3 mb-6">
                 <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-cyan-500/10">
                   <UIcon name="i-heroicons-eye" class="text-cyan-500 text-xl" />
                 </div>
                 <div>
-                  <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Récapitulatif</h2>
+                  <h2 class="text-lg font-semibold text-strong">Récapitulatif</h2>
                   <p class="text-sm text-gray-500">Vérifiez les informations avant d'envoyer. Cliquez sur "Modifier" pour corriger.</p>
                 </div>
               </div>
 
               <div class="space-y-6">
                 <!-- Section: Infos de base -->
-                <div class="rounded-xl border border-gray-200 dark:border-gray-800 p-4">
+                <div class="rounded-xl border border-line p-4">
                   <div class="flex items-center justify-between mb-3">
                     <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Informations de base</h3>
                     <UButton variant="ghost" color="neutral" size="xs" icon="i-heroicons-pencil" @click="step = 0">Modifier</UButton>
@@ -503,29 +503,29 @@
                   <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                     <div>
                       <span class="text-gray-500">Nom :</span>
-                      <span class="ml-1 font-medium text-gray-900 dark:text-white">{{ form.communityName || '—' }}</span>
+                      <span class="ml-1 font-medium text-strong">{{ form.communityName || '—' }}</span>
                     </div>
                     <div>
                       <span class="text-gray-500">Contact :</span>
-                      <span class="ml-1 font-medium text-gray-900 dark:text-white">{{ form.contactName || '—' }}</span>
+                      <span class="ml-1 font-medium text-strong">{{ form.contactName || '—' }}</span>
                     </div>
                     <div v-if="form.shortDescription" class="sm:col-span-2">
                       <span class="text-gray-500">Description courte :</span>
-                      <span class="ml-1 text-gray-900 dark:text-white">{{ form.shortDescription }}</span>
+                      <span class="ml-1 text-strong">{{ form.shortDescription }}</span>
                     </div>
                     <div v-if="form.founder">
                       <span class="text-gray-500">Fondateur :</span>
-                      <span class="ml-1 text-gray-900 dark:text-white">{{ form.founder }}</span>
+                      <span class="ml-1 text-strong">{{ form.founder }}</span>
                     </div>
                     <div v-if="form.sizeText">
                       <span class="text-gray-500">Taille :</span>
-                      <span class="ml-1 text-gray-900 dark:text-white">{{ form.sizeText }}</span>
+                      <span class="ml-1 text-strong">{{ form.sizeText }}</span>
                     </div>
                   </div>
                 </div>
 
                 <!-- Section: Classification -->
-                <div class="rounded-xl border border-gray-200 dark:border-gray-800 p-4">
+                <div class="rounded-xl border border-line p-4">
                   <div class="flex items-center justify-between mb-3">
                     <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Classification</h3>
                     <UButton variant="ghost" color="neutral" size="xs" icon="i-heroicons-pencil" @click="step = 1">Modifier</UButton>
@@ -533,19 +533,19 @@
                   <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                     <div v-if="form.communityType">
                       <span class="text-gray-500">Type :</span>
-                      <span class="ml-1 text-gray-900 dark:text-white">{{ TYPE_LABELS[form.communityType] || form.communityType }}</span>
+                      <span class="ml-1 text-strong">{{ TYPE_LABELS[form.communityType] || form.communityType }}</span>
                     </div>
                     <div v-if="form.sizeCategory">
                       <span class="text-gray-500">Taille :</span>
-                      <span class="ml-1 text-gray-900 dark:text-white">{{ SIZE_LABELS[form.sizeCategory] || form.sizeCategory }}</span>
+                      <span class="ml-1 text-strong">{{ SIZE_LABELS[form.sizeCategory] || form.sizeCategory }}</span>
                     </div>
                     <div v-if="form.recruitmentStatus">
                       <span class="text-gray-500">Recrutement :</span>
-                      <span class="ml-1 text-gray-900 dark:text-white">{{ RECRUITMENT_LABELS[form.recruitmentStatus] || form.recruitmentStatus }}</span>
+                      <span class="ml-1 text-strong">{{ RECRUITMENT_LABELS[form.recruitmentStatus] || form.recruitmentStatus }}</span>
                     </div>
                     <div v-if="form.eventFrequency">
                       <span class="text-gray-500">Événements :</span>
-                      <span class="ml-1 text-gray-900 dark:text-white">{{ FREQUENCY_LABELS[form.eventFrequency] || form.eventFrequency }}</span>
+                      <span class="ml-1 text-strong">{{ FREQUENCY_LABELS[form.eventFrequency] || form.eventFrequency }}</span>
                     </div>
                     <div v-if="form.historicalPeriods.length" class="sm:col-span-2">
                       <span class="text-gray-500">Périodes :</span>
@@ -557,7 +557,7 @@
                 </div>
 
                 <!-- Section: Modules & Expériences -->
-                <div class="rounded-xl border border-gray-200 dark:border-gray-800 p-4">
+                <div class="rounded-xl border border-line p-4">
                   <div class="flex items-center justify-between mb-3">
                     <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Modules & Expériences</h3>
                     <UButton variant="ghost" color="neutral" size="xs" icon="i-heroicons-pencil" @click="step = 2">Modifier</UButton>
@@ -586,27 +586,27 @@
                 </div>
 
                 <!-- Section: Liens & Réseaux -->
-                <div class="rounded-xl border border-gray-200 dark:border-gray-800 p-4">
+                <div class="rounded-xl border border-line p-4">
                   <div class="flex items-center justify-between mb-3">
                     <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Liens & Réseaux</h3>
                     <UButton variant="ghost" color="neutral" size="xs" icon="i-heroicons-pencil" @click="step = 3">Modifier</UButton>
                   </div>
                   <div class="space-y-2 text-sm">
                     <div v-if="form.discordUrl" class="flex items-center gap-2">
-                      <UIcon name="i-simple-icons-discord" class="text-blue-400 text-sm" />
-                      <a :href="form.discordUrl" target="_blank" class="text-blue-400 hover:underline truncate">{{ form.discordUrl }}</a>
+                      <UIcon name="i-simple-icons-discord" class="text-blue-600 dark:text-blue-400 text-sm" />
+                      <a :href="form.discordUrl" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline truncate">{{ form.discordUrl }}</a>
                     </div>
                     <div v-if="form.websiteUrl" class="flex items-center gap-2">
                       <UIcon name="i-heroicons-globe-alt" class="text-gray-400 text-sm" />
-                      <a :href="form.websiteUrl" target="_blank" class="text-blue-400 hover:underline truncate">{{ form.websiteUrl }}</a>
+                      <a :href="form.websiteUrl" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline truncate">{{ form.websiteUrl }}</a>
                     </div>
                     <div v-if="form.youtubeUrl" class="flex items-center gap-2">
-                      <UIcon name="i-simple-icons-youtube" class="text-red-400 text-sm" />
-                      <span class="text-gray-900 dark:text-white truncate">{{ form.youtubeUrl }}</span>
+                      <UIcon name="i-simple-icons-youtube" class="text-red-600 dark:text-red-400 text-sm" />
+                      <span class="text-strong truncate">{{ form.youtubeUrl }}</span>
                     </div>
                     <div v-if="form.twitchUrl" class="flex items-center gap-2">
-                      <UIcon name="i-simple-icons-twitch" class="text-purple-400 text-sm" />
-                      <span class="text-gray-900 dark:text-white truncate">{{ form.twitchUrl }}</span>
+                      <UIcon name="i-simple-icons-twitch" class="text-purple-600 dark:text-purple-400 text-sm" />
+                      <span class="text-strong truncate">{{ form.twitchUrl }}</span>
                     </div>
                     <div v-if="form.logoUrl" class="flex items-center gap-3 mt-2">
                       <span class="text-gray-500">Logo :</span>
@@ -628,7 +628,7 @@
       </div>
 
       <!-- Error -->
-      <div v-if="error" class="mt-6 rounded-xl border border-red-500/30 bg-red-500/5 px-4 py-3 text-sm text-red-400 flex items-center gap-2">
+      <div v-if="error" class="mt-6 rounded-xl border border-red-500/30 bg-red-500/5 px-4 py-3 text-sm text-red-600 dark:text-red-400 flex items-center gap-2">
         <UIcon name="i-heroicons-exclamation-triangle" />
         {{ error }}
       </div>
@@ -665,7 +665,7 @@
               <strong>{{ account.user.value?.displayName }}</strong>&nbsp;: vous pourrez la
               modifier vous-même une fois validée.
             </p>
-            <p class="text-xs text-gray-500 dark:text-gray-400 text-right max-w-xs">
+            <p class="text-xs text-soft text-right max-w-xs">
               En soumettant ce formulaire, vous acceptez que les informations de contact fournies soient publiées sur la fiche publique de votre communauté.
               <NuxtLink to="/confidentialite" class="underline underline-offset-2 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">Politique de confidentialité</NuxtLink>.
             </p>
@@ -758,10 +758,10 @@ function selectAllModules(type: 'used' | 'sought') {
 const experienceCategories = computed(() => {
   if (!allExperiences.value) return []
   const catDefs = [
-    { key: 'mission_role', label: 'Rôles de mission', icon: 'i-heroicons-fire', textColor: 'text-blue-400', bgActive: 'bg-blue-500', borderActive: 'border-blue-500' },
-    { key: 'gameplay', label: 'Types de gameplay', icon: 'i-heroicons-puzzle-piece', textColor: 'text-purple-400', bgActive: 'bg-purple-500', borderActive: 'border-purple-500' },
-    { key: 'skill_level', label: 'Niveau & Structure', icon: 'i-heroicons-academic-cap', textColor: 'text-green-400', bgActive: 'bg-green-500', borderActive: 'border-green-500' },
-    { key: 'infrastructure', label: 'Infrastructure & Services', icon: 'i-heroicons-server-stack', textColor: 'text-orange-400', bgActive: 'bg-orange-500', borderActive: 'border-orange-500' },
+    { key: 'mission_role', label: 'Rôles de mission', icon: 'i-heroicons-fire', textColor: 'text-blue-600 dark:text-blue-400', bgActive: 'bg-blue-500', borderActive: 'border-blue-500' },
+    { key: 'gameplay', label: 'Types de gameplay', icon: 'i-heroicons-puzzle-piece', textColor: 'text-purple-600 dark:text-purple-400', bgActive: 'bg-purple-500', borderActive: 'border-purple-500' },
+    { key: 'skill_level', label: 'Niveau & Structure', icon: 'i-heroicons-academic-cap', textColor: 'text-green-700 dark:text-green-400', bgActive: 'bg-green-500', borderActive: 'border-green-500' },
+    { key: 'infrastructure', label: 'Infrastructure & Services', icon: 'i-heroicons-server-stack', textColor: 'text-orange-700 dark:text-orange-400', bgActive: 'bg-orange-500', borderActive: 'border-orange-500' },
   ]
   const cats = catDefs.map(def => ({
     ...def,

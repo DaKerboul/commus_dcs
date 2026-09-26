@@ -1,22 +1,22 @@
 <template>
-  <div :class="['min-h-screen flex flex-col bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-100', { 'rlpdk-theme': isRlpdk }]">
+  <div :class="['min-h-screen flex flex-col bg-gray-50 dark:bg-gray-950 text-gray-800 dark:text-gray-100', { 'rlpdk-theme': isRlpdk }]">
     <!-- RLPDK Banner -->
     <div v-if="isRlpdk" class="rlpdk-banner hidden items-center justify-center gap-3 bg-emerald-900 border-b border-emerald-700 py-1.5 px-4 text-center">
-      <span class="text-[11px] font-mono text-emerald-300 tracking-widest uppercase">
+      <span class="text-[11px] font-mono text-emerald-700 dark:text-emerald-300 tracking-widest uppercase">
         ★ République Libre et Populaire du Kerboulistan — Registre Officiel des Communautés Aériennes ★
       </span>
-      <button class="text-emerald-500 hover:text-emerald-300 text-xs ml-2" @click="disableRlpdk">✕</button>
+      <button class="text-emerald-500 hover:text-emerald-800 dark:hover:text-emerald-300 text-xs ml-2" @click="disableRlpdk">✕</button>
     </div>
 
     <!-- Navbar — floating glass pill detached from the top -->
     <header class="sticky top-0 z-50 px-4 pt-3">
-      <nav class="mx-auto max-w-7xl rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-950/80 backdrop-blur-lg shadow-sm px-4 sm:px-6">
+      <nav class="mx-auto max-w-7xl rounded-2xl border border-line bg-white/80 dark:bg-gray-950/80 backdrop-blur-lg shadow-sm px-4 sm:px-6">
         <div class="flex h-14 items-center justify-between">
           <div class="flex items-center gap-6">
             <NuxtLink to="/" class="flex items-center gap-2">
               <NuxtImg src="/logo.png" alt="Commus DCS FR" width="64" height="64" format="webp" class="h-8 w-8" />
-              <span v-if="!isRlpdk" class="text-lg font-bold text-gray-900 dark:text-white">Commus DCS</span>
-              <span v-else class="text-lg font-bold text-emerald-300 font-serif tracking-wide">ROCA-DK</span>
+              <span v-if="!isRlpdk" class="text-lg font-bold text-strong">Commus DCS</span>
+              <span v-else class="text-lg font-bold text-emerald-700 dark:text-emerald-300 font-serif tracking-wide">ROCA-DK</span>
             </NuxtLink>
             <div class="hidden md:flex items-center gap-1">
               <!-- Primary destinations -->
@@ -183,10 +183,10 @@
     </main>
 
     <!-- Footer -->
-    <footer class="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
+    <footer class="border-t border-line bg-white dark:bg-gray-950">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-          <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+          <div class="flex items-center gap-2 text-sm text-soft">
             <NuxtImg src="/logo.png" alt="" width="40" height="40" format="webp" class="h-5 w-5" />
             <span v-if="!isRlpdk">Commus DCS FR — Annuaire des communautés francophones DCS World</span>
             <span v-else class="font-serif tracking-wide">ROCA-DK — Registre Officiel des Communautés Aériennes du Kerboulistan</span>
@@ -212,7 +212,7 @@
               <UIcon name="i-heroicons-cog-6-tooth" class="text-sm align-text-bottom" />
             </NuxtLink>
             <span v-if="!isRlpdk">© {{ new Date().getFullYear() }} Kerboulistan</span>
-            <span v-else class="font-serif text-emerald-400">© République du Kerboulistan — Tous droits réservés par décret</span>
+            <span v-else class="font-serif text-emerald-700 dark:text-emerald-400">© République du Kerboulistan — Tous droits réservés par décret</span>
           </div>
         </div>
       </div>

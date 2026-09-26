@@ -2,7 +2,7 @@
   <div>
     <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Streameurs</h1>
+        <h1 class="text-2xl font-bold text-strong">Streameurs</h1>
         <p class="mt-1 text-sm text-gray-500">
           Relier les chaînes Twitch à leurs communautés. Les gestionnaires le font eux-mêmes depuis leur fiche ;
           ici, surtout les communautés sans gestionnaire.
@@ -13,7 +13,7 @@
 
     <!-- ── Suggestions ──────────────────────────── -->
     <section class="mb-10">
-      <h2 class="mb-3 font-semibold text-gray-900 dark:text-white">
+      <h2 class="mb-3 font-semibold text-strong">
         Suggestions <span class="text-sm font-normal text-gray-500">({{ openSuggestions.length }})</span>
       </h2>
       <p v-if="!openSuggestions.length" class="rounded-xl border border-dashed border-gray-300 dark:border-gray-700 p-6 text-center text-sm text-gray-500">
@@ -23,12 +23,12 @@
         <div
           v-for="s in openSuggestions"
           :key="`${s.communityId}-${s.streamerId}`"
-          class="flex flex-wrap items-center gap-3 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-3"
+          class="flex flex-wrap items-center gap-3 rounded-xl border border-line surface p-3"
         >
           <img v-if="s.avatarUrl" :src="s.avatarUrl" alt="" class="size-9 rounded-full">
           <div class="min-w-0 flex-1">
             <p class="text-sm">
-              <NuxtLink :to="`/streamers/${s.login}`" target="_blank" class="font-medium text-gray-900 dark:text-white hover:underline">{{ s.displayName }}</NuxtLink>
+              <NuxtLink :to="`/streamers/${s.login}`" target="_blank" class="font-medium text-strong hover:underline">{{ s.displayName }}</NuxtLink>
               <span class="text-gray-500"> → </span>
               <NuxtLink :to="`/communautes/${s.communitySlug}`" target="_blank" class="font-medium text-primary hover:underline">{{ s.communityName }}</NuxtLink>
               <UBadge v-if="s.managed" variant="subtle" color="neutral" size="xs" class="ml-2">gérée</UBadge>
@@ -44,12 +44,12 @@
     <!-- ── Chaînes ──────────────────────────────── -->
     <section>
       <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
-        <h2 class="font-semibold text-gray-900 dark:text-white">Chaînes suivies <span class="text-sm font-normal text-gray-500">({{ channels.length }})</span></h2>
+        <h2 class="font-semibold text-strong">Chaînes suivies <span class="text-sm font-normal text-gray-500">({{ channels.length }})</span></h2>
         <UInput v-model="query" icon="i-heroicons-magnifying-glass" placeholder="Filtrer…" size="sm" class="w-56" />
       </div>
-      <div class="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
+      <div class="overflow-x-auto rounded-xl border border-line">
         <table class="w-full text-sm">
-          <thead class="bg-gray-50 dark:bg-gray-900/50 text-left text-xs uppercase text-gray-500">
+          <thead class="surface text-left text-xs uppercase text-gray-500">
             <tr>
               <th class="px-3 py-2">Chaîne</th>
               <th class="px-3 py-2">DCS 30 j</th>

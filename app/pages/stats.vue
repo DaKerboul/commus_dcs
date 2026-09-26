@@ -1,7 +1,7 @@
 <template>
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Statistiques</h1>
-    <p class="text-gray-500 dark:text-gray-400 mb-8">Vue d'ensemble de l'écosystème DCS francophone.</p>
+    <h1 class="text-3xl font-bold text-strong mb-2">Statistiques</h1>
+    <p class="text-soft mb-8">Vue d'ensemble de l'écosystème DCS francophone.</p>
 
     <div v-if="stats" class="space-y-12">
       <!-- Overview -->
@@ -9,8 +9,8 @@
 
       <!-- Streamer stats -->
       <section v-if="stats.totalStreamers > 0">
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-          <UIcon name="i-simple-icons-twitch" class="text-purple-400" />
+        <h2 class="text-xl font-semibold text-strong mb-4 flex items-center gap-2">
+          <UIcon name="i-simple-icons-twitch" class="text-purple-600 dark:text-purple-400" />
           Streaming DCS FR
         </h2>
         <div class="grid gap-4 sm:grid-cols-3 mb-6">
@@ -38,7 +38,7 @@
         </div>
 
         <!-- Top streamers -->
-        <div v-if="stats.topStreamers?.length" class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5">
+        <div v-if="stats.topStreamers?.length" class="rounded-xl border border-line surface p-5">
           <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-4 uppercase tracking-wider">Top streameurs par jours de stream</h3>
           <div class="space-y-3">
             <div
@@ -54,11 +54,11 @@
                 class="h-8 w-8 rounded-full object-cover"
               />
               <div v-else class="h-8 w-8 rounded-full bg-purple-500/20 flex items-center justify-center">
-                <UIcon name="i-simple-icons-twitch" class="text-purple-400 text-sm" />
+                <UIcon name="i-simple-icons-twitch" class="text-purple-600 dark:text-purple-400 text-sm" />
               </div>
               <NuxtLink
                 :to="`/streamers/${s.twitchLogin}`"
-                class="text-sm font-medium text-purple-400 hover:text-purple-300 transition-colors w-36 truncate shrink-0"
+                class="text-sm font-medium text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-colors w-36 truncate shrink-0"
               >
                 {{ s.displayName }}
               </NuxtLink>
@@ -78,8 +78,8 @@
       <ClientOnly>
         <div v-if="infographie" class="space-y-10">
           <!-- Treemap: Modules by category -->
-          <section class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-6">
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+          <section class="rounded-xl border border-line surface p-6">
+            <h2 class="text-xl font-semibold text-strong mb-4">
               Carte des modules par catégorie
             </h2>
             <p class="text-sm text-gray-500 mb-4">Chaque bloc représente un module. La taille indique le nombre de communautés qui l'utilisent.</p>
@@ -88,15 +88,15 @@
 
           <!-- Pie: Community types + Bar: Top modules -->
           <div class="grid gap-8 lg:grid-cols-2">
-            <section class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-6">
-              <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+            <section class="rounded-xl border border-line surface p-6">
+              <h2 class="text-xl font-semibold text-strong mb-4">
                 Répartition par type
               </h2>
               <div ref="typePieRef" style="height: 320px;" />
             </section>
 
-            <section class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-6">
-              <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+            <section class="rounded-xl border border-line surface p-6">
+              <h2 class="text-xl font-semibold text-strong mb-4">
                 Top modules
               </h2>
               <div ref="moduleBarRef" style="height: 320px;" />
@@ -104,16 +104,16 @@
           </div>
 
           <!-- Experiences bar -->
-          <section class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-6">
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+          <section class="rounded-xl border border-line surface p-6">
+            <h2 class="text-xl font-semibold text-strong mb-4">
               Expériences proposées
             </h2>
             <div ref="experienceBarRef" style="height: 300px;" />
           </section>
 
           <!-- Periods -->
-          <section v-if="infographie.periodDistribution.length" class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-6">
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+          <section v-if="infographie.periodDistribution.length" class="rounded-xl border border-line surface p-6">
+            <h2 class="text-xl font-semibold text-strong mb-4">
               Périodes historiques
             </h2>
             <div ref="periodBarRef" style="height: 260px;" />
@@ -130,21 +130,21 @@
 
       <!-- By size -->
       <section>
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Par taille</h2>
+        <h2 class="text-xl font-semibold text-strong mb-4">Par taille</h2>
         <div class="space-y-2">
           <div
             v-for="item in stats.communityBySize"
             :key="item.size"
             class="flex items-center gap-4"
           >
-            <span class="w-48 text-sm text-gray-500 dark:text-gray-400 text-right shrink-0">{{ SIZE_LABELS[item.size] || item.size }}</span>
+            <span class="w-48 text-sm text-soft text-right shrink-0">{{ SIZE_LABELS[item.size] || item.size }}</span>
             <div class="flex-1 h-6 rounded bg-gray-200 dark:bg-gray-800 overflow-hidden">
               <div
                 class="h-full bg-blue-500/60 rounded transition-all duration-500"
                 :style="{ width: `${(item.count / maxSize) * 100}%` }"
               />
             </div>
-            <span class="text-sm font-medium text-gray-900 dark:text-white w-8">{{ item.count }}</span>
+            <span class="text-sm font-medium text-strong w-8">{{ item.count }}</span>
           </div>
         </div>
       </section>
@@ -218,6 +218,17 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 let charts: any[] = []
 
+// The charts were drawn once with ECharts' dark theme and colours tuned for a
+// black page: on the light theme that gave a dark mosaic and near-white labels.
+const colorMode = useColorMode()
+const isDark = computed(() => colorMode.value === 'dark')
+const ink = () => isDark.value
+  ? { theme: 'dark', label: '#ccc', axis: '#888', split: '#333', border: '#1a1a2e', gap: '#333' }
+  : { theme: undefined, label: '#374151', axis: '#6b7280', split: '#e5e7eb', border: '#ffffff', gap: '#f3f4f6' }
+
+let draw: (() => void) | null = null
+watch(isDark, () => draw?.())
+
 onMounted(async () => {
   // ClientOnly delays rendering, so chart refs aren't available until nextTick
   await nextTick()
@@ -229,126 +240,134 @@ onMounted(async () => {
   const { CanvasRenderer } = await import('echarts/renderers')
   use([BarChart, PieChart, TreemapChart, TooltipComponent, GridComponent, CanvasRenderer])
 
-  const initChart = (el: HTMLDivElement | undefined, option: any) => {
-    if (!el) return
-    const chart = init(el, 'dark')
-    chart.setOption(option)
-    charts.push(chart)
-  }
+  draw = () => {
+    for (const chart of charts) chart.dispose()
+    charts = []
+    const c = ink()
 
-  // Treemap
-  const treemapData = Object.entries(
-    infographie.value.moduleUsage.reduce((acc, m) => {
-      const cat = m.category || 'other'
-      if (!acc[cat]) acc[cat] = []
-      acc[cat].push({ name: m.name, value: m.count })
-      return acc
-    }, {} as Record<string, { name: string; value: number }[]>),
-  ).map(([cat, children]) => ({
-    name: CATEGORY_LABELS[cat] || cat,
-    itemStyle: { color: CATEGORY_COLORS[cat] || '#6b7280', borderColor: '#1a1a2e' },
-    children,
-  }))
+    const initChart = (el: HTMLDivElement | undefined, option: any) => {
+      if (!el) return
+      const chart = init(el, c.theme)
+      chart.setOption(option)
+      charts.push(chart)
+    }
 
-  initChart(treemapRef.value, {
-    backgroundColor: 'transparent',
-    tooltip: { formatter: (p: any) => `<b>${p.name}</b><br/>${p.value} communauté${p.value > 1 ? 's' : ''}` },
-    series: [{
-      type: 'treemap',
-      data: treemapData,
-      roam: false,
-      nodeClick: false,
-      breadcrumb: { show: false },
-      label: {
-        show: true,
-        formatter: '{b}',
-        fontSize: 11,
-        color: '#fff',
-      },
-      itemStyle: { borderColor: '#1a1a2e', borderWidth: 2, gapWidth: 2 },
-      levels: [
-        { itemStyle: { borderColor: '#333', borderWidth: 3, gapWidth: 4 } },
-        { colorSaturation: [0.3, 0.7], itemStyle: { borderColorSaturation: 0.6, gapWidth: 2 } },
-      ],
-    }],
-  })
+    // Treemap
+    const treemapData = Object.entries(
+      infographie.value.moduleUsage.reduce((acc, m) => {
+        const cat = m.category || 'other'
+        if (!acc[cat]) acc[cat] = []
+        acc[cat].push({ name: m.name, value: m.count })
+        return acc
+      }, {} as Record<string, { name: string; value: number }[]>),
+    ).map(([cat, children]) => ({
+      name: CATEGORY_LABELS[cat] || cat,
+      itemStyle: { color: CATEGORY_COLORS[cat] || '#6b7280', borderColor: c.border },
+      children,
+    }))
 
-  // Type pie
-  initChart(typePieRef.value, {
-    backgroundColor: 'transparent',
-    tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
-    series: [{
-      type: 'pie',
-      radius: ['35%', '70%'],
-      avoidLabelOverlap: true,
-      itemStyle: { borderRadius: 6, borderColor: '#1a1a2e', borderWidth: 2 },
-      label: { show: true, color: '#ccc', fontSize: 11 },
-      emphasis: { label: { show: true, fontSize: 14, fontWeight: 'bold' } },
-      data: infographie.value.typeDistribution.map(t => ({
-        name: TYPE_LABELS[t.type] || t.type,
-        value: t.count,
-      })),
-    }],
-  })
+    initChart(treemapRef.value, {
+      backgroundColor: 'transparent',
+      tooltip: { formatter: (p: any) => `<b>${p.name}</b><br/>${p.value} communauté${p.value > 1 ? 's' : ''}` },
+      series: [{
+        type: 'treemap',
+        data: treemapData,
+        roam: false,
+        nodeClick: false,
+        breadcrumb: { show: false },
+        label: {
+          show: true,
+          formatter: '{b}',
+          fontSize: 11,
+          color: '#fff',
+        },
+        itemStyle: { borderColor: c.border, borderWidth: 2, gapWidth: 2 },
+        levels: [
+          { itemStyle: { borderColor: c.gap, borderWidth: 3, gapWidth: 4 } },
+          { colorSaturation: [0.3, 0.7], itemStyle: { borderColorSaturation: 0.6, gapWidth: 2 } },
+        ],
+      }],
+    })
 
-  // Module bar
-  const topModules = infographie.value.moduleUsage.slice(0, 15)
-  initChart(moduleBarRef.value, {
-    backgroundColor: 'transparent',
-    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-    grid: { left: 120, right: 20, top: 10, bottom: 20 },
-    xAxis: { type: 'value', axisLabel: { color: '#888' }, splitLine: { lineStyle: { color: '#333' } } },
-    yAxis: { type: 'category', data: topModules.map(m => m.name).reverse(), axisLabel: { color: '#ccc', fontSize: 11 } },
-    series: [{
-      type: 'bar',
-      data: topModules.map(m => ({
-        value: m.count,
-        itemStyle: { color: CATEGORY_COLORS[m.category] || '#6b7280' },
-      })).reverse(),
-      barWidth: '60%',
-      itemStyle: { borderRadius: [0, 4, 4, 0] },
-    }],
-  })
+    // Type pie
+    initChart(typePieRef.value, {
+      backgroundColor: 'transparent',
+      tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+      series: [{
+        type: 'pie',
+        radius: ['35%', '70%'],
+        avoidLabelOverlap: true,
+        itemStyle: { borderRadius: 6, borderColor: c.border, borderWidth: 2 },
+        label: { show: true, color: c.label, fontSize: 11 },
+        emphasis: { label: { show: true, fontSize: 14, fontWeight: 'bold' } },
+        data: infographie.value.typeDistribution.map(t => ({
+          name: TYPE_LABELS[t.type] || t.type,
+          value: t.count,
+        })),
+      }],
+    })
 
-  // Experience bar
-  initChart(experienceBarRef.value, {
-    backgroundColor: 'transparent',
-    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-    grid: { left: 200, right: 20, top: 10, bottom: 20 },
-    xAxis: { type: 'value', axisLabel: { color: '#888' }, splitLine: { lineStyle: { color: '#333' } } },
-    yAxis: {
-      type: 'category',
-      data: infographie.value.experienceDistribution.map(e => e.name).reverse(),
-      axisLabel: { color: '#ccc', fontSize: 11 },
-    },
-    series: [{
-      type: 'bar',
-      data: infographie.value.experienceDistribution.map(e => e.count).reverse(),
-      barWidth: '60%',
-      itemStyle: { color: '#a855f7', borderRadius: [0, 4, 4, 0] },
-    }],
-  })
-
-  // Period bar
-  if (infographie.value.periodDistribution.length) {
-    initChart(periodBarRef.value, {
+    // Module bar
+    const topModules = infographie.value.moduleUsage.slice(0, 15)
+    initChart(moduleBarRef.value, {
       backgroundColor: 'transparent',
       tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-      grid: { left: 180, right: 20, top: 10, bottom: 20 },
-      xAxis: { type: 'value', axisLabel: { color: '#888' }, splitLine: { lineStyle: { color: '#333' } } },
+      grid: { left: 120, right: 20, top: 10, bottom: 20 },
+      xAxis: { type: 'value', axisLabel: { color: c.axis }, splitLine: { lineStyle: { color: c.split } } },
+      yAxis: { type: 'category', data: topModules.map(m => m.name).reverse(), axisLabel: { color: c.label, fontSize: 11 } },
+      series: [{
+        type: 'bar',
+        data: topModules.map(m => ({
+          value: m.count,
+          itemStyle: { color: CATEGORY_COLORS[m.category] || '#6b7280' },
+        })).reverse(),
+        barWidth: '60%',
+        itemStyle: { borderRadius: [0, 4, 4, 0] },
+      }],
+    })
+
+    // Experience bar
+    initChart(experienceBarRef.value, {
+      backgroundColor: 'transparent',
+      tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+      grid: { left: 200, right: 20, top: 10, bottom: 20 },
+      xAxis: { type: 'value', axisLabel: { color: c.axis }, splitLine: { lineStyle: { color: c.split } } },
       yAxis: {
         type: 'category',
-        data: infographie.value.periodDistribution.map(p => PERIOD_LABELS[p.period] || p.period).reverse(),
-        axisLabel: { color: '#ccc', fontSize: 11 },
+        data: infographie.value.experienceDistribution.map(e => e.name).reverse(),
+        axisLabel: { color: c.label, fontSize: 11 },
       },
       series: [{
         type: 'bar',
-        data: infographie.value.periodDistribution.map(p => p.count).reverse(),
+        data: infographie.value.experienceDistribution.map(e => e.count).reverse(),
         barWidth: '60%',
-        itemStyle: { color: '#f59e0b', borderRadius: [0, 4, 4, 0] },
+        itemStyle: { color: '#a855f7', borderRadius: [0, 4, 4, 0] },
       }],
     })
+
+    // Period bar
+    if (infographie.value.periodDistribution.length) {
+      initChart(periodBarRef.value, {
+        backgroundColor: 'transparent',
+        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+        grid: { left: 180, right: 20, top: 10, bottom: 20 },
+        xAxis: { type: 'value', axisLabel: { color: c.axis }, splitLine: { lineStyle: { color: c.split } } },
+        yAxis: {
+          type: 'category',
+          data: infographie.value.periodDistribution.map(p => PERIOD_LABELS[p.period] || p.period).reverse(),
+          axisLabel: { color: c.label, fontSize: 11 },
+        },
+        series: [{
+          type: 'bar',
+          data: infographie.value.periodDistribution.map(p => p.count).reverse(),
+          barWidth: '60%',
+          itemStyle: { color: '#f59e0b', borderRadius: [0, 4, 4, 0] },
+        }],
+      })
+    }
+
   }
+  draw()
 
   // Resize observer
   const resizeObserver = new ResizeObserver(() => {
@@ -380,14 +399,17 @@ onMounted(async () => {
 .stat-value {
   font-size: 2rem;
   font-weight: 800;
-  color: var(--color-white);
+  color: var(--color-gray-900);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .stat-label {
   font-size: 0.75rem;
-  color: var(--color-gray-400);
+  color: var(--color-gray-500);
   margin-top: 0.25rem;
 }
+/* Light values above: white figures vanished on the light theme. */
+:global(html.dark .stat-value) { color: var(--color-white); }
+:global(html.dark .stat-label) { color: var(--color-gray-400); }
 </style>

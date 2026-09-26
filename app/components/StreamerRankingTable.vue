@@ -1,10 +1,10 @@
 <template>
-  <section class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5">
-    <h2 class="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-      <UIcon :name="icon" class="text-blue-400" />
+  <section class="rounded-xl border border-line surface p-5">
+    <h2 class="font-semibold text-strong flex items-center gap-2">
+      <UIcon :name="icon" class="text-blue-600 dark:text-blue-400" />
       {{ title }}
     </h2>
-    <p v-if="caption" class="text-xs text-gray-500 dark:text-gray-400 mt-1 mb-4">{{ caption }}</p>
+    <p v-if="caption" class="text-xs text-soft mt-1 mb-4">{{ caption }}</p>
 
     <ol v-if="rows.length" class="space-y-1">
       <li
@@ -23,21 +23,21 @@
         <UIcon v-else name="i-heroicons-user-circle" class="text-2xl text-gray-400 shrink-0" />
 
         <NuxtLink :to="`/streamers/${row.login}`" class="min-w-0 flex-1 group">
-          <span class="block truncate text-sm font-medium text-gray-900 dark:text-white group-hover:text-blue-400 transition-colors">
+          <span class="block truncate text-sm font-medium text-strong group-hover:text-blue-400 transition-colors">
             {{ row.displayName }}
             <span v-if="row.isLive" class="ml-1 inline-block h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse align-middle" />
           </span>
           <NuxtLink
             v-if="row.communitySlug"
             :to="`/communautes/${row.communitySlug}`"
-            class="block truncate text-xs text-gray-500 hover:text-blue-400"
+            class="block truncate text-xs text-gray-500 hover:text-blue-700 dark:hover:text-blue-400"
             @click.stop
           >
             {{ row.communityName }}
           </NuxtLink>
         </NuxtLink>
 
-        <span class="text-sm font-semibold text-gray-900 dark:text-white tabular-nums shrink-0">
+        <span class="text-sm font-semibold text-strong tabular-nums shrink-0">
           {{ value(row) }}
         </span>
       </li>

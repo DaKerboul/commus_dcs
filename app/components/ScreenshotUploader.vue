@@ -33,7 +33,7 @@
         <p class="text-sm text-gray-500 text-center">
           <span v-if="modelValue.length >= maxFiles">Nombre maximum de screenshots atteint</span>
           <span v-else>
-            Glissez vos images ici ou <span class="text-blue-400 font-medium">parcourir</span>
+            Glissez vos images ici ou <span class="text-blue-600 dark:text-blue-400 font-medium">parcourir</span>
           </span>
         </p>
         <p v-if="modelValue.length < maxFiles" class="text-xs text-gray-400 mt-1">
@@ -43,13 +43,13 @@
     </div>
 
     <!-- Processing indicator -->
-    <div v-if="processing" class="flex items-center gap-2 text-sm text-blue-400">
+    <div v-if="processing" class="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
       <UIcon name="i-heroicons-arrow-path" class="animate-spin text-base" />
       Compression en cours...
     </div>
 
     <!-- Error -->
-    <p v-if="errorMsg" class="text-sm text-red-400 flex items-center gap-1">
+    <p v-if="errorMsg" class="text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
       <UIcon name="i-heroicons-exclamation-triangle" class="text-sm" />
       {{ errorMsg }}
     </p>
@@ -59,7 +59,7 @@
       <div
         v-for="(img, i) in modelValue"
         :key="i"
-        class="group relative rounded-lg overflow-hidden border border-gray-200 dark:border-gray-800 bg-gray-100 dark:bg-gray-800 aspect-video"
+        class="group relative rounded-lg overflow-hidden border border-line bg-gray-100 dark:bg-gray-800 aspect-video"
       >
         <img :src="img" alt="Screenshot" class="w-full h-full object-cover" />
         <!-- Remove button -->

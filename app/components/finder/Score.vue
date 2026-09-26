@@ -13,6 +13,6 @@ const props = defineProps<{ score: number }>()
 const tone = computed(() =>
   props.score >= 80 ? { bar: 'bg-emerald-500', text: 'text-emerald-600 dark:text-emerald-400' }
     : props.score >= 60 ? { bar: 'bg-amber-500', text: 'text-amber-600 dark:text-amber-400' }
-      : { bar: 'bg-gray-400', text: 'text-gray-500 dark:text-gray-400' },
+      : { bar: 'bg-gray-400', text: 'text-soft' },
 )
 </script>

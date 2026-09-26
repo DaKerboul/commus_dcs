@@ -1,8 +1,8 @@
 <template>
   <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Changelog</h1>
-      <p class="mt-2 text-gray-500 dark:text-gray-400">Dernières mises à jour de l'annuaire — {{ entries?.length || 0 }} entrées récentes.</p>
+      <h1 class="text-3xl font-bold text-strong">Changelog</h1>
+      <p class="mt-2 text-soft">Dernières mises à jour de l'annuaire — {{ entries?.length || 0 }} entrées récentes.</p>
     </div>
 
     <!-- Filter tabs -->
@@ -47,15 +47,15 @@
         />
 
         <div
-          class="rounded-lg border bg-gray-50 dark:bg-gray-900/50 p-4"
-          :class="isNew(entry) ? 'border-green-200 dark:border-green-900' : 'border-gray-200 dark:border-gray-800'"
+          class="rounded-lg border surface p-4"
+          :class="isNew(entry) ? 'border-green-200 dark:border-green-900' : 'border-line'"
         >
           <div class="flex items-center gap-3 mb-2">
             <div class="h-8 w-8 rounded-md bg-gray-200 dark:bg-gray-800 flex items-center justify-center overflow-hidden shrink-0">
               <img v-if="entry.logoUrl" :src="entry.logoUrl" :alt="entry.name" class="h-full w-full object-cover" />
               <UIcon v-else name="i-heroicons-user-group" class="text-gray-500" />
             </div>
-            <NuxtLink :to="`/communautes/${entry.slug}`" class="text-gray-900 dark:text-white font-medium hover:text-blue-400 transition-colors">
+            <NuxtLink :to="`/communautes/${entry.slug}`" class="text-strong font-medium hover:text-blue-700 dark:hover:text-blue-400 transition-colors">
               {{ entry.name }}
             </NuxtLink>
             <UBadge v-if="isNew(entry)" color="success" variant="subtle" size="xs">
@@ -65,7 +65,7 @@
               <UIcon name="i-heroicons-pencil-square" class="mr-0.5" />Mise à jour
             </UBadge>
           </div>
-          <p v-if="entry.shortDescription" class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+          <p v-if="entry.shortDescription" class="text-sm text-soft line-clamp-2">
             {{ entry.shortDescription }}
           </p>
           <div class="mt-2 flex items-center gap-3 text-xs text-gray-600">
@@ -86,7 +86,7 @@
 
     <div v-else class="text-center py-16">
       <UIcon name="i-heroicons-clock" class="text-5xl text-gray-600" />
-      <p class="mt-4 text-gray-500 dark:text-gray-400">Aucune mise à jour récente.</p>
+      <p class="mt-4 text-soft">Aucune mise à jour récente.</p>
     </div>
   </div>
 </template>

@@ -6,11 +6,11 @@
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" />
 
         <!-- Modal -->
-        <div class="relative w-full max-w-lg rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-2xl">
+        <div class="relative w-full max-w-lg rounded-2xl border border-line bg-white dark:bg-gray-900 shadow-2xl">
           <!-- Header -->
           <div class="flex items-center justify-between px-6 pt-5 pb-3">
             <div>
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Recadrer le logo</h3>
+              <h3 class="text-lg font-semibold text-strong">Recadrer le logo</h3>
               <p class="text-sm text-gray-500 mt-0.5">Ajustez la zone de recadrage (format carré)</p>
             </div>
             <button

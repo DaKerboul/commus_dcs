@@ -1,8 +1,8 @@
 <template>
   <div class="mx-auto max-w-lg px-4 py-16">
-    <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-8 text-center">
+    <div class="rounded-xl border border-line surface p-8 text-center">
       <UIcon name="i-heroicons-envelope-open" class="text-4xl text-gray-400 mb-3" />
-      <h1 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Invitation à gérer une fiche</h1>
+      <h1 class="text-xl font-bold text-strong mb-2">Invitation à gérer une fiche</h1>
 
       <template v-if="!code">
         <p class="text-gray-600 dark:text-gray-400">Ce lien d'invitation est incomplet.</p>

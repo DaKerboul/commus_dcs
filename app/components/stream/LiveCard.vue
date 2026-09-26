@@ -1,5 +1,5 @@
 <template>
-  <article class="overflow-hidden rounded-xl border border-red-500/30 bg-gray-50 dark:bg-gray-900/50">
+  <article class="overflow-hidden rounded-xl border border-red-500/30 surface">
     <!-- Facade: a static thumbnail until the visitor asks for the player, so
          Twitch sets no cookie on anyone who only browses. -->
     <div class="relative aspect-video bg-gray-900">
@@ -31,7 +31,7 @@
         <img v-if="stream.avatarUrl" :src="stream.avatarUrl" :alt="stream.displayName" class="size-9 rounded-full ring-2 ring-red-500">
       </NuxtLink>
       <div class="min-w-0 flex-1">
-        <p class="line-clamp-2 text-sm font-medium text-gray-900 dark:text-white" :title="stream.title ?? ''">{{ stream.title || 'En direct sur DCS' }}</p>
+        <p class="line-clamp-2 text-sm font-medium text-strong" :title="stream.title ?? ''">{{ stream.title || 'En direct sur DCS' }}</p>
         <div class="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
           <NuxtLink :to="`/streamers/${stream.login}`" class="text-gray-500 hover:text-primary">{{ stream.displayName }}</NuxtLink>
           <StreamCommunityBadges :communities="stream.communities ?? []" :source="source" />

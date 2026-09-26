@@ -1,7 +1,7 @@
 <template>
   <UBreadcrumb
     :items="items"
-    class="mb-6 text-sm text-gray-500 dark:text-gray-400"
+    class="mb-6 text-sm text-soft"
   />
 </template>
 

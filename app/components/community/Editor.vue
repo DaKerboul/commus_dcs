@@ -49,18 +49,18 @@
       :class="panelOpen && isDesktop ? 'lg:pr-[28rem]' : ''"
     >
       <div
-        class="pointer-events-auto flex max-w-full items-center gap-1 sm:gap-2 rounded-full border border-gray-200 dark:border-gray-800 bg-white/95 dark:bg-gray-900/95 py-1.5 pl-4 pr-1.5 shadow-xl backdrop-blur"
+        class="pointer-events-auto flex max-w-full items-center gap-1 sm:gap-2 rounded-full border border-line bg-white/95 dark:bg-gray-900/95 py-1.5 pl-4 pr-1.5 shadow-xl backdrop-blur"
         role="toolbar"
         aria-label="Édition de la fiche"
       >
         <div class="min-w-0 pr-1 text-sm leading-tight">
-          <p class="truncate font-medium text-gray-900 dark:text-white">
+          <p class="truncate font-medium text-strong">
             <template v-if="changed.length">
               {{ changed.length }} modification{{ changed.length > 1 ? 's' : '' }}
             </template>
             <template v-else>Mode édition</template>
           </p>
-          <p class="truncate text-xs text-gray-500 dark:text-gray-400">
+          <p class="truncate text-xs text-soft">
             <template v-if="saveError"><span class="text-red-500">{{ saveError }}</span></template>
             <template v-else-if="changedReviewed.length">dont {{ changedReviewed.length }} soumise{{ changedReviewed.length > 1 ? 's' : '' }} à validation</template>
             <template v-else-if="pendingFields.length">

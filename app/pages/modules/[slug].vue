@@ -21,10 +21,10 @@
       />
 
       <header class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+        <h1 class="text-3xl font-bold text-strong">
           Communautés DCS francophones sur {{ data.name }}
         </h1>
-        <p class="mt-2 text-gray-500 dark:text-gray-400">
+        <p class="mt-2 text-soft">
           <template v-if="data.stats.communities > 0">
             {{ data.stats.communities }} communauté{{ data.stats.communities > 1 ? 's' : '' }}
             sur {{ data.stats.totalCommunities }} pratique{{ data.stats.communities > 1 ? 'nt' : '' }}
@@ -55,7 +55,7 @@
         class="rounded-xl border border-dashed border-gray-300 dark:border-gray-700 p-8 text-center"
       >
         <UIcon name="i-heroicons-magnifying-glass" class="text-3xl text-gray-400 mb-2" />
-        <p class="text-gray-500 dark:text-gray-400">
+        <p class="text-soft">
           Personne ne le déclare encore. Si votre communauté vole dessus, ajoutez-le à votre fiche.
         </p>
         <UButton to="/soumettre" variant="outline" color="neutral" size="sm" class="mt-4">
@@ -64,7 +64,7 @@
       </div>
 
       <section v-else class="mb-12">
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+        <h2 class="text-xl font-semibold text-strong mb-4">
           Qui vole en {{ data.name }}
         </h2>
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -77,10 +77,10 @@
       </section>
 
       <section v-if="data.soughtBy.length" class="mb-12">
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-1">
+        <h2 class="text-xl font-semibold text-strong mb-1">
           Elles cherchent des pilotes {{ data.name }}
         </h2>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+        <p class="text-sm text-soft mb-4">
           Ces communautés déclarent rechercher ce module chez de nouveaux membres.
         </p>
         <div class="flex flex-wrap gap-2">

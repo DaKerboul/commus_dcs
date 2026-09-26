@@ -2,7 +2,7 @@
   <div>
     <div class="flex items-center justify-between gap-4 flex-wrap mb-6">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Réclamations de fiches</h1>
+        <h1 class="text-2xl font-bold text-strong">Réclamations de fiches</h1>
         <p class="text-sm text-gray-500 mt-1">
           Vérifiez l'identité du demandeur sur le Discord de la communauté avant d'approuver.
         </p>
@@ -55,7 +55,7 @@
       <div
         v-for="claim in visible"
         :key="claim.id"
-        class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5"
+        class="rounded-xl border border-line surface p-5"
       >
         <div class="flex items-start gap-4">
           <img v-if="claim.userAvatarUrl" :src="claim.userAvatarUrl" alt="" class="h-10 w-10 rounded-full shrink-0" />
@@ -63,7 +63,7 @@
 
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 flex-wrap">
-              <span class="font-semibold text-gray-900 dark:text-white">{{ claim.userDisplayName }}</span>
+              <span class="font-semibold text-strong">{{ claim.userDisplayName }}</span>
               <UBadge color="neutral" variant="subtle" size="xs" class="font-mono">{{ claim.userDiscordId }}</UBadge>
               <UBadge :color="STATUS_COLORS[claim.status]" variant="subtle" size="xs">
                 {{ STATUS_LABELS[claim.status] }}

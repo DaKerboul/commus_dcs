@@ -9,6 +9,36 @@
 /* Custom DCS theme overrides */
 :root {
   --color-primary: #3b82f6;
+  /* Relief for cards on the light theme; the dark theme separates by tone instead. */
+  --surface-shadow: 0 1px 2px 0 rgb(15 23 42 / 0.04), 0 1px 3px 0 rgb(15 23 42 / 0.06);
+}
+
+/*
+ * Theme tokens. The site was designed dark and the light theme was obtained by
+ * pairing classes by hand (text-gray-900 dark:text-white…) — each forgotten pair
+ * was a light-theme bug. One name per role instead. The dark values are exactly
+ * the ones the pairs had.
+ */
+@utility text-strong {
+  color: var(--color-gray-900);
+  @variant dark { color: var(--color-white); }
+}
+@utility text-soft {
+  color: var(--color-gray-500);
+  @variant dark { color: var(--color-gray-400); }
+}
+@utility border-line {
+  border-color: var(--color-gray-200);
+  @variant dark { border-color: var(--color-gray-800); }
+}
+/* A card: white and lifted on the light page, a tint on the dark one. */
+@utility surface {
+  background-color: var(--color-white);
+  box-shadow: var(--surface-shadow);
+  @variant dark {
+    background-color: color-mix(in oklab, var(--color-gray-900) 50%, transparent);
+    box-shadow: none;
+  }
 }
 
 /* Smooth scrolling */

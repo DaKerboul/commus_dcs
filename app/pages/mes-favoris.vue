@@ -1,11 +1,11 @@
 <template>
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+      <h1 class="text-3xl font-bold text-strong">
         <UIcon name="i-heroicons-bookmark-solid" class="text-yellow-500" />
         Mes Favoris
       </h1>
-      <p class="mt-2 text-gray-500 dark:text-gray-400">
+      <p class="mt-2 text-soft">
         {{ favorites.length }} communauté{{ favorites.length > 1 ? 's' : '' }} sauvegardée{{ favorites.length > 1 ? 's' : '' }} localement
       </p>
     </div>
@@ -13,8 +13,8 @@
     <!-- Empty state -->
     <div v-if="!favorites.length" class="text-center py-16">
       <UIcon name="i-heroicons-bookmark" class="text-6xl text-gray-300 dark:text-gray-700 mx-auto" />
-      <h2 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">Aucun favori</h2>
-      <p class="mt-2 text-gray-500 dark:text-gray-400">
+      <h2 class="mt-4 text-lg font-medium text-strong">Aucun favori</h2>
+      <p class="mt-2 text-soft">
         Cliquez sur l'icône <UIcon name="i-heroicons-bookmark" class="text-sm" /> sur les cartes de communauté pour les ajouter à vos favoris.
       </p>
       <UButton to="/communautes" class="mt-6" color="primary" variant="solid">
@@ -34,7 +34,7 @@
         :key="community.slug"
         :community="community"
       />
-      <div v-if="favCommunities.length < favorites.length" class="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
+      <div v-if="favCommunities.length < favorites.length" class="text-sm text-soft text-center py-4">
         {{ favorites.length - favCommunities.length }} communauté(s) favorite(s) non trouvée(s) — elles ont peut-être été supprimées.
       </div>
     </div>

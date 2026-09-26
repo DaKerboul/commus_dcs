@@ -5,8 +5,8 @@
     <section class="relative overflow-hidden -mt-[4.25rem]">
       <div class="absolute inset-0">
         <NuxtImg src="/bck1.png" alt="" width="1920" format="webp" quality="70" preload fetchpriority="high" class="h-full w-full object-cover" />
-        <div class="absolute inset-0 bg-white/70 dark:bg-gray-950/70" />
-        <div class="absolute inset-0 bg-linear-to-b from-white/30 dark:from-gray-950/30 via-transparent to-white dark:to-gray-950" />
+        <div class="absolute inset-0 bg-white/45 dark:bg-gray-950/70" />
+        <div class="absolute inset-0 bg-linear-to-b from-white/30 dark:from-gray-950/30 via-transparent to-gray-50 dark:to-gray-950" />
       </div>
       <!-- Animated gradient orbs -->
       <div class="hero-orb hero-orb-1" />
@@ -15,7 +15,7 @@
 
       <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-40 pb-24 sm:pt-56 sm:pb-40 text-center">
         <template v-if="!isRlpdk">
-          <h1 class="hero-title text-4xl sm:text-6xl font-extrabold tracking-tight text-gray-900 dark:text-white drop-shadow-lg">
+          <h1 class="hero-title text-4xl sm:text-6xl font-extrabold tracking-tight text-strong drop-shadow-lg">
             Communautés <span class="hero-gradient-text">DCS World</span> Francophones
           </h1>
           <p class="hero-subtitle mt-6 text-lg sm:text-xl text-gray-700 dark:text-gray-200 max-w-2xl mx-auto">
@@ -24,8 +24,8 @@
         </template>
         <template v-else>
           <div class="rlpdk-seal inline-block mb-4">★ REGISTRE OFFICIEL ★</div>
-          <h1 class="hero-title text-4xl sm:text-6xl font-extrabold tracking-tight text-gray-900 dark:text-white drop-shadow-lg font-serif">
-            Registre des <span class="text-emerald-400">Communautés Aériennes</span>
+          <h1 class="hero-title text-4xl sm:text-6xl font-extrabold tracking-tight text-strong drop-shadow-lg font-serif">
+            Registre des <span class="text-emerald-700 dark:text-emerald-400">Communautés Aériennes</span>
           </h1>
           <p class="mt-4 text-sm font-mono text-emerald-300/80 tracking-wider uppercase">
             Décret n°{{ decreeNumber }} — Ministère de l'Aviation Virtuelle
@@ -76,26 +76,26 @@
       <div class="streaming-bar">
         <div class="flex items-center gap-6 flex-wrap">
           <div class="flex items-center gap-2">
-            <UIcon name="i-simple-icons-twitch" class="text-lg text-purple-400" />
-            <span class="text-sm font-semibold text-purple-300">Streaming DCS FR</span>
+            <UIcon name="i-simple-icons-twitch" class="text-lg text-purple-600 dark:text-purple-400" />
+            <span class="text-sm font-semibold text-purple-600 dark:text-purple-300">Streaming DCS FR</span>
           </div>
           <div class="flex items-center gap-4 text-sm">
             <span class="text-gray-400">
-              <span class="font-bold text-white">{{ stats.totalStreamers }}</span> streameurs
+              <span class="font-bold text-strong">{{ stats.totalStreamers }}</span> streameurs
             </span>
             <span v-if="stats.liveStreamers > 0" class="flex items-center gap-1.5">
               <span class="relative flex h-2 w-2">
                 <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
                 <span class="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
               </span>
-              <span class="font-bold text-red-400">{{ stats.liveStreamers }}</span>
+              <span class="font-bold text-red-600 dark:text-red-400">{{ stats.liveStreamers }}</span>
               <span class="text-gray-400">en live</span>
             </span>
             <span class="text-gray-400">
-              <span class="font-bold text-green-400">{{ stats.totalStreamDays }}</span> jours de stream
+              <span class="font-bold text-green-700 dark:text-green-400">{{ stats.totalStreamDays }}</span> jours de stream
             </span>
           </div>
-          <NuxtLink to="/streamers" class="ml-auto text-xs text-purple-400 hover:text-purple-300 transition-colors flex items-center gap-1">
+          <NuxtLink to="/streamers" class="ml-auto text-xs text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-colors flex items-center gap-1">
             Voir les streameurs
             <UIcon name="i-heroicons-arrow-right" class="text-xs" />
           </NuxtLink>
@@ -112,7 +112,7 @@
               <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
               <span class="relative inline-flex h-3 w-3 rounded-full bg-red-500" />
             </span>
-            <h2 class="text-lg font-bold text-gray-900 dark:text-white">En ce moment sur DCS</h2>
+            <h2 class="text-lg font-bold text-strong">En ce moment sur DCS</h2>
           </div>
           <UButton to="/streamers" variant="ghost" color="neutral" trailing-icon="i-heroicons-arrow-right" size="xs">
             Tous les streameurs
@@ -129,8 +129,8 @@
             <img v-if="s.profileImageUrl" :src="s.profileImageUrl" :alt="s.displayName" class="h-10 w-10 rounded-full object-cover" />
             <div class="min-w-0 flex-1">
               <div class="flex items-center gap-2">
-                <span class="font-semibold text-sm text-gray-900 dark:text-white truncate">{{ s.displayName }}</span>
-                <span class="text-xs text-red-400 font-medium">{{ s.currentViewers }} viewers</span>
+                <span class="font-semibold text-sm text-strong truncate">{{ s.displayName }}</span>
+                <span class="text-xs text-red-600 dark:text-red-400 font-medium">{{ s.currentViewers }} viewers</span>
               </div>
               <p class="text-xs text-gray-500 truncate">{{ s.lastStreamTitle || 'DCS World' }}</p>
             </div>
@@ -142,7 +142,7 @@
     <!-- Featured communities -->
     <section v-if="featured?.data?.length" ref="featuredRef" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
       <div class="flex items-center justify-between mb-8">
-        <h2 class="section-title text-2xl font-bold text-gray-900 dark:text-white" :class="{ 'section-title-visible': featuredVisible }">
+        <h2 class="section-title text-2xl font-bold text-strong" :class="{ 'section-title-visible': featuredVisible }">
           Communautés à la une
         </h2>
         <UButton to="/communautes" variant="ghost" color="neutral" trailing-icon="i-heroicons-arrow-right" size="sm">
@@ -164,7 +164,7 @@
 
     <!-- Top modules -->
     <section v-if="stats?.topModules?.length" ref="modulesRef" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-16">
-      <h2 class="section-title text-2xl font-bold text-gray-900 dark:text-white mb-8" :class="{ 'section-title-visible': modulesVisible }">
+      <h2 class="section-title text-2xl font-bold text-strong mb-8" :class="{ 'section-title-visible': modulesVisible }">
         Modules les plus représentés
       </h2>
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
@@ -176,7 +176,7 @@
           :class="{ 'module-card-visible': modulesVisible }"
           :style="{ transitionDelay: `${i * 60}ms` }"
         >
-          <div class="text-sm font-medium text-gray-900 dark:text-white">{{ mod.name }}</div>
+          <div class="text-sm font-medium text-strong">{{ mod.name }}</div>
           <div class="mt-1 text-xs text-gray-500">{{ mod.count }} commu{{ mod.count > 1 ? 's' : '' }}</div>
         </NuxtLink>
       </div>
@@ -184,14 +184,14 @@
 
     <!-- Screenshots gallery -->
     <section ref="galleryRef" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-16">
-      <h2 class="section-title text-2xl font-bold text-gray-900 dark:text-white mb-8" :class="{ 'section-title-visible': galleryVisible }">
+      <h2 class="section-title text-2xl font-bold text-strong mb-8" :class="{ 'section-title-visible': galleryVisible }">
         En images
       </h2>
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
         <div
           v-for="(img, i) in galleryImages"
           :key="img.src"
-          class="gallery-item group relative aspect-video overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800"
+          class="gallery-item group relative aspect-video overflow-hidden rounded-lg border border-line"
           :class="{ 'gallery-item-visible': galleryVisible }"
           :style="{ transitionDelay: `${i * 50}ms` }"
         >
@@ -206,7 +206,7 @@
             loading="lazy"
           />
           <div class="absolute inset-0 bg-linear-to-t from-white/80 dark:from-gray-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          <span class="absolute bottom-2 left-2 text-xs font-medium text-gray-900 dark:text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <span class="absolute bottom-2 left-2 text-xs font-medium text-strong opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             {{ img.alt }}
           </span>
         </div>
@@ -215,10 +215,10 @@
 
     <!-- Discover features -->
     <section ref="discoverRef" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
-      <h2 class="section-title text-2xl font-bold text-gray-900 dark:text-white mb-2" :class="{ 'section-title-visible': discoverVisible }">
+      <h2 class="section-title text-2xl font-bold text-strong mb-2" :class="{ 'section-title-visible': discoverVisible }">
         Découvrir l'écosystème
       </h2>
-      <p class="text-gray-500 dark:text-gray-400 mb-6">Des outils visuels pour explorer la scène DCS francophone.</p>
+      <p class="text-soft mb-6">Des outils visuels pour explorer la scène DCS francophone.</p>
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
         <NuxtLink
           v-for="(card, i) in discoverCards"
@@ -229,17 +229,17 @@
           :style="{ transitionDelay: `${i * 80}ms` }"
         >
           <UIcon :name="card.icon" class="text-2xl mb-2 group-hover:scale-110 transition-transform" :class="card.color" />
-          <span class="text-sm font-medium text-gray-900 dark:text-white">{{ card.title }}</span>
+          <span class="text-sm font-medium text-strong">{{ card.title }}</span>
           <span class="text-[11px] text-gray-500">{{ card.subtitle }}</span>
         </NuxtLink>
       </div>
     </section>
 
     <!-- CTA -->
-    <section class="border-t border-gray-200 dark:border-gray-800">
+    <section class="border-t border-line">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 text-center">
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Votre communauté n'est pas listée ?</h2>
-        <p class="mt-3 text-gray-500 dark:text-gray-400">Soumettez votre escadron ou communauté DCS francophone pour apparaître dans l'annuaire.</p>
+        <h2 class="text-2xl font-bold text-strong">Votre communauté n'est pas listée ?</h2>
+        <p class="mt-3 text-soft">Soumettez votre escadron ou communauté DCS francophone pour apparaître dans l'annuaire.</p>
         <UButton to="/soumettre" size="lg" class="mt-6 cta-pulse" icon="i-heroicons-plus">
           Soumettre ma communauté
         </UButton>
@@ -339,10 +339,10 @@ const heroStats = computed(() => {
 })
 
 const discoverCards = [
-  { to: '/stats', icon: 'i-heroicons-chart-pie', color: 'text-green-400', title: 'Statistiques', subtitle: 'DCS en chiffres' },
-  { to: '/streamers', icon: 'i-simple-icons-twitch', color: 'text-amber-400', title: 'Streameurs', subtitle: 'DCS en direct' },
-  { to: '/soumettre', icon: 'i-heroicons-plus-circle', color: 'text-blue-400', title: 'Soumettre', subtitle: 'Ajouter ta commu' },
-  { to: '/trouver', icon: 'i-heroicons-sparkles', color: 'text-purple-400', title: 'Trouver', subtitle: 'Ta commu idéale' },
+  { to: '/stats', icon: 'i-heroicons-chart-pie', color: 'text-green-700 dark:text-green-400', title: 'Statistiques', subtitle: 'DCS en chiffres' },
+  { to: '/streamers', icon: 'i-simple-icons-twitch', color: 'text-amber-700 dark:text-amber-400', title: 'Streameurs', subtitle: 'DCS en direct' },
+  { to: '/soumettre', icon: 'i-heroicons-plus-circle', color: 'text-blue-600 dark:text-blue-400', title: 'Soumettre', subtitle: 'Ajouter ta commu' },
+  { to: '/trouver', icon: 'i-heroicons-sparkles', color: 'text-purple-600 dark:text-purple-400', title: 'Trouver', subtitle: 'Ta commu idéale' },
 ]
 
 const galleryImages = [
@@ -405,13 +405,17 @@ onMounted(() => {
 .hero-btn-delay-1 { animation-delay: 0.6s; }
 .hero-btn-delay-2 { animation-delay: 0.7s; }
 
+/* Light values first; the dark theme this page was designed in overrides them. */
 .hero-gradient-text {
-  background: linear-gradient(135deg, #60a5fa, #a78bfa, #60a5fa);
+  background: linear-gradient(135deg, #2563eb, #7c3aed, #2563eb);
   background-size: 200% 200%;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: gradientShift 4s ease infinite;
+}
+:global(html.dark .hero-gradient-text) {
+  background-image: linear-gradient(135deg, #60a5fa, #a78bfa, #60a5fa);
 }
 
 /* Floating orbs behind hero */
@@ -448,27 +452,39 @@ onMounted(() => {
   padding: 1.5rem 1rem;
   border-radius: 0.75rem;
   border: 1px solid rgba(128, 128, 128, 0.15);
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--color-white);
+  box-shadow: var(--surface-shadow);
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 0.6s ease, transform 0.6s ease;
+}
+:global(html.dark .stat-counter-card) {
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: none;
 }
 .stat-counter-visible {
   opacity: 1;
   transform: translateY(0);
 }
+/* Was white in both themes: the key figures vanished on a light page. */
 .stat-counter-value {
   font-size: 2rem;
   font-weight: 800;
-  color: var(--color-white);
+  color: var(--color-gray-900);
   line-height: 1.1;
+}
+:global(html.dark .stat-counter-value) {
+  color: var(--color-white);
 }
 .stat-counter-label {
   font-size: 0.75rem;
-  color: var(--color-gray-400);
+  color: var(--color-gray-500);
   margin-top: 0.25rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+:global(html.dark .stat-counter-label) {
+  color: var(--color-gray-400);
 }
 
 /* ── Streaming bar ── */
@@ -506,12 +522,18 @@ onMounted(() => {
   display: block;
   border-radius: 0.5rem;
   border: 1px solid rgba(128, 128, 128, 0.2);
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--color-white);
+  box-shadow: var(--surface-shadow);
   padding: 1rem;
   text-align: center;
   opacity: 0;
   transform: scale(0.9);
   transition: opacity 0.4s ease, transform 0.4s ease, border-color 0.3s ease, background 0.3s ease;
+}
+:global(html.dark .module-card),
+:global(html.dark .discover-card) {
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: none;
 }
 .module-card-visible {
   opacity: 1;
@@ -541,7 +563,8 @@ onMounted(() => {
   padding: 1.25rem 0.75rem;
   border-radius: 0.75rem;
   border: 1px solid rgba(128, 128, 128, 0.15);
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--color-white);
+  box-shadow: var(--surface-shadow);
   text-align: center;
   opacity: 0;
   transform: translateY(20px);

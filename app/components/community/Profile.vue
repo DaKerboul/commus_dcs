@@ -12,7 +12,7 @@
         </div>
         <div class="flex-1">
           <div class="flex items-center gap-3 flex-wrap">
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">{{ community.name }}</h1>
+            <h1 class="text-3xl font-bold text-strong">{{ community.name }}</h1>
             <UBadge :color="recruitmentColor" variant="subtle">
               {{ RECRUITMENT_LABELS[community.recruitmentStatus] }}
             </UBadge>
@@ -32,7 +32,7 @@
               {{ TYPE_LABELS[community.communityType] }}
             </UBadge>
           </div>
-          <p v-if="community.shortDescription" class="mt-2 text-gray-500 dark:text-gray-400 text-lg">
+          <p v-if="community.shortDescription" class="mt-2 text-soft text-lg">
             {{ community.shortDescription }}
           </p>
           <p v-else-if="editing" class="mt-2 text-gray-400 dark:text-gray-500 text-lg italic">
@@ -156,7 +156,7 @@
               <div
                 v-for="(img, i) in community.images"
                 :key="i"
-                class="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-800"
+                class="rounded-lg overflow-hidden border border-line"
               >
                 <NuxtImg :src="img.url" :provider="provider(img.url)" :alt="img.alt || community.name" width="400" height="192" loading="lazy" class="w-full h-48 object-cover" />
               </div>
@@ -174,7 +174,7 @@
                 :key="link.url"
                 :href="link.url"
                 target="_blank"
-                class="flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors"
+                class="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
                 @click="emit('social', 'other')"
               >
                 <UIcon name="i-heroicons-link" />
@@ -188,14 +188,14 @@
       <!-- Sidebar (1/3) -->
       <div class="space-y-4">
         <CommunityEditZone zone="info">
-          <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5 space-y-4">
-            <h3 class="font-semibold text-gray-900 dark:text-white">Informations</h3>
+          <div class="rounded-xl border border-line surface p-5 space-y-4">
+            <h3 class="font-semibold text-strong">Informations</h3>
 
             <div v-for="row in infoRows" :key="row.label" class="flex items-start gap-3">
               <UIcon :name="row.icon" class="text-gray-500 mt-0.5" />
               <div>
-                <div class="text-sm text-gray-500 dark:text-gray-400">{{ row.label }}</div>
-                <div class="text-sm text-gray-900 dark:text-white whitespace-pre-line">{{ row.value }}</div>
+                <div class="text-sm text-soft">{{ row.label }}</div>
+                <div class="text-sm text-strong whitespace-pre-line">{{ row.value }}</div>
               </div>
             </div>
 
@@ -206,8 +206,8 @@
         </CommunityEditZone>
 
         <CommunityEditZone v-if="community.streamers?.length || editing" zone="streamers">
-          <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5">
-            <h3 class="mb-3 flex items-center gap-2 font-semibold text-gray-900 dark:text-white">
+          <div class="rounded-xl border border-line surface p-5">
+            <h3 class="mb-3 flex items-center gap-2 font-semibold text-strong">
               <UIcon name="i-simple-icons-twitch" class="text-purple-500" />
               Nos streameurs
             </h3>
@@ -216,7 +216,7 @@
                 <NuxtLink :to="`/streamers/${s.login}`" class="flex items-center gap-3 hover:text-primary">
                   <img v-if="s.avatarUrl" :src="s.avatarUrl" :alt="s.displayName" class="size-9 shrink-0 rounded-full" :class="s.isLiveOnDcs ? 'ring-2 ring-red-500' : ''" loading="lazy">
                   <div class="min-w-0">
-                    <p class="flex items-center gap-1.5 truncate text-sm font-medium text-gray-900 dark:text-white">
+                    <p class="flex items-center gap-1.5 truncate text-sm font-medium text-strong">
                       {{ s.displayName }}
                       <span v-if="s.isLiveOnDcs" class="rounded bg-red-600 px-1 text-[10px] font-bold uppercase text-white">Direct</span>
                     </p>
@@ -226,7 +226,7 @@
               </li>
             </ul>
             <p v-else class="text-sm italic text-gray-400">+ Reliez les chaînes Twitch de vos membres</p>
-            <div v-if="community.latestVod" class="mt-4 border-t border-gray-200 dark:border-gray-800 pt-4">
+            <div v-if="community.latestVod" class="mt-4 border-t border-line pt-4">
               <p class="mb-2 text-xs font-medium uppercase tracking-wide text-gray-500">Dernière rediffusion</p>
               <StreamVodCard :vod="community.latestVod" source="community" />
             </div>

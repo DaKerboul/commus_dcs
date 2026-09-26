@@ -3,7 +3,7 @@
     <div
       v-for="i in count"
       :key="i"
-      class="relative overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5 pl-6"
+      class="relative overflow-hidden rounded-xl border border-line surface p-5 pl-6"
     >
       <div class="flex items-start gap-4">
         <!-- Logo placeholder (double-bezel) -->

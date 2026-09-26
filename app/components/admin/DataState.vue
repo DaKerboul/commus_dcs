@@ -6,7 +6,7 @@
         <div
           v-for="i in skeletonCount"
           :key="i"
-          class="h-20 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-100 dark:bg-gray-900/50 animate-pulse"
+          class="h-20 rounded-xl border border-line bg-gray-100 dark:bg-gray-900/50 animate-pulse"
         />
       </div>
     </slot>
@@ -33,7 +33,7 @@
     class="rounded-xl border border-dashed border-gray-300 dark:border-gray-700 p-8 text-center"
   >
     <UIcon :name="emptyIcon" class="text-3xl text-gray-400 mb-2" />
-    <p class="text-gray-500 dark:text-gray-400">{{ emptyLabel }}</p>
+    <p class="text-soft">{{ emptyLabel }}</p>
     <slot name="empty" />
   </div>
 

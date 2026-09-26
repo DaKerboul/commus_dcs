@@ -1,14 +1,14 @@
 <template>
   <div>
     <!-- Hero -->
-    <section class="relative overflow-hidden border-b border-gray-200 dark:border-gray-800">
+    <section class="relative overflow-hidden border-b border-line">
       <div class="absolute inset-0">
         <img src="/bck2.png" alt="" class="h-full w-full object-cover" />
         <div class="absolute inset-0 bg-white/80 dark:bg-gray-950/80" />
       </div>
       <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 text-center">
-        <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-          Politique de <span class="text-blue-400">confidentialité</span>
+        <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-strong">
+          Politique de <span class="text-blue-600 dark:text-blue-400">confidentialité</span>
         </h1>
         <p class="mt-4 text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
           Informations sur les données collectées, leur usage et vos droits RGPD sur Commus DCS FR.
@@ -22,36 +22,36 @@
 
         <!-- Qui sommes-nous -->
         <div>
-          <h2 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-            <UIcon name="i-heroicons-information-circle" class="text-blue-400 text-2xl shrink-0" />
+          <h2 class="text-2xl font-bold text-strong flex items-center gap-3">
+            <UIcon name="i-heroicons-information-circle" class="text-blue-600 dark:text-blue-400 text-2xl shrink-0" />
             Qui sommes-nous
           </h2>
           <div class="mt-4 space-y-4 text-gray-600 dark:text-gray-300 leading-relaxed">
             <p>
-              <strong class="text-gray-900 dark:text-white">Commus DCS FR</strong> est un annuaire communautaire
+              <strong class="text-strong">Commus DCS FR</strong> est un annuaire communautaire
               non commercial des groupes de simulation aérienne DCS World francophones, opéré bénévolement par
               DaKerboul, pour la communauté Kerboulistan.
             </p>
             <p>
               Pour toute question relative à vos données, vous pouvez nous contacter via la
-              <NuxtLink to="/contact" class="text-blue-400 hover:text-blue-300 underline underline-offset-4">page Contact</NuxtLink>.
+              <NuxtLink to="/contact" class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 underline underline-offset-4">page Contact</NuxtLink>.
             </p>
           </div>
         </div>
 
         <!-- Données collectées -->
         <div>
-          <h2 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-            <UIcon name="i-heroicons-document-text" class="text-blue-400 text-2xl shrink-0" />
+          <h2 class="text-2xl font-bold text-strong flex items-center gap-3">
+            <UIcon name="i-heroicons-document-text" class="text-blue-600 dark:text-blue-400 text-2xl shrink-0" />
             Données collectées
           </h2>
           <div class="mt-6 space-y-6">
 
             <!-- Formulaire -->
-            <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5">
+            <div class="rounded-xl border border-line surface p-5">
               <div class="flex items-center gap-3 mb-3">
-                <UIcon name="i-heroicons-pencil-square" class="text-blue-400 text-lg shrink-0" />
-                <h3 class="font-semibold text-gray-900 dark:text-white">Via le formulaire de soumission (/soumettre)</h3>
+                <UIcon name="i-heroicons-pencil-square" class="text-blue-600 dark:text-blue-400 text-lg shrink-0" />
+                <h3 class="font-semibold text-strong">Via le formulaire de soumission (/soumettre)</h3>
               </div>
               <div class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed space-y-2">
                 <p>
@@ -67,17 +67,17 @@
             </div>
 
             <!-- Comptes gestionnaires -->
-            <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5">
+            <div class="rounded-xl border border-line surface p-5">
               <div class="flex items-center gap-3 mb-3">
-                <UIcon name="i-simple-icons-discord" class="text-blue-400 text-lg shrink-0" />
-                <h3 class="font-semibold text-gray-900 dark:text-white">Comptes gestionnaires (connexion Discord)</h3>
+                <UIcon name="i-simple-icons-discord" class="text-blue-600 dark:text-blue-400 text-lg shrink-0" />
+                <h3 class="font-semibold text-strong">Comptes gestionnaires (connexion Discord)</h3>
               </div>
               <div class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed space-y-2">
                 <p>
                   Si vous vous connectez avec Discord pour gérer la fiche de votre communauté, nous conservons
-                  uniquement votre <strong class="text-gray-900 dark:text-white">identifiant Discord</strong>,
-                  votre <strong class="text-gray-900 dark:text-white">pseudo</strong> et l'URL de votre
-                  <strong class="text-gray-900 dark:text-white">avatar</strong>. Aucun mot de passe, aucune adresse
+                  uniquement votre <strong class="text-strong">identifiant Discord</strong>,
+                  votre <strong class="text-strong">pseudo</strong> et l'URL de votre
+                  <strong class="text-strong">avatar</strong>. Aucun mot de passe, aucune adresse
                   e-mail, et aucun jeton Discord n'est stocké.
                 </p>
                 <p>
@@ -85,7 +85,7 @@
                   nom dans l'interface d'administration. Elles ne sont jamais transmises à un tiers.
                 </p>
                 <p>
-                  <strong class="text-gray-900 dark:text-white">Durée de conservation :</strong> les comptes
+                  <strong class="text-strong">Durée de conservation :</strong> les comptes
                   inactifs depuis plus de 18 mois et qui ne gèrent aucune fiche sont supprimés automatiquement.
                   Vous pouvez demander la suppression de votre compte à tout moment via la page contact.
                 </p>
@@ -93,34 +93,34 @@
             </div>
 
             <!-- Statistiques par fiche -->
-            <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5">
+            <div class="rounded-xl border border-line surface p-5">
               <div class="flex items-center gap-3 mb-3">
-                <UIcon name="i-heroicons-presentation-chart-line" class="text-blue-400 text-lg shrink-0" />
-                <h3 class="font-semibold text-gray-900 dark:text-white">Statistiques par communauté</h3>
+                <UIcon name="i-heroicons-presentation-chart-line" class="text-blue-600 dark:text-blue-400 text-lg shrink-0" />
+                <h3 class="font-semibold text-strong">Statistiques par communauté</h3>
               </div>
               <div class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed space-y-2">
                 <p>
                   Chaque fiche compte le nombre de consultations et de clics sur ses liens, afin que ses
                   responsables sachent si leur page fonctionne. Il s'agit de
-                  <strong class="text-gray-900 dark:text-white">compteurs agrégés par jour</strong> :
+                  <strong class="text-strong">compteurs agrégés par jour</strong> :
                   aucune ligne par visiteur, aucun identifiant, aucune adresse IP n'est enregistrée.
                 </p>
               </div>
             </div>
 
             <!-- Analytics -->
-            <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5">
+            <div class="rounded-xl border border-line surface p-5">
               <div class="flex items-center gap-3 mb-3">
-                <UIcon name="i-heroicons-chart-bar" class="text-blue-400 text-lg shrink-0" />
-                <h3 class="font-semibold text-gray-900 dark:text-white">Données de navigation (Umami Analytics)</h3>
+                <UIcon name="i-heroicons-chart-bar" class="text-blue-600 dark:text-blue-400 text-lg shrink-0" />
+                <h3 class="font-semibold text-strong">Données de navigation (Umami Analytics)</h3>
               </div>
               <div class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed space-y-2">
                 <p>
-                  Le site utilise <strong class="text-gray-900 dark:text-white">Umami Analytics</strong> en mode
+                  Le site utilise <strong class="text-strong">Umami Analytics</strong> en mode
                   self-hosted, hébergé sur <code class="px-1.5 py-0.5 rounded bg-gray-200 dark:bg-gray-800 text-xs font-mono">stats.kerboul.me</code>.
                 </p>
                 <p>
-                  Umami <strong class="text-gray-900 dark:text-white">ne dépose pas de cookies</strong> et ne
+                  Umami <strong class="text-strong">ne dépose pas de cookies</strong> et ne
                   collecte pas de données personnelles identifiables. Les adresses IP sont anonymisées avant
                   tout stockage. Aucun consentement cookie n'est requis pour cette solution d'analyse.
                 </p>
@@ -128,10 +128,10 @@
             </div>
 
             <!-- Votes -->
-            <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5">
+            <div class="rounded-xl border border-line surface p-5">
               <div class="flex items-center gap-3 mb-3">
-                <UIcon name="i-heroicons-hand-thumb-up" class="text-blue-400 text-lg shrink-0" />
-                <h3 class="font-semibold text-gray-900 dark:text-white">Votes</h3>
+                <UIcon name="i-heroicons-hand-thumb-up" class="text-blue-600 dark:text-blue-400 text-lg shrink-0" />
+                <h3 class="font-semibold text-strong">Votes</h3>
               </div>
               <div class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
                 <p>
@@ -147,15 +147,15 @@
             </div>
 
             <!-- Twitch -->
-            <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5">
+            <div class="rounded-xl border border-line surface p-5">
               <div class="flex items-center gap-3 mb-3">
-                <UIcon name="i-simple-icons-twitch" class="text-blue-400 text-lg shrink-0" />
-                <h3 class="font-semibold text-gray-900 dark:text-white">Directs Twitch</h3>
+                <UIcon name="i-simple-icons-twitch" class="text-blue-600 dark:text-blue-400 text-lg shrink-0" />
+                <h3 class="font-semibold text-strong">Directs Twitch</h3>
               </div>
               <div class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed space-y-2">
                 <p>
                   Les directs et rediffusions s'affichent sous forme d'images fournies par Twitch, qui ne déposent
-                  pas de cookie. Le lecteur Twitch n'est chargé <strong class="text-gray-900 dark:text-white">que si vous
+                  pas de cookie. Le lecteur Twitch n'est chargé <strong class="text-strong">que si vous
                   cliquez sur « Regarder ici »</strong> : Twitch peut alors déposer ses propres cookies, selon sa
                   <a href="https://www.twitch.tv/p/legal/privacy-notice/" target="_blank" rel="noopener" class="text-primary hover:underline">politique de confidentialité</a>.
                 </p>
@@ -170,31 +170,31 @@
 
         <!-- Durée de conservation -->
         <div>
-          <h2 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-            <UIcon name="i-heroicons-clock" class="text-blue-400 text-2xl shrink-0" />
+          <h2 class="text-2xl font-bold text-strong flex items-center gap-3">
+            <UIcon name="i-heroicons-clock" class="text-blue-600 dark:text-blue-400 text-2xl shrink-0" />
             Durée de conservation
           </h2>
           <div class="mt-4 text-gray-600 dark:text-gray-300 leading-relaxed">
             <ul class="space-y-3">
               <li class="flex items-start gap-3">
-                <UIcon name="i-heroicons-arrow-right-circle" class="text-blue-400 mt-0.5 shrink-0" />
+                <UIcon name="i-heroicons-arrow-right-circle" class="text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
                 <span>
-                  <strong class="text-gray-900 dark:text-white">Soumissions non approuvées</strong> :
+                  <strong class="text-strong">Soumissions non approuvées</strong> :
                   conservées le temps de leur traitement par la modération, puis supprimées.
                   Vous pouvez en demander la suppression à tout moment.
                 </span>
               </li>
               <li class="flex items-start gap-3">
-                <UIcon name="i-heroicons-arrow-right-circle" class="text-blue-400 mt-0.5 shrink-0" />
+                <UIcon name="i-heroicons-arrow-right-circle" class="text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
                 <span>
-                  <strong class="text-gray-900 dark:text-white">Fiches communautés publiées</strong> :
+                  <strong class="text-strong">Fiches communautés publiées</strong> :
                   conservées jusqu'à demande de suppression ou dissolution de la communauté concernée.
                 </span>
               </li>
               <li class="flex items-start gap-3">
-                <UIcon name="i-heroicons-arrow-right-circle" class="text-blue-400 mt-0.5 shrink-0" />
+                <UIcon name="i-heroicons-arrow-right-circle" class="text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
                 <span>
-                  <strong class="text-gray-900 dark:text-white">Données de navigation</strong> :
+                  <strong class="text-strong">Données de navigation</strong> :
                   conservées 13 mois, conformément aux recommandations de la CNIL.
                 </span>
               </li>
@@ -204,60 +204,60 @@
 
         <!-- Vos droits -->
         <div>
-          <h2 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-            <UIcon name="i-heroicons-shield-check" class="text-blue-400 text-2xl shrink-0" />
+          <h2 class="text-2xl font-bold text-strong flex items-center gap-3">
+            <UIcon name="i-heroicons-shield-check" class="text-blue-600 dark:text-blue-400 text-2xl shrink-0" />
             Vos droits
           </h2>
           <div class="mt-4 space-y-4 text-gray-600 dark:text-gray-300 leading-relaxed">
             <p>
-              Conformément au <strong class="text-gray-900 dark:text-white">Règlement Général sur la Protection des Données (RGPD)</strong>,
+              Conformément au <strong class="text-strong">Règlement Général sur la Protection des Données (RGPD)</strong>,
               vous disposez des droits suivants sur vos données personnelles :
             </p>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div class="flex items-center gap-2.5 rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/30 px-4 py-3">
-                <UIcon name="i-heroicons-eye" class="text-blue-400 shrink-0" />
-                <span class="text-sm font-medium text-gray-900 dark:text-white">Droit d'accès</span>
+              <div class="flex items-center gap-2.5 rounded-lg border border-line bg-gray-50 dark:bg-gray-900/30 px-4 py-3">
+                <UIcon name="i-heroicons-eye" class="text-blue-600 dark:text-blue-400 shrink-0" />
+                <span class="text-sm font-medium text-strong">Droit d'accès</span>
               </div>
-              <div class="flex items-center gap-2.5 rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/30 px-4 py-3">
-                <UIcon name="i-heroicons-pencil" class="text-blue-400 shrink-0" />
-                <span class="text-sm font-medium text-gray-900 dark:text-white">Droit de rectification</span>
+              <div class="flex items-center gap-2.5 rounded-lg border border-line bg-gray-50 dark:bg-gray-900/30 px-4 py-3">
+                <UIcon name="i-heroicons-pencil" class="text-blue-600 dark:text-blue-400 shrink-0" />
+                <span class="text-sm font-medium text-strong">Droit de rectification</span>
               </div>
-              <div class="flex items-center gap-2.5 rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/30 px-4 py-3">
-                <UIcon name="i-heroicons-trash" class="text-blue-400 shrink-0" />
-                <span class="text-sm font-medium text-gray-900 dark:text-white">Droit de suppression</span>
+              <div class="flex items-center gap-2.5 rounded-lg border border-line bg-gray-50 dark:bg-gray-900/30 px-4 py-3">
+                <UIcon name="i-heroicons-trash" class="text-blue-600 dark:text-blue-400 shrink-0" />
+                <span class="text-sm font-medium text-strong">Droit de suppression</span>
               </div>
-              <div class="flex items-center gap-2.5 rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/30 px-4 py-3">
-                <UIcon name="i-heroicons-arrow-down-tray" class="text-blue-400 shrink-0" />
-                <span class="text-sm font-medium text-gray-900 dark:text-white">Droit à la portabilité</span>
+              <div class="flex items-center gap-2.5 rounded-lg border border-line bg-gray-50 dark:bg-gray-900/30 px-4 py-3">
+                <UIcon name="i-heroicons-arrow-down-tray" class="text-blue-600 dark:text-blue-400 shrink-0" />
+                <span class="text-sm font-medium text-strong">Droit à la portabilité</span>
               </div>
             </div>
             <p>
               Pour exercer ces droits, contactez-nous via la
-              <NuxtLink to="/contact" class="text-blue-400 hover:text-blue-300 underline underline-offset-4">page Contact</NuxtLink>
+              <NuxtLink to="/contact" class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 underline underline-offset-4">page Contact</NuxtLink>
               en précisant la communauté concernée.
             </p>
           </div>
         </div>
 
         <!-- Responsable du traitement -->
-        <div class="rounded-2xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-6">
+        <div class="rounded-2xl border border-line surface p-6">
           <div class="flex items-center gap-3 mb-4">
-            <UIcon name="i-heroicons-user-circle" class="text-blue-400 text-2xl shrink-0" />
-            <h2 class="text-xl font-bold text-gray-900 dark:text-white">Responsable du traitement</h2>
+            <UIcon name="i-heroicons-user-circle" class="text-blue-600 dark:text-blue-400 text-2xl shrink-0" />
+            <h2 class="text-xl font-bold text-strong">Responsable du traitement</h2>
           </div>
           <div class="text-gray-600 dark:text-gray-300 text-sm space-y-2">
-            <p><strong class="text-gray-900 dark:text-white">DaKerboul</strong>, pour la communauté Kerboulistan.</p>
+            <p><strong class="text-strong">DaKerboul</strong>, pour la communauté Kerboulistan.</p>
             <p>
               Éditeur non professionnel au sens de la LCEN. Pour toute demande relative à vos données,
               écrivez-nous via la
-              <NuxtLink to="/contact" class="text-blue-400 hover:text-blue-300 underline underline-offset-4">page Contact</NuxtLink> ;
+              <NuxtLink to="/contact" class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 underline underline-offset-4">page Contact</NuxtLink> ;
               nous répondons sur le serveur Discord du Kerboulistan.
             </p>
           </div>
         </div>
 
         <!-- Footer note -->
-        <div class="text-center pt-4 border-t border-gray-200 dark:border-gray-800">
+        <div class="text-center pt-4 border-t border-line">
           <p class="text-sm text-gray-500">
             Dernière mise à jour : juin 2026 ·
             <NuxtLink to="/contact" class="text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors underline underline-offset-4">

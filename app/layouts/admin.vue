@@ -1,17 +1,17 @@
 <template>
   <div class="min-h-screen flex">
     <!-- Sidebar (desktop) -->
-    <aside class="hidden lg:flex w-64 flex-col border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
-      <div class="p-4 border-b border-gray-200 dark:border-gray-800">
+    <aside class="hidden lg:flex w-64 flex-col border-r border-line bg-white dark:bg-gray-950">
+      <div class="p-4 border-b border-line">
         <NuxtLink to="/" class="flex items-center gap-2">
           <img src="/logo.png" alt="Commus DCS FR" class="h-8 w-8" />
-          <span class="text-lg font-bold text-gray-900 dark:text-white">Admin</span>
+          <span class="text-lg font-bold text-strong">Admin</span>
         </NuxtLink>
       </div>
       <nav class="flex-1 p-4 space-y-1">
         <AdminNavLink v-for="item in navItems" :key="item.to" v-bind="item" />
       </nav>
-      <div class="p-4 border-t border-gray-200 dark:border-gray-800">
+      <div class="p-4 border-t border-line">
         <UButton
           variant="ghost"
           color="error"
@@ -28,7 +28,7 @@
     <!-- Main -->
     <div class="flex-1 flex flex-col bg-white dark:bg-gray-950 text-gray-800 dark:text-gray-100 min-w-0">
       <!-- Mobile header -->
-      <header class="lg:hidden sticky top-0 z-50 border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-950/80 backdrop-blur-lg">
+      <header class="lg:hidden sticky top-0 z-50 border-b border-line bg-white/80 dark:bg-gray-950/80 backdrop-blur-lg">
         <div class="flex h-14 items-center justify-between px-4">
           <div class="flex items-center gap-2">
             <UButton
@@ -41,7 +41,7 @@
             />
             <NuxtLink to="/admin" class="flex items-center gap-2">
               <img src="/logo.png" alt="" class="h-6 w-6" />
-              <span class="font-bold text-gray-900 dark:text-white">Admin</span>
+              <span class="font-bold text-strong">Admin</span>
             </NuxtLink>
           </div>
           <UBadge v-if="totalPending > 0" color="warning" variant="subtle" size="sm">

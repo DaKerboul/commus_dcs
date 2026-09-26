@@ -1,5 +1,5 @@
 <template>
-  <article class="relative flex flex-col rounded-2xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5">
+  <article class="relative flex flex-col rounded-2xl border border-line surface p-5">
     <span class="absolute -top-3 left-5 rounded-full bg-gray-900 px-2.5 py-0.5 text-xs font-semibold text-white dark:bg-white dark:text-gray-900">
       #{{ rank }}
     </span>
@@ -19,12 +19,12 @@
         <UIcon v-else name="i-heroicons-user-group" class="text-2xl text-gray-500" />
       </div>
       <div class="min-w-0 flex-1">
-        <h3 class="truncate font-semibold text-gray-900 dark:text-white">{{ community.name }}</h3>
+        <h3 class="truncate font-semibold text-strong">{{ community.name }}</h3>
         <FinderScore :score="match.score" />
       </div>
     </div>
 
-    <p v-if="community.shortDescription" class="mt-3 line-clamp-2 text-sm text-gray-500 dark:text-gray-400">
+    <p v-if="community.shortDescription" class="mt-3 line-clamp-2 text-sm text-soft">
       {{ community.shortDescription.replace(/\*\*|__/g, '') }}
     </p>
 

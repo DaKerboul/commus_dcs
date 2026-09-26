@@ -28,8 +28,8 @@
     <CommunityProfile v-else :community="community" @social="trackSocial">
       <template #aside>
         <!-- Share -->
-        <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5">
-          <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Partager</h3>
+        <div class="rounded-xl border border-line surface p-5">
+          <h3 class="font-semibold text-strong mb-3">Partager</h3>
           <SocialShare
             :url="`https://commus.kerboul.me/communautes/${slug}`"
             :text="`Découvrez ${community.name} sur Commus DCS FR`"
@@ -37,8 +37,8 @@
         </div>
   
         <!-- Upvote -->
-        <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5">
-          <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Soutenir</h3>
+        <div class="rounded-xl border border-line surface p-5">
+          <h3 class="font-semibold text-strong mb-3">Soutenir</h3>
           <UButton
             v-if="account.isSignedIn.value || hasVoted"
             :icon="hasVoted ? 'i-heroicons-heart-solid' : 'i-heroicons-heart'"
@@ -69,7 +69,7 @@
               <span class="text-xs font-mono">{{ voteCount }}</span>
             </template>
           </UButton>
-          <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+          <p class="mt-2 text-xs text-soft">
             Un vote par compte Discord. Aucun message ni serveur n'est lu.
           </p>
           <p v-if="voteError" class="mt-2 text-xs text-red-500">
@@ -78,8 +78,8 @@
         </div>
   
         <!-- Claim / manage this page -->
-        <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5">
-          <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Gérer cette fiche</h3>
+        <div class="rounded-xl border border-line surface p-5">
+          <h3 class="font-semibold text-strong mb-3">Gérer cette fiche</h3>
   
           <template v-if="managesThisCommunity">
             <UButton
@@ -111,7 +111,7 @@
           </template>
   
           <template v-else>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">
+            <p class="text-xs text-soft mb-3">
               Vous êtes responsable de cette communauté&nbsp;? Réclamez cette page pour la mettre à jour vous-même.
             </p>
             <UButton
@@ -168,7 +168,7 @@
 
     <!-- Similar communities -->
     <section v-if="similar?.data?.length && !editing" class="mt-12">
-      <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Communautés similaires</h2>
+      <h2 class="text-xl font-semibold text-strong mb-4">Communautés similaires</h2>
       <div class="grid gap-4 md:grid-cols-3">
         <CommunityCard v-for="c in similar.data" :key="c.id" :community="c" />
       </div>

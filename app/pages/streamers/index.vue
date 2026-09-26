@@ -3,15 +3,15 @@
     <AppBreadcrumb :items="[{ label: 'Accueil', to: '/', icon: 'i-heroicons-home' }, { label: 'Streameurs' }]" />
 
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Streameurs DCS FR</h1>
-      <p class="mt-1 text-gray-500 dark:text-gray-400">
+      <h1 class="text-3xl font-bold text-strong">Streameurs DCS FR</h1>
+      <p class="mt-1 text-soft">
         Qui vole en direct, qui vole ce soir, et les dernières rediffusions de la scène francophone.
       </p>
     </div>
 
     <!-- ── En direct ─────────────────────────────── -->
     <section class="mb-12" aria-labelledby="live-title">
-      <h2 id="live-title" class="mb-4 flex items-center gap-2 text-xl font-semibold text-gray-900 dark:text-white">
+      <h2 id="live-title" class="mb-4 flex items-center gap-2 text-xl font-semibold text-strong">
         <span class="relative flex size-2.5">
           <span v-if="hub?.live.length" class="absolute inline-flex size-full animate-ping rounded-full bg-red-400 opacity-75" />
           <span class="relative inline-flex size-2.5 rounded-full" :class="hub?.live.length ? 'bg-red-500' : 'bg-gray-400'" />
@@ -30,13 +30,13 @@
 
     <!-- ── Habituellement aujourd'hui ─────────────── -->
     <section v-if="hub?.today.length" class="mb-12" aria-labelledby="today-title">
-      <h2 id="today-title" class="mb-1 text-xl font-semibold text-gray-900 dark:text-white">Souvent en direct le {{ todayName }}</h2>
+      <h2 id="today-title" class="mb-1 text-xl font-semibold text-strong">Souvent en direct le {{ todayName }}</h2>
       <p class="mb-4 text-sm text-gray-500">D'après leurs streams des 60 derniers jours.</p>
       <ul class="flex gap-3 overflow-x-auto pb-2">
         <li v-for="s in hub.today" :key="s.login" class="w-44 shrink-0">
-          <NuxtLink :to="`/streamers/${s.login}`" class="block rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-3 text-center hover:border-primary/50">
+          <NuxtLink :to="`/streamers/${s.login}`" class="block rounded-xl border border-line surface p-3 text-center hover:border-primary/50">
             <img v-if="s.avatarUrl" :src="s.avatarUrl" :alt="s.displayName" class="mx-auto size-12 rounded-full" loading="lazy">
-            <p class="mt-2 truncate text-sm font-medium text-gray-900 dark:text-white">{{ s.displayName }}</p>
+            <p class="mt-2 truncate text-sm font-medium text-strong">{{ s.displayName }}</p>
             <p class="text-xs font-semibold text-primary">vers {{ formatClock(s.slotMinutes ?? 0) }}</p>
             <p v-if="s.communities[0]" class="mt-1 truncate text-[11px] text-gray-500">{{ s.communities[0].name }}</p>
           </NuxtLink>
@@ -46,7 +46,7 @@
 
     <!-- ── Rediffusions ──────────────────────────── -->
     <section v-if="hub?.vods.length" class="mb-12" aria-labelledby="vods-title">
-      <h2 id="vods-title" class="mb-1 text-xl font-semibold text-gray-900 dark:text-white">Dernières rediffusions DCS</h2>
+      <h2 id="vods-title" class="mb-1 text-xl font-semibold text-strong">Dernières rediffusions DCS</h2>
       <p class="mb-4 text-sm text-gray-500">Les VOD Twitch des 14 derniers jours (Twitch les efface ensuite).</p>
       <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         <StreamVodCard v-for="v in hub.vods" :key="v.url" :vod="v" source="streamers" />
@@ -57,7 +57,7 @@
     <section class="mb-12" aria-labelledby="channels-title">
       <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 id="channels-title" class="text-xl font-semibold text-gray-900 dark:text-white">Chaînes actives</h2>
+          <h2 id="channels-title" class="text-xl font-semibold text-strong">Chaînes actives</h2>
           <p class="text-sm text-gray-500">{{ hub?.channels.length ?? 0 }} chaînes ont diffusé du DCS ces 30 derniers jours.</p>
         </div>
         <div class="flex flex-wrap gap-2">
@@ -80,11 +80,11 @@
           v-for="s in channels"
           :key="s.login"
           :to="`/streamers/${s.login}`"
-          class="flex items-center gap-3 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-3 hover:border-primary/50"
+          class="flex items-center gap-3 rounded-xl border border-line surface p-3 hover:border-primary/50"
         >
           <img v-if="s.avatarUrl" :src="s.avatarUrl" :alt="s.displayName" class="size-11 shrink-0 rounded-full" :class="s.isLiveOnDcs ? 'ring-2 ring-red-500' : ''" loading="lazy">
           <div class="min-w-0 flex-1">
-            <p class="flex items-center gap-1.5 truncate font-medium text-gray-900 dark:text-white">
+            <p class="flex items-center gap-1.5 truncate font-medium text-strong">
               {{ s.displayName }}
               <span v-if="s.isLiveOnDcs" class="rounded bg-red-600 px-1 text-[10px] font-bold uppercase text-white">Direct</span>
             </p>
@@ -106,7 +106,7 @@
             v-for="s in inactive"
             :key="s.twitchLogin"
             :to="`/streamers/${s.twitchLogin}`"
-            class="rounded-full border border-gray-200 dark:border-gray-800 px-3 py-1 text-xs text-gray-600 dark:text-gray-400 hover:border-primary/50"
+            class="rounded-full border border-line px-3 py-1 text-xs text-gray-600 dark:text-gray-400 hover:border-primary/50"
           >
             {{ s.displayName }}
           </NuxtLink>
@@ -116,7 +116,7 @@
 
     <!-- ── Scène ─────────────────────────────────── -->
     <section id="scene" class="scroll-mt-24" aria-labelledby="scene-title">
-      <h2 id="scene-title" class="mb-1 text-xl font-semibold text-gray-900 dark:text-white">La scène DCS FR sur 30 jours</h2>
+      <h2 id="scene-title" class="mb-1 text-xl font-semibold text-strong">La scène DCS FR sur 30 jours</h2>
       <p class="mb-4 text-sm text-gray-500">Relevés en direct toutes les 5 minutes : Twitch ne conserve aucun historique.</p>
       <template v-if="rankings">
         <StreamerStatTiles

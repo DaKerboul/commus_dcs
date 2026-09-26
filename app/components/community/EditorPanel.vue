@@ -21,7 +21,7 @@
 
       <UFormField label="Logo" hint="Carré, recadré à l'envoi">
         <div class="flex items-center gap-4">
-          <div class="size-16 shrink-0 overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
+          <div class="size-16 shrink-0 overflow-hidden rounded-xl border border-line bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
             <img v-if="draft.logoUrl" :src="draft.logoUrl" alt="" class="size-full object-cover">
             <UIcon v-else name="i-heroicons-photo" class="text-2xl text-gray-400" />
           </div>
@@ -117,7 +117,7 @@
 
     <!-- ── Sections libres ─────────────────────────── -->
     <template v-else-if="zone === 'sections'">
-      <div v-for="(section, i) in draft.sections" :key="i" class="space-y-2 rounded-lg border border-gray-200 dark:border-gray-800 p-3">
+      <div v-for="(section, i) in draft.sections" :key="i" class="space-y-2 rounded-lg border border-line p-3">
         <div class="flex items-center gap-1">
           <UInput v-model="section.title" placeholder="Titre de la section" :maxlength="80" class="flex-1" />
           <UButton icon="i-heroicons-chevron-up" variant="ghost" color="neutral" size="xs" :disabled="i === 0" aria-label="Monter" @click="moveSection(i, -1)" />
@@ -193,15 +193,15 @@
 
     <!-- ── Streameurs ──────────────────────────────── -->
     <template v-else-if="zone === 'streamers'">
-      <p class="text-xs text-gray-500 dark:text-gray-400">
+      <p class="text-xs text-soft">
         Les chaînes Twitch qui streament pour votre communauté : leurs directs et rediffusions s'affichent sur votre fiche,
         et votre commu apparaît sur leurs streams dans l'annuaire. Publié sans validation.
       </p>
 
       <div v-if="linked.length" class="space-y-2">
-        <div v-for="c in linked" :key="c.id" class="flex items-center gap-3 rounded-lg border border-gray-200 dark:border-gray-800 p-2">
+        <div v-for="c in linked" :key="c.id" class="flex items-center gap-3 rounded-lg border border-line p-2">
           <img v-if="c.avatarUrl" :src="c.avatarUrl" alt="" class="size-8 rounded-full">
-          <span class="min-w-0 flex-1 truncate text-sm font-medium text-gray-900 dark:text-white">{{ c.displayName }}</span>
+          <span class="min-w-0 flex-1 truncate text-sm font-medium text-strong">{{ c.displayName }}</span>
           <UButton icon="i-heroicons-x-mark" variant="ghost" color="error" size="xs" :aria-label="`Retirer ${c.displayName}`" @click="unlink(c.id)" />
         </div>
       </div>
@@ -211,7 +211,7 @@
         <div v-for="s in openSuggestions" :key="s.streamerId" class="rounded-lg bg-primary/5 p-2">
           <div class="flex items-center gap-3">
             <img v-if="s.avatarUrl" :src="s.avatarUrl" alt="" class="size-8 rounded-full">
-            <span class="min-w-0 flex-1 truncate text-sm font-medium text-gray-900 dark:text-white">{{ s.displayName }}</span>
+            <span class="min-w-0 flex-1 truncate text-sm font-medium text-strong">{{ s.displayName }}</span>
             <UButton size="xs" icon="i-heroicons-plus" @click="link(s.streamerId)">Ajouter</UButton>
             <UButton size="xs" variant="ghost" color="neutral" @click="dismiss(s.streamerId)">Ignorer</UButton>
           </div>
@@ -426,7 +426,7 @@ const ChipList = defineComponent({
   },
 })
 
-const MarkdownHint = () => h('p', { class: 'text-xs text-gray-500 dark:text-gray-400 leading-relaxed' }, [
+const MarkdownHint = () => h('p', { class: 'text-xs text-soft leading-relaxed' }, [
   'Mise en forme : ',
   h('code', '**gras**'), ', ', h('code', '*italique*'), ', ', h('code', '### titre'), ', ',
   h('code', '- liste'), ', ', h('code', '> citation'), ', ', h('code', '[lien](https://…)'),

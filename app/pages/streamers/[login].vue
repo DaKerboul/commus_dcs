@@ -36,12 +36,12 @@
 
         <div class="flex-1">
           <div class="flex items-center gap-3 flex-wrap">
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">{{ streamer.displayName }}</h1>
+            <h1 class="text-3xl font-bold text-strong">{{ streamer.displayName }}</h1>
             <UBadge v-if="streamer.isLive" color="error" variant="subtle" class="animate-pulse">
               🔴 EN DIRECT — {{ streamer.currentViewers }} spectateurs
             </UBadge>
           </div>
-          <p v-if="streamer.description" class="mt-1 text-gray-500 dark:text-gray-400 line-clamp-2">
+          <p v-if="streamer.description" class="mt-1 text-soft line-clamp-2">
             {{ streamer.description }}
           </p>
           <div class="mt-3 flex items-center gap-3 flex-wrap">
@@ -67,7 +67,7 @@
               {{ c.name }}
             </UButton>
           </div>
-          <p class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-500 dark:text-gray-400">
+          <p class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-soft">
             <span v-if="streamer.slot"><UIcon name="i-heroicons-clock" class="mr-1 align-text-bottom" />{{ streamer.slot }}</span>
             <span v-if="streamer.lastDcsDate"><UIcon name="i-heroicons-calendar" class="mr-1 align-text-bottom" />Dernier stream DCS : {{ lastStreamAgo.toLowerCase() }}</span>
           </p>
@@ -87,7 +87,7 @@
 
       <!-- VODs -->
       <section v-if="streamer.vods?.length" class="mb-10">
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-1">
+        <h2 class="text-xl font-semibold text-strong mb-1">
           <UIcon name="i-heroicons-film" class="mr-1" />
           Rediffusions DCS
         </h2>
@@ -99,7 +99,7 @@
 
       <!-- Sessions -->
       <section class="mb-10">
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-1">
+        <h2 class="text-xl font-semibold text-strong mb-1">
           <UIcon name="i-heroicons-signal" class="mr-1" />
           Historique des sessions
         </h2>
@@ -111,7 +111,7 @@
 
       <!-- Follower curve -->
       <section v-if="(streamer.followerCurve?.length || 0) > 1" class="mb-10">
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-1">
+        <h2 class="text-xl font-semibold text-strong mb-1">
           <UIcon name="i-heroicons-arrow-trending-up" class="mr-1" />
           Followers
         </h2>
@@ -129,12 +129,12 @@
 
       <!-- Calendar Heatmap -->
       <section class="mb-10">
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+        <h2 class="text-xl font-semibold text-strong mb-4">
           <UIcon name="i-heroicons-calendar-days" class="mr-1" />
           Activité DCS
         </h2>
         <p class="text-sm text-gray-500 mb-4">Jours où ce streameur a été détecté en direct sur DCS World (3 derniers mois)</p>
-        <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-6">
+        <div class="rounded-xl border border-line surface p-6">
           <StreamCalendarHeatmap
             v-if="streamer.calendarHeatmap?.length > 0"
             :data="streamer.calendarHeatmap"
