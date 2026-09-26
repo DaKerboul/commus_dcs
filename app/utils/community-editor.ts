@@ -39,6 +39,8 @@ export interface CommunityDraft {
   experienceNames: string[]
   sections: { title: string; body: string }[]
   images: { url: string; alt: string | null }[]
+  /** Channels that stream for the community (published immediately). */
+  streamerIds: number[]
 }
 
 export type EditorZone =
@@ -50,6 +52,7 @@ export type EditorZone =
   | 'modules'
   | 'experiences'
   | 'gallery'
+  | 'streamers'
   | 'info'
 
 export const ZONES: Record<EditorZone, { label: string; fields: (keyof CommunityDraft)[] }> = {
@@ -67,6 +70,7 @@ export const ZONES: Record<EditorZone, { label: string; fields: (keyof Community
   modules: { label: 'Modules', fields: ['moduleNames', 'soughtModuleNames'] },
   experiences: { label: 'Expériences', fields: ['experienceNames'] },
   gallery: { label: 'Galerie', fields: ['images'] },
+  streamers: { label: 'Streameurs', fields: ['streamerIds'] },
   info: {
     label: 'Informations',
     fields: ['sizeCategory', 'sizeText', 'eventFrequency', 'historicalPeriods', 'founder', 'contact', 'foundedDate', 'entryConditions'],

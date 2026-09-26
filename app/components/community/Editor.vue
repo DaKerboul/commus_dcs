@@ -29,6 +29,10 @@
           :zone="active"
           :modules="modules"
           :experiences="experiences"
+          :community-id="community.id"
+          :channels="channelList"
+          :suggestions="streamerSuggestions"
+          @channel-added="addChannel"
         />
       </template>
       <template #footer>
@@ -97,7 +101,7 @@
 
 <script setup lang="ts">
 import { useEventListener, useMediaQuery } from '@vueuse/core'
-import type { CommunityDetail } from '#shared/types'
+import type { CommunityDetail, CommunityStreamer } from '#shared/types'
 
 const props = defineProps<{ community: CommunityDetail }>()
 const emit = defineEmits<{ exit: []; published: [] }>()
@@ -105,10 +109,41 @@ const emit = defineEmits<{ exit: []; published: [] }>()
 const toast = useToast()
 const isDesktop = useMediaQuery('(min-width: 1024px)')
 
+// Every tracked channel: the streamer picker, and the preview of a channel
+// linked in the draft before it is published.
+interface ChannelRow { id: number; twitchLogin: string; displayName: string; profileImageUrl: string | null; isLive: boolean; currentViewers: number; lastStreamTitle: string | null; lastStreamStartedAt: string | null; dcsMinutes30d: number }
+const { data: channelRows } = useLazyFetch<{ data: ChannelRow[] }>('/api/streamers', { server: false, key: 'editor-channels' })
+const extraChannels = ref<CommunityStreamer[]>([])
+const channelList = computed<CommunityStreamer[]>(() => [
+  ...(channelRows.value?.data ?? []).map(c => ({
+    id: c.id,
+    login: c.twitchLogin,
+    displayName: c.displayName,
+    avatarUrl: c.profileImageUrl,
+    isLiveOnDcs: c.isLive,
+    viewers: c.isLive ? c.currentViewers : 0,
+    title: c.isLive ? c.lastStreamTitle : null,
+    liveSince: c.isLive ? c.lastStreamStartedAt : null,
+    dcsMinutes30d: c.dcsMinutes30d,
+    slot: null,
+  })),
+  ...extraChannels.value,
+])
+const channels = computed(() => new Map(channelList.value.map(c => [c.id, c])))
+
+/** A channel the manager added by its Twitch name: known now, linked right away. */
+function addChannel(c: { id: number; login: string; displayName: string; avatarUrl: string | null }) {
+  if (!channels.value.has(c.id)) {
+    extraChannels.value.push({ ...c, isLiveOnDcs: false, viewers: 0, title: null, liveSince: null, dcsMinutes30d: 0, slot: null })
+  }
+  if (!draft.value.streamerIds.includes(c.id)) draft.value.streamerIds.push(c.id)
+}
+
 const {
   draft,
   preview,
   pendingFields,
+  streamerSuggestions,
   changed,
   changedReviewed,
   ready,
@@ -120,7 +155,7 @@ const {
   init,
   discard,
   publish,
-} = useCommunityDraft(props.community.id, toRef(props, 'community'))
+} = useCommunityDraft(props.community.id, toRef(props, 'community'), channels)
 
 // ── Zones ────────────────────────────────────────────
 const active = ref<EditorZone | null>(null)

@@ -1,204 +1,222 @@
 <template>
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-      <div>
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Streameurs DCS FR</h1>
-        <p class="mt-1 text-gray-500 dark:text-gray-400">
-          Les streameurs francophones DCS World, détectés automatiquement via Twitch.
-        </p>
-        <UButton
-          to="/streamers/stats"
-          icon="i-heroicons-chart-bar"
-          variant="outline"
-          color="primary"
-          size="sm"
-          class="mt-3"
-        >
-          Classements et statistiques
-        </UButton>
-      </div>
-      <div v-if="liveCount > 0" class="flex items-center gap-2">
-        <span class="relative flex h-3 w-3">
-          <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
-          <span class="relative inline-flex h-3 w-3 rounded-full bg-red-500" />
-        </span>
-        <span class="text-sm font-medium text-red-400">
-          {{ liveCount }} en direct
-        </span>
-      </div>
+    <AppBreadcrumb :items="[{ label: 'Accueil', to: '/', icon: 'i-heroicons-home' }, { label: 'Streameurs' }]" />
+
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Streameurs DCS FR</h1>
+      <p class="mt-1 text-gray-500 dark:text-gray-400">
+        Qui vole en direct, qui vole ce soir, et les dernières rediffusions de la scène francophone.
+      </p>
     </div>
 
-    <!-- Stats bar -->
-    <div v-if="streamersData" class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
-      <div class="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-4 text-center">
-        <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ streamersData.total }}</div>
-        <div class="text-xs text-gray-500">Streameurs</div>
-      </div>
-      <div class="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-4 text-center">
-        <div class="text-2xl font-bold text-red-400">{{ liveCount }}</div>
-        <div class="text-xs text-gray-500">En direct</div>
-      </div>
-      <div class="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-4 text-center">
-        <div class="text-2xl font-bold text-purple-400">{{ totalDcsDays }}</div>
-        <div class="text-xs text-gray-500">Jours DCS détectés</div>
-      </div>
-    </div>
-
-    <!-- Top streamers -->
-    <div v-if="topStreamers.length" class="mb-8 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5">
-      <h2 class="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-4 uppercase tracking-wider flex items-center gap-2">
-        <UIcon name="i-heroicons-trophy" class="text-amber-400" />
-        Top streameurs par jours de stream DCS
+    <!-- ── En direct ─────────────────────────────── -->
+    <section class="mb-12" aria-labelledby="live-title">
+      <h2 id="live-title" class="mb-4 flex items-center gap-2 text-xl font-semibold text-gray-900 dark:text-white">
+        <span class="relative flex size-2.5">
+          <span v-if="hub?.live.length" class="absolute inline-flex size-full animate-ping rounded-full bg-red-400 opacity-75" />
+          <span class="relative inline-flex size-2.5 rounded-full" :class="hub?.live.length ? 'bg-red-500' : 'bg-gray-400'" />
+        </span>
+        En direct sur DCS
+        <span v-if="hub?.live.length" class="text-base font-normal text-gray-500">({{ hub.live.length }})</span>
       </h2>
-      <div class="space-y-2.5">
-        <div
-          v-for="(s, i) in topStreamers"
-          :key="s.id"
-          class="flex items-center gap-3"
+      <div v-if="hub?.live.length" class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        <StreamLiveCard v-for="s in hub.live" :key="s.login" :stream="s" source="streamers" />
+      </div>
+      <p v-else class="rounded-xl border border-dashed border-gray-300 dark:border-gray-700 p-6 text-center text-gray-500">
+        Personne sur DCS en ce moment.
+        <template v-if="hub?.today.length">Plusieurs streameurs volent d'habitude aujourd'hui, voir ci-dessous.</template>
+      </p>
+    </section>
+
+    <!-- ── Habituellement aujourd'hui ─────────────── -->
+    <section v-if="hub?.today.length" class="mb-12" aria-labelledby="today-title">
+      <h2 id="today-title" class="mb-1 text-xl font-semibold text-gray-900 dark:text-white">Souvent en direct le {{ todayName }}</h2>
+      <p class="mb-4 text-sm text-gray-500">D'après leurs streams des 60 derniers jours.</p>
+      <ul class="flex gap-3 overflow-x-auto pb-2">
+        <li v-for="s in hub.today" :key="s.login" class="w-44 shrink-0">
+          <NuxtLink :to="`/streamers/${s.login}`" class="block rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-3 text-center hover:border-primary/50">
+            <img v-if="s.avatarUrl" :src="s.avatarUrl" :alt="s.displayName" class="mx-auto size-12 rounded-full" loading="lazy">
+            <p class="mt-2 truncate text-sm font-medium text-gray-900 dark:text-white">{{ s.displayName }}</p>
+            <p class="text-xs font-semibold text-primary">vers {{ formatClock(s.slotMinutes ?? 0) }}</p>
+            <p v-if="s.communities[0]" class="mt-1 truncate text-[11px] text-gray-500">{{ s.communities[0].name }}</p>
+          </NuxtLink>
+        </li>
+      </ul>
+    </section>
+
+    <!-- ── Rediffusions ──────────────────────────── -->
+    <section v-if="hub?.vods.length" class="mb-12" aria-labelledby="vods-title">
+      <h2 id="vods-title" class="mb-1 text-xl font-semibold text-gray-900 dark:text-white">Dernières rediffusions DCS</h2>
+      <p class="mb-4 text-sm text-gray-500">Les VOD Twitch des 14 derniers jours (Twitch les efface ensuite).</p>
+      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <StreamVodCard v-for="v in hub.vods" :key="v.url" :vod="v" source="streamers" />
+      </div>
+    </section>
+
+    <!-- ── Chaînes actives ───────────────────────── -->
+    <section class="mb-12" aria-labelledby="channels-title">
+      <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 id="channels-title" class="text-xl font-semibold text-gray-900 dark:text-white">Chaînes actives</h2>
+          <p class="text-sm text-gray-500">{{ hub?.channels.length ?? 0 }} chaînes ont diffusé du DCS ces 30 derniers jours.</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <UInput v-model="search" placeholder="Rechercher…" icon="i-heroicons-magnifying-glass" size="sm" class="w-48" />
+          <UButton
+            v-for="opt in SORTS"
+            :key="opt.value"
+            :variant="sort === opt.value ? 'solid' : 'outline'"
+            :color="sort === opt.value ? 'primary' : 'neutral'"
+            size="sm"
+            @click="sort = opt.value"
+          >
+            {{ opt.label }}
+          </UButton>
+        </div>
+      </div>
+
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <NuxtLink
+          v-for="s in channels"
+          :key="s.login"
+          :to="`/streamers/${s.login}`"
+          class="flex items-center gap-3 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-3 hover:border-primary/50"
         >
-          <span class="w-6 text-sm font-bold text-right" :class="i === 0 ? 'text-amber-400' : i === 1 ? 'text-gray-300' : i === 2 ? 'text-orange-400' : 'text-gray-500'">{{ i + 1 }}</span>
-          <img
-            v-if="s.profileImageUrl"
-            :src="s.profileImageUrl"
-            :alt="s.displayName"
-            class="h-8 w-8 rounded-full object-cover shrink-0"
-          />
-          <div v-else class="h-8 w-8 rounded-full bg-purple-500/20 flex items-center justify-center shrink-0">
-            <UIcon name="i-simple-icons-twitch" class="text-purple-400 text-sm" />
+          <img v-if="s.avatarUrl" :src="s.avatarUrl" :alt="s.displayName" class="size-11 shrink-0 rounded-full" :class="s.isLiveOnDcs ? 'ring-2 ring-red-500' : ''" loading="lazy">
+          <div class="min-w-0 flex-1">
+            <p class="flex items-center gap-1.5 truncate font-medium text-gray-900 dark:text-white">
+              {{ s.displayName }}
+              <span v-if="s.isLiveOnDcs" class="rounded bg-red-600 px-1 text-[10px] font-bold uppercase text-white">Direct</span>
+            </p>
+            <p class="truncate text-xs text-gray-500">
+              {{ formatHours(s.dcsMinutes30d) }} de DCS en 30 j<template v-if="s.slot"> · {{ s.slot.replace('Souvent ', '') }}</template>
+            </p>
+            <p v-if="s.communities.length" class="truncate text-xs text-primary">{{ s.communities.map(c => c.name).join(' · ') }}</p>
           </div>
+        </NuxtLink>
+      </div>
+      <p v-if="!channels.length" class="py-8 text-center text-gray-500">Aucune chaîne ne correspond.</p>
+
+      <div v-if="hub?.inactiveCount" class="mt-4">
+        <UButton v-if="!inactive" variant="ghost" color="neutral" size="sm" :loading="loadingInactive" @click="loadInactive">
+          Voir les {{ hub.inactiveCount }} chaînes sans DCS récent
+        </UButton>
+        <div v-else class="flex flex-wrap gap-2">
           <NuxtLink
+            v-for="s in inactive"
+            :key="s.twitchLogin"
             :to="`/streamers/${s.twitchLogin}`"
-            class="text-sm font-medium text-purple-400 hover:text-purple-300 transition-colors w-36 truncate shrink-0"
+            class="rounded-full border border-gray-200 dark:border-gray-800 px-3 py-1 text-xs text-gray-600 dark:text-gray-400 hover:border-primary/50"
           >
             {{ s.displayName }}
           </NuxtLink>
-          <div class="flex-1 h-5 rounded bg-gray-200 dark:bg-gray-800 overflow-hidden">
-            <div
-              class="h-full rounded transition-all duration-700"
-              :class="i === 0 ? 'bg-amber-500/60' : i === 1 ? 'bg-gray-400/40' : i === 2 ? 'bg-orange-500/50' : 'bg-purple-500/50'"
-              :style="{ width: `${(s.dcsDays / maxDcsDays) * 100}%` }"
-            />
-          </div>
-          <span class="text-sm text-gray-500 w-16 text-right shrink-0">{{ s.dcsDays }} j.</span>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- Filters -->
-    <div class="flex flex-col sm:flex-row gap-3 mb-6">
-      <UInput
-        v-model="search"
-        name="streamer-search"
-        placeholder="Rechercher un streameur..."
-        icon="i-heroicons-magnifying-glass"
-        class="sm:w-64"
-        size="sm"
-      />
-      <div class="flex gap-2 flex-wrap">
-        <UButton
-          v-for="opt in sortOptions"
-          :key="opt.value"
-          :variant="sort === opt.value ? 'solid' : 'outline'"
-          :color="sort === opt.value ? 'primary' : 'neutral'"
-          size="xs"
-          @click="sort = opt.value"
-        >
-          {{ opt.label }}
-        </UButton>
-      </div>
-    </div>
-
-    <!-- Streamers list -->
-    <div v-if="pending" class="flex justify-center py-16">
-      <UIcon name="i-heroicons-arrow-path" class="animate-spin text-4xl text-gray-400" />
-    </div>
-    <div v-else-if="filteredStreamers.length === 0" class="text-center py-16">
-      <UIcon name="i-simple-icons-twitch" class="text-5xl text-gray-400 mb-4" />
-      <h2 class="text-xl font-semibold text-gray-600 dark:text-gray-300">Aucun streameur trouvé</h2>
-      <p class="text-gray-500 mt-2">Les streameurs DCS français seront détectés automatiquement lorsqu'ils streameront.</p>
-    </div>
-    <div v-else class="space-y-3">
-      <StreamerCard
-        v-for="str in filteredStreamers"
-        :key="str.id"
-        :streamer="str"
-      />
-    </div>
+    <!-- ── Scène ─────────────────────────────────── -->
+    <section id="scene" class="scroll-mt-24" aria-labelledby="scene-title">
+      <h2 id="scene-title" class="mb-1 text-xl font-semibold text-gray-900 dark:text-white">La scène DCS FR sur 30 jours</h2>
+      <p class="mb-4 text-sm text-gray-500">Relevés en direct toutes les 5 minutes : Twitch ne conserve aucun historique.</p>
+      <template v-if="rankings">
+        <StreamerStatTiles
+          class="mb-8"
+          :tiles="[
+            { label: 'Streameurs DCS actifs', value: rankings.scene.streamers },
+            { label: 'Heures de DCS diffusées', value: `${rankings.scene.dcsHours} h` },
+            { label: 'Sessions', value: rankings.scene.sessions },
+            { label: 'Pic d\'audience', value: peakViewers },
+          ]"
+        />
+        <div v-if="rankings.byDcsTime.length" class="grid gap-8 lg:grid-cols-2">
+          <StreamerRankingTable title="Temps de DCS" icon="i-heroicons-clock" :rows="rankings.byDcsTime.slice(0, 10)" :value="r => formatHours(r.dcsMinutes)" caption="Minutes réellement passées sur DCS World." />
+          <StreamerRankingTable title="Audience moyenne" icon="i-heroicons-users" :rows="rankings.byViewers.slice(0, 10)" :value="r => `${r.avgViewers}`" caption="Moyenne pondérée par le temps d'antenne." />
+        </div>
+      </template>
+      <p class="mt-8 text-xs text-gray-400 dark:text-gray-600">
+        Un streameur peut demander son retrait via la page contact.
+      </p>
+    </section>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { StreamerCard as StreamerCardType } from '#shared/types'
+import { formatClock } from '#shared/streamers'
 
 useSeoMeta({
-  title: 'Streameurs DCS FR — Commus DCS FR',
+  title: 'Streameurs DCS FR — en direct, ce soir et en rediffusion',
   ogTitle: 'Streameurs DCS FR',
-  description: 'Découvrez les streameurs francophones DCS World : en direct, activité, horaires habituels.',
-  ogDescription: 'Découvrez les streameurs francophones DCS World : en direct, activité, horaires habituels.',
+  description: 'Les streameurs francophones de DCS World : qui est en direct, qui stream ce soir, les dernières rediffusions et leurs communautés.',
+  ogDescription: 'Qui vole en direct sur DCS World, qui stream ce soir, et leurs communautés.',
   twitterCard: 'summary',
 })
 
-const search = ref('')
-const sort = ref('live')
+interface Badge { name: string; slug: string }
+interface Channel {
+  login: string
+  displayName: string
+  avatarUrl: string | null
+  isLiveOnDcs: boolean
+  viewers: number
+  title: string | null
+  liveSince: string | null
+  dcsMinutes30d: number
+  communities: Badge[]
+  slot: string | null
+  slotMinutes: number | null
+}
+interface Hub {
+  live: Channel[]
+  today: Channel[]
+  vods: { streamerLogin: string; streamerName: string; url: string; thumbnailUrl: string | null; title: string | null; duration: string | null; startedAt: string; communities: Badge[] }[]
+  channels: Channel[]
+  inactiveCount: number
+}
 
-const sortOptions = [
-  { value: 'live', label: 'En direct' },
-  { value: 'days', label: 'Jours DCS' },
+const { data: hub, refresh } = await useFetch<Hub>('/api/streamers/hub')
+const { data: rankings } = await useFetch<any>('/api/streamers/rankings', { query: { days: 30 }, lazy: true, server: false })
+
+// Live status moves fast: refresh on arrival and every two minutes while open.
+let timer: ReturnType<typeof setInterval> | undefined
+onMounted(() => {
+  refresh()
+  timer = setInterval(refresh, 120_000)
+})
+onBeforeUnmount(() => clearInterval(timer))
+
+const todayName = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', timeZone: 'Europe/Paris' }).format(new Date())
+
+const SORTS = [
+  { value: 'activity', label: 'Plus actifs' },
   { value: 'name', label: 'Nom' },
-]
+] as const
+const sort = ref<typeof SORTS[number]['value']>('activity')
+const search = ref('')
 
-const { data: streamersData, pending, refresh } = await useFetch<{ data: StreamerCardType[]; total: number }>('/api/streamers')
-
-// Force fresh data on every client-side navigation (avoids stale cache)
-onMounted(() => { refresh() })
-
-const filteredStreamers = computed(() => {
-  if (!streamersData.value?.data) return []
-
-  let list = [...streamersData.value.data]
-
-  // Search filter
-  if (search.value) {
-    const q = search.value.toLowerCase()
-    list = list.filter(
-      s => s.displayName.toLowerCase().includes(q) || s.twitchLogin.toLowerCase().includes(q),
-    )
-  }
-
-  // Sort
-  switch (sort.value) {
-    case 'days':
-      list.sort((a, b) => b.dcsDays - a.dcsDays)
-      break
-    case 'name':
-      list.sort((a, b) => a.displayName.localeCompare(b.displayName))
-      break
-    case 'live':
-    default:
-      list.sort((a, b) => {
-        if (a.isLive !== b.isLive) return a.isLive ? -1 : 1
-        if (a.isLive && b.isLive) return b.currentViewers - a.currentViewers
-        return b.dcsDays - a.dcsDays
-      })
-  }
-
-  return list
+const channels = computed(() => {
+  const q = search.value.trim().toLowerCase()
+  const list = (hub.value?.channels ?? []).filter(s =>
+    !q || s.displayName.toLowerCase().includes(q) || s.communities.some(c => c.name.toLowerCase().includes(q)))
+  return sort.value === 'name' ? [...list].sort((a, b) => a.displayName.localeCompare(b.displayName)) : list
 })
 
-const liveCount = computed(() => streamersData.value?.data?.filter(s => s.isLive).length ?? 0)
-const totalDcsDays = computed(() =>
-  streamersData.value?.data?.reduce((sum, s) => sum + s.dcsDays, 0) ?? 0,
-)
+const peakViewers = computed(() => Math.max(0, ...(rankings.value?.byViewers ?? []).map((r: any) => r.peakViewers ?? 0)))
 
-// Top streamers sorted by DCS days (top 10)
-const topStreamers = computed(() => {
-  if (!streamersData.value?.data) return []
-  return [...streamersData.value.data]
-    .filter(s => s.dcsDays > 0)
-    .sort((a, b) => b.dcsDays - a.dcsDays)
-    .slice(0, 10)
-})
+const inactive = ref<{ twitchLogin: string; displayName: string }[] | null>(null)
+const loadingInactive = ref(false)
+async function loadInactive() {
+  loadingInactive.value = true
+  try {
+    const all = await $fetch<{ data: { twitchLogin: string; displayName: string; dcsMinutes30d: number; isLive: boolean }[] }>('/api/streamers')
+    inactive.value = all.data.filter(s => !s.dcsMinutes30d && !s.isLive).sort((a, b) => a.displayName.localeCompare(b.displayName))
+  } finally {
+    loadingInactive.value = false
+  }
+}
 
-const maxDcsDays = computed(() => topStreamers.value[0]?.dcsDays || 1)
+function formatHours(minutes: number) {
+  if (!minutes) return '0 h'
+  const h = Math.floor(minutes / 60)
+  return h ? `${h} h` : `${minutes} min`
+}
 </script>

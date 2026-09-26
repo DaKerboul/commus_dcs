@@ -1,5 +1,5 @@
-import { and, eq, isNull } from 'drizzle-orm'
-import { communities, streamers } from '#server/db/schema'
+import { eq } from 'drizzle-orm'
+import { communities, communityStreamers, streamers } from '#server/db/schema'
 
 /**
  * Linking streamers to the community they belong to.
@@ -38,44 +38,39 @@ export function extractTwitchLogin(url: unknown): string | null {
 /**
  * Links streamers to communities whose `twitchUrl` points at them.
  *
- * Only fills empty links: an existing association may have been set by hand in
- * the admin panel and must not be overwritten by a guess.
+ * Adds links only: a manager or the admin may have dismissed this pairing, and
+ * the conflict clause leaves such a row untouched.
  */
 export async function linkStreamersToCommunities(): Promise<{ linked: number }> {
   const db = useDB()
 
   const communityRows = await db
-    .select({ id: communities.id, slug: communities.slug, twitchUrl: communities.twitchUrl })
+    .select({ id: communities.id, twitchUrl: communities.twitchUrl })
     .from(communities)
 
-  const communityByLogin = new Map<string, number>()
+  const communitiesByLogin = new Map<string, number[]>()
   for (const community of communityRows) {
     const login = extractTwitchLogin(community.twitchUrl)
-    // First community wins if two declare the same channel — a conflict worth
-    // seeing in the logs rather than resolving silently.
-    if (login && !communityByLogin.has(login)) {
-      communityByLogin.set(login, community.id)
-    }
+    if (login) communitiesByLogin.set(login, [...(communitiesByLogin.get(login) ?? []), community.id])
   }
 
-  if (!communityByLogin.size) return { linked: 0 }
+  if (!communitiesByLogin.size) return { linked: 0 }
 
-  const unlinked = await db
+  const channels = await db
     .select({ id: streamers.id, login: streamers.twitchLogin })
     .from(streamers)
-    .where(and(isNull(streamers.communityId), eq(streamers.isActive, true)))
+    .where(eq(streamers.isActive, true))
 
   let linked = 0
 
-  for (const streamer of unlinked) {
-    const communityId = communityByLogin.get(streamer.login.toLowerCase())
-    if (!communityId) continue
-
-    await db.update(streamers)
-      .set({ communityId, updatedAt: new Date() })
-      .where(eq(streamers.id, streamer.id))
-
-    linked++
+  for (const streamer of channels) {
+    for (const communityId of communitiesByLogin.get(streamer.login.toLowerCase()) ?? []) {
+      const inserted = await db.insert(communityStreamers)
+        .values({ communityId, streamerId: streamer.id, status: 'linked', source: 'twitch_url' })
+        .onConflictDoNothing()
+        .returning({ id: communityStreamers.id })
+      linked += inserted.length
+    }
   }
 
   if (linked > 0) {

@@ -145,6 +145,26 @@
                 </p>
               </div>
             </div>
+
+            <!-- Twitch -->
+            <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5">
+              <div class="flex items-center gap-3 mb-3">
+                <UIcon name="i-simple-icons-twitch" class="text-blue-400 text-lg shrink-0" />
+                <h3 class="font-semibold text-gray-900 dark:text-white">Directs Twitch</h3>
+              </div>
+              <div class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed space-y-2">
+                <p>
+                  Les directs et rediffusions s'affichent sous forme d'images fournies par Twitch, qui ne déposent
+                  pas de cookie. Le lecteur Twitch n'est chargé <strong class="text-gray-900 dark:text-white">que si vous
+                  cliquez sur « Regarder ici »</strong> : Twitch peut alors déposer ses propres cookies, selon sa
+                  <a href="https://www.twitch.tv/p/legal/privacy-notice/" target="_blank" rel="noopener" class="text-primary hover:underline">politique de confidentialité</a>.
+                </p>
+                <p>
+                  Les statistiques des chaînes (temps de stream, audience) proviennent de l'API publique de Twitch.
+                  Un streameur peut demander le retrait de sa chaîne via la page contact.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 

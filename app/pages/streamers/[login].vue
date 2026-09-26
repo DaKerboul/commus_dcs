@@ -56,42 +56,52 @@
               Twitch
             </UButton>
             <UButton
-              v-if="streamer.communitySlug"
-              :to="`/communautes/${streamer.communitySlug}`"
+              v-for="c in streamer.communities || []"
+              :key="c.slug"
+              :to="`/communautes/${c.slug}`"
               icon="i-heroicons-user-group"
               color="primary"
               variant="outline"
               size="sm"
             >
-              {{ streamer.communityName }}
+              {{ c.name }}
             </UButton>
           </div>
+          <p class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-500 dark:text-gray-400">
+            <span v-if="streamer.slot"><UIcon name="i-heroicons-clock" class="mr-1 align-text-bottom" />{{ streamer.slot }}</span>
+            <span v-if="streamer.lastDcsDate"><UIcon name="i-heroicons-calendar" class="mr-1 align-text-bottom" />Dernier stream DCS : {{ lastStreamAgo.toLowerCase() }}</span>
+          </p>
         </div>
       </div>
 
-      <!-- Live banner -->
-      <div
-        v-if="streamer.isLive && streamer.lastStreamTitle"
-        class="mb-8 rounded-xl border border-red-500/30 bg-red-500/5 p-4"
-      >
-        <div class="flex items-center gap-2 mb-1">
-          <span class="relative flex h-3 w-3">
-            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
-            <span class="relative inline-flex h-3 w-3 rounded-full bg-red-500" />
-          </span>
-          <span class="text-sm font-medium text-red-400">En direct</span>
-        </div>
-        <p class="text-gray-200 font-medium">{{ streamer.lastStreamTitle }}</p>
+      <!-- Live: the same click-to-load player as the directory. -->
+      <div v-if="streamer.isLive" class="mb-10 max-w-3xl">
+        <StreamLiveCard
+          :stream="{ login: streamer.twitchLogin, displayName: streamer.displayName, avatarUrl: streamer.profileImageUrl, title: streamer.lastStreamTitle, viewers: streamer.currentViewers, liveSince: streamer.lastStreamStartedAt, communities: streamer.communities }"
+          source="profile"
+        />
       </div>
 
       <!-- Stats -->
       <StreamerStatTiles :tiles="statTiles" class="mb-10" />
 
+      <!-- VODs -->
+      <section v-if="streamer.vods?.length" class="mb-10">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-1">
+          <UIcon name="i-heroicons-film" class="mr-1" />
+          Rediffusions DCS
+        </h2>
+        <p class="text-sm text-gray-500 mb-4">Les VOD Twitch des 14 derniers jours.</p>
+        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <StreamVodCard v-for="v in streamer.vods" :key="v.url" :vod="v" source="profile" :show-streamer="false" />
+        </div>
+      </section>
+
       <!-- Sessions -->
       <section class="mb-10">
         <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-1">
           <UIcon name="i-heroicons-signal" class="mr-1" />
-          Sessions récentes
+          Historique des sessions
         </h2>
         <p class="text-sm text-gray-500 mb-4">
           Durées et audiences relevées en direct toutes les 5 minutes.
@@ -111,6 +121,10 @@
             ({{ followerDelta >= 0 ? '+' : '' }}{{ followerDelta }} depuis le début du suivi)
           </span>
         </p>
+        <!-- The section used to announce a curve and show none. -->
+        <svg viewBox="0 0 600 120" preserveAspectRatio="none" class="h-32 w-full text-primary" role="img" :aria-label="`Évolution des followers sur ${streamer.followerCurve.length} jours`">
+          <polyline :points="followerPoints" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
+        </svg>
       </section>
 
       <!-- Calendar Heatmap -->
@@ -202,6 +216,16 @@ const followerDelta = computed(() => {
   const curve = (streamer.value as any)?.followerCurve
   if (!curve || curve.length < 2) return null
   return curve[curve.length - 1].followers - curve[0].followers
+})
+
+/** Follower curve as SVG points, scaled to the 600×120 box. */
+const followerPoints = computed(() => {
+  const curve: { followers: number }[] = (streamer.value as any)?.followerCurve ?? []
+  if (curve.length < 2) return ''
+  const values = curve.map(p => p.followers)
+  const min = Math.min(...values)
+  const span = Math.max(1, Math.max(...values) - min)
+  return values.map((v, i) => `${(i / (values.length - 1)) * 600},${110 - ((v - min) / span) * 100}`).join(' ')
 })
 
 const lastStreamAgo = computed(() => {

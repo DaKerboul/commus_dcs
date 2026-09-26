@@ -101,6 +101,7 @@ const navItems = computed(() => [
   { to: '/admin/submissions', label: 'Soumissions', icon: 'i-heroicons-inbox', badge: counts.value.pendingSubmissions },
   { to: '/admin/reclamations', label: 'Réclamations', icon: 'i-heroicons-hand-raised', badge: counts.value.pendingClaims },
   { to: '/admin/revisions', label: 'Modifications', icon: 'i-heroicons-document-check', badge: counts.value.pendingRevisions },
+  { to: '/admin/streameurs', label: 'Streameurs', icon: 'i-simple-icons-twitch' },
 ])
 
 const totalPending = computed(() =>

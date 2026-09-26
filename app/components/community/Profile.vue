@@ -67,6 +67,18 @@
       </CommunityEditZone>
     </div>
 
+    <!-- One of its streamers is flying right now: the best invitation there is. -->
+    <section v-if="liveStreamer" class="mb-8 max-w-3xl" aria-labelledby="live-member">
+      <h2 id="live-member" class="mb-3 flex items-center gap-2 text-sm font-semibold text-red-600 dark:text-red-400">
+        <span class="relative flex size-2.5">
+          <span class="absolute inline-flex size-full animate-ping rounded-full bg-red-400 opacity-75" />
+          <span class="relative inline-flex size-2.5 rounded-full bg-red-500" />
+        </span>
+        {{ liveStreamer.displayName }} est en direct sur DCS
+      </h2>
+      <StreamLiveCard :stream="liveStreamer" source="community" />
+    </section>
+
     <div class="grid gap-8 lg:grid-cols-3">
       <!-- Main content (2/3) -->
       <div class="lg:col-span-2 space-y-8 min-w-0">
@@ -193,6 +205,34 @@
           </div>
         </CommunityEditZone>
 
+        <CommunityEditZone v-if="community.streamers?.length || editing" zone="streamers">
+          <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5">
+            <h3 class="mb-3 flex items-center gap-2 font-semibold text-gray-900 dark:text-white">
+              <UIcon name="i-simple-icons-twitch" class="text-purple-500" />
+              Nos streameurs
+            </h3>
+            <ul v-if="community.streamers?.length" class="space-y-2.5">
+              <li v-for="s in community.streamers" :key="s.id">
+                <NuxtLink :to="`/streamers/${s.login}`" class="flex items-center gap-3 hover:text-primary">
+                  <img v-if="s.avatarUrl" :src="s.avatarUrl" :alt="s.displayName" class="size-9 shrink-0 rounded-full" :class="s.isLiveOnDcs ? 'ring-2 ring-red-500' : ''" loading="lazy">
+                  <div class="min-w-0">
+                    <p class="flex items-center gap-1.5 truncate text-sm font-medium text-gray-900 dark:text-white">
+                      {{ s.displayName }}
+                      <span v-if="s.isLiveOnDcs" class="rounded bg-red-600 px-1 text-[10px] font-bold uppercase text-white">Direct</span>
+                    </p>
+                    <p class="truncate text-xs text-gray-500">{{ s.slot || (s.dcsMinutes30d ? `${Math.round(s.dcsMinutes30d / 60)} h de DCS en 30 j` : 'Pas de DCS récemment') }}</p>
+                  </div>
+                </NuxtLink>
+              </li>
+            </ul>
+            <p v-else class="text-sm italic text-gray-400">+ Reliez les chaînes Twitch de vos membres</p>
+            <div v-if="community.latestVod" class="mt-4 border-t border-gray-200 dark:border-gray-800 pt-4">
+              <p class="mb-2 text-xs font-medium uppercase tracking-wide text-gray-500">Dernière rediffusion</p>
+              <StreamVodCard :vod="community.latestVod" source="community" />
+            </div>
+          </div>
+        </CommunityEditZone>
+
         <UButton
           v-if="community.discordUrl"
           :to="community.discordUrl"
@@ -245,6 +285,11 @@ const visibleLinks = computed(() =>
     .filter(l => props.community[l.key])
     .map(l => ({ ...l, ...LINK_FIELDS.find(f => f.key === l.key)! })),
 )
+
+const liveStreamer = computed(() => {
+  const s = props.community.streamers?.find(x => x.isLiveOnDcs)
+  return s ? { ...s, communities: [] } : null
+})
 
 const infoRows = computed(() => {
   const c = props.community

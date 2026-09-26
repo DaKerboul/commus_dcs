@@ -553,6 +553,8 @@ export const streamerSessions = pgTable('streamer_sessions', {
   vodUrl: text('vod_url'),
   vodDuration: varchar('vod_duration', { length: 16 }),
   vodViewCount: integer('vod_view_count'),
+  // Twitch template with %{width}x%{height} placeholders, stored as given.
+  vodThumbnailUrl: text('vod_thumbnail_url'),
 }, table => ({
   byStreamer: index('idx_streamer_sessions_streamer').on(table.streamerId, table.startedAt),
   byLive: index('idx_streamer_sessions_live').on(table.isLive),
@@ -593,6 +595,27 @@ export const streamerDcsDays = pgTable('streamer_dcs_days', {
   date: varchar('date', { length: 10 }).notNull(), // YYYY-MM-DD in Paris tz
   createdAt: timestamp('created_at').defaultNow(),
 })
+
+/**
+ * Which channels stream for which community — many-to-many: a pilot can fly
+ * with two groups. 'dismissed' rows remember a rejected suggestion so it is
+ * not offered again.
+ */
+export const communityStreamerStatusEnum = pgEnum('community_streamer_status', ['linked', 'dismissed'])
+export const communityStreamerSourceEnum = pgEnum('community_streamer_source', ['manager', 'admin', 'migrated', 'twitch_url'])
+
+export const communityStreamers = pgTable('community_streamers', {
+  id: serial('id').primaryKey(),
+  communityId: integer('community_id').notNull().references(() => communities.id, { onDelete: 'cascade' }),
+  streamerId: integer('streamer_id').notNull().references(() => streamers.id, { onDelete: 'cascade' }),
+  status: communityStreamerStatusEnum('status').notNull().default('linked'),
+  source: communityStreamerSourceEnum('source').notNull(),
+  addedByUserId: integer('added_by_user_id').references(() => users.id, { onDelete: 'set null' }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, table => ({
+  uniquePair: uniqueIndex('idx_community_streamers_pair').on(table.communityId, table.streamerId),
+  byStreamer: index('idx_community_streamers_streamer').on(table.streamerId),
+}))
 
 // ── Streamer Relations ─────────────────────────────────
 

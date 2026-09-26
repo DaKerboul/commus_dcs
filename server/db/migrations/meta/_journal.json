@@ -64,6 +64,13 @@
       "when": 1790179326818,
       "tag": "0008_votes_require_account",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1790419984997,
+      "tag": "0009_streamer_communities",
+      "breakpoints": true
     }
   ]
 }

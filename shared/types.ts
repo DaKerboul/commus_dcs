@@ -40,6 +40,8 @@ export interface CommunityDetail extends CommunityCard {
   accentColor?: string | null
   accentHex?: string | null
   isManagedByCommunity?: boolean
+  streamers?: CommunityStreamer[]
+  latestVod?: StreamVod | null
   soughtModuleNames: string[]
   featured: boolean
   votes: number
@@ -179,6 +181,38 @@ export interface StreamerDetail extends StreamerCard {
   description: string | null
   twitchId: string
   calendarHeatmap: { date: string; active: boolean }[]
+  communities?: { id: number; name: string; slug: string }[]
+  slot?: string | null
+  lastDcsDate?: string | null
+  vods?: StreamVod[]
+  followers?: number | null
+  followerCurve?: { day: string; followers: number }[]
+}
+
+export interface StreamVod {
+  streamerLogin: string
+  streamerName: string
+  url: string
+  thumbnailUrl: string | null
+  title: string | null
+  duration: string | null
+  startedAt: string
+  peakViewers?: number
+  communities?: { name: string; slug: string }[]
+}
+
+/** A channel as shown in a community's "Nos streameurs" block. */
+export interface CommunityStreamer {
+  id: number
+  login: string
+  displayName: string
+  avatarUrl: string | null
+  isLiveOnDcs: boolean
+  viewers: number
+  title: string | null
+  liveSince: string | null
+  dcsMinutes30d: number
+  slot: string | null
 }
 
 export interface LiveStreamer {

@@ -10,6 +10,7 @@ const PAGES: Record<string, string> = {
   '/mon-profil': '/',
   '/modules': '/stats',
   '/new.html': '/',
+  '/streamers/stats': '/streamers#scene', // merged into /streamers on 2026-09-26
 }
 
 // Renamed fiches → current slug. A missing entry for a deleted fiche falls

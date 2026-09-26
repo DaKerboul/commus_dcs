@@ -1,5 +1,5 @@
 import { and, desc, eq, gte, sql } from 'drizzle-orm'
-import { communities, streamerDailyStats, streamers } from '#server/db/schema'
+import { streamerDailyStats, streamers } from '#server/db/schema'
 
 /**
  * GET /api/streamers/rankings?days=30 — leaderboards for the French DCS scene.
@@ -22,8 +22,6 @@ export default defineEventHandler(async (event) => {
       avatarUrl: streamers.profileImageUrl,
       isLive: streamers.isLive,
       followers: streamers.followers,
-      communityName: communities.name,
-      communitySlug: communities.slug,
       dcsMinutes: sql<number>`SUM(${streamerDailyStats.dcsMinutes})::int`,
       totalMinutes: sql<number>`SUM(${streamerDailyStats.totalMinutes})::int`,
       sessions: sql<number>`SUM(${streamerDailyStats.sessions})::int`,
@@ -38,7 +36,6 @@ export default defineEventHandler(async (event) => {
     })
     .from(streamerDailyStats)
     .innerJoin(streamers, eq(streamerDailyStats.streamerId, streamers.id))
-    .leftJoin(communities, eq(streamers.communityId, communities.id))
     .where(and(
       gte(streamerDailyStats.day, since),
       eq(streamers.isActive, true),
@@ -51,13 +48,16 @@ export default defineEventHandler(async (event) => {
       streamers.profileImageUrl,
       streamers.isLive,
       streamers.followers,
-      communities.name,
-      communities.slug,
     )
     .orderBy(desc(sql`SUM(${streamerDailyStats.dcsMinutes})`))
 
+  // A channel can stream for several communities; the table shows the first.
+  const badges = await communitiesByStreamer(rows.map(r => r.streamerId))
+
   const withRegularity = rows.map(row => ({
     ...row,
+    communityName: badges.get(row.streamerId)?.[0]?.name ?? null,
+    communitySlug: badges.get(row.streamerId)?.[0]?.slug ?? null,
     regularity: Math.round((row.activeDays / days) * 100),
     // Share of airtime actually spent on DCS — the dedication signal.
     dcsShare: row.totalMinutes > 0 ? Math.round((row.dcsMinutes / row.totalMinutes) * 100) : 0,

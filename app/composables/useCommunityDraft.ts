@@ -1,5 +1,14 @@
 import { useDebouncedRefHistory, watchDebounced } from '@vueuse/core'
-import type { CommunityDetail } from '#shared/types'
+import type { CommunityDetail, CommunityStreamer } from '#shared/types'
+
+export interface StreamerSuggestionItem {
+  streamerId: number
+  login: string
+  displayName: string
+  avatarUrl: string | null
+  mentions: number
+  evidence: string
+}
 
 const STORAGE_PREFIX = 'commus:draft:'
 
@@ -39,6 +48,7 @@ function fromServer(data: Record<string, any>): CommunityDraft {
     experienceNames: data.experienceNames ?? [],
     sections: data.sections ?? [],
     images: ('images' in p ? p.images : data.images) ?? [],
+    streamerIds: data.streamerIds ?? [],
   }
 }
 
@@ -51,10 +61,16 @@ function fromServer(data: Record<string, any>): CommunityDraft {
  * - markdown rendered by the server, cached per source text, so the preview is
  *   the exact published output.
  */
-export function useCommunityDraft(id: number, published: Ref<CommunityDetail | null | undefined>) {
+export function useCommunityDraft(
+  id: number,
+  published: Ref<CommunityDetail | null | undefined>,
+  /** Every tracked channel, to show a streamer as soon as it is linked in the draft. */
+  channels: Ref<Map<number, CommunityStreamer>>,
+) {
   const draft = ref<CommunityDraft>(fromServer({}))
   const reference = shallowRef<CommunityDraft>(fromServer({}))
   const pendingFields = ref<string[]>([])
+  const streamerSuggestions = ref<StreamerSuggestionItem[]>([])
   const version = ref('')
   const ready = ref(false)
   const loadError = ref('')
@@ -109,6 +125,7 @@ export function useCommunityDraft(id: number, published: Ref<CommunityDetail | n
     const server = fromServer(data)
     reference.value = server
     pendingFields.value = data.pendingRevision?.fields ?? []
+    streamerSuggestions.value = data.streamerSuggestions ?? []
     version.value = `${data.updatedAt}|${data.pendingRevision?.createdAt ?? ''}`
 
     const stored = readStored()
@@ -235,6 +252,11 @@ export function useCommunityDraft(id: number, published: Ref<CommunityDetail | n
       soughtModuleNames: d.soughtModuleNames,
       experienceNames: d.experienceNames,
       images: d.images,
+      // Published summaries carry the usual slot; a freshly linked channel shows without it.
+      streamers: d.streamerIds
+        .map(sid => published.value?.streamers?.find(x => x.id === sid) ?? channels.value.get(sid))
+        .filter((x): x is CommunityStreamer => !!x)
+        .sort((a, b) => Number(b.isLiveOnDcs) - Number(a.isLiveOnDcs) || b.dcsMinutes30d - a.dcsMinutes30d),
     }
   })
 
@@ -243,6 +265,7 @@ export function useCommunityDraft(id: number, published: Ref<CommunityDetail | n
     preview,
     reference,
     pendingFields,
+    streamerSuggestions,
     changed,
     changedReviewed,
     ready,

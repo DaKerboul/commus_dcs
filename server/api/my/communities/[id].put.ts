@@ -110,6 +110,13 @@ export default defineEventHandler(async (event) => {
     await replaceCommunitySections(id, body.sections)
   }
 
+  // Showing a Twitch channel on its own page exposes no visitor to a phishing
+  // link, so streamer links publish immediately, like the text.
+  if (Array.isArray(body.streamerIds)) {
+    const ids = body.streamerIds.map(Number).filter((n: number) => Number.isInteger(n) && n > 0)
+    await setCommunityStreamers(id, ids, 'manager', user?.id ?? null)
+  }
+
   // normalizeStringArray returns null for an empty/absent list — an empty array
   // here means "clear this relation", which is a legitimate edit.
   const periods = (normalizeStringArray(body?.historicalPeriods) ?? [])

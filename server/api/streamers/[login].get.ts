@@ -8,10 +8,10 @@ import {
   streamerDailyStats,
   streamerFollowerHistory,
   streamerSessions,
-  communities,
 } from '#server/db/schema'
 import { computeSessionMetrics } from '#server/utils/twitch-metrics'
 import { DCS_GAME_ID } from '#server/utils/twitch'
+import { usualSlot } from '#shared/streamers'
 
 export default defineEventHandler(async (event) => {
   const login = getRouterParam(event, 'login')
@@ -30,16 +30,13 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Streameur non trouvé' })
   }
 
-  // Community link
-  let communityInfo: { name: string; slug: string } | null = null
-  if (streamer.communityId) {
-    const [comm] = await db
-      .select({ name: communities.name, slug: communities.slug })
-      .from(communities)
-      .where(eq(communities.id, streamer.communityId))
-      .limit(1)
-    if (comm) communityInfo = comm
-  }
+  // A channel can stream for several communities.
+  const [badges, starts, vods] = await Promise.all([
+    communitiesByStreamer([streamer.id]),
+    recentStarts([streamer.id]),
+    recentDcsVods([streamer.id], 9),
+  ])
+  const streamerCommunities = badges.get(streamer.id) ?? []
 
   // Fetch DCS days (last 6 months)
   const sixMonthsAgo = new Date()
@@ -136,8 +133,11 @@ export default defineEventHandler(async (event) => {
     lastStreamStartedAt: streamer.lastStreamStartedAt?.toISOString() ?? null,
     lastDcsDate,
     dcsDays: totalCount?.count ?? 0,
-    communityName: communityInfo?.name ?? null,
-    communitySlug: communityInfo?.slug ?? null,
+    communities: streamerCommunities,
+    communityName: streamerCommunities[0]?.name ?? null,
+    communitySlug: streamerCommunities[0]?.slug ?? null,
+    slot: usualSlot(starts.get(streamer.id) ?? [])?.label ?? null,
+    vods,
     calendarHeatmap,
 
     followers: streamer.followers,

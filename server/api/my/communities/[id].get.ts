@@ -41,9 +41,11 @@ export default defineEventHandler(async (event) => {
     db.select().from(communityImages).where(eq(communityImages.communityId, id)).orderBy(communityImages.sortOrder),
   ])
 
-  const [pending, sections] = await Promise.all([
+  const [pending, sections, streamerIds, streamerSuggestionsList] = await Promise.all([
     getPendingRevision(id),
     getCommunitySections(id),
+    linkedStreamerIds(id),
+    streamerSuggestions(id),
   ])
 
   return {
@@ -54,6 +56,8 @@ export default defineEventHandler(async (event) => {
     experienceNames: experienceRows.map(r => r.name),
     historicalPeriods: periodRows.map(r => r.period),
     images: imageRows.map(r => ({ url: r.url, alt: r.alt })),
+    streamerIds,
+    streamerSuggestions: streamerSuggestionsList,
     // Sensitive edits already submitted and awaiting review, so the editor can
     // show them as proposed rather than silently reverting to the live value.
     pendingRevision: pending

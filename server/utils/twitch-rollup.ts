@@ -201,7 +201,8 @@ export async function matchVods(): Promise<number> {
   let matched = 0
 
   for (const [streamerId, sessions] of byStreamer) {
-    if (sessions.every(s => s.vodUrl)) continue
+    // Sessions matched before thumbnails were stored get one on the next pass.
+    if (sessions.every(s => s.vodUrl && s.vodThumbnailUrl)) continue
 
     const [streamer] = await db.select().from(streamers).where(eq(streamers.id, streamerId)).limit(1)
     if (!streamer) continue
@@ -211,12 +212,13 @@ export async function matchVods(): Promise<number> {
 
     for (const session of sessions) {
       const video = videoByStreamId.get(session.streamId)
-      if (!video || session.vodUrl === video.url) continue
+      if (!video || (session.vodUrl === video.url && session.vodThumbnailUrl)) continue
 
       await db.update(streamerSessions).set({
         vodUrl: video.url,
         vodDuration: video.duration,
         vodViewCount: video.view_count,
+        vodThumbnailUrl: video.thumbnail_url || null,
       }).where(eq(streamerSessions.id, session.id))
 
       matched++

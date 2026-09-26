@@ -13,7 +13,7 @@ function draft(overrides: Partial<CommunityDraft> = {}): CommunityDraft {
     recruitmentStatus: 'open', eventFrequency: 'unknown', discordUrl: '', websiteUrl: '', youtubeUrl: '',
     twitchUrl: '', instagramUrl: '', facebookUrl: '', twitterUrl: '', otherLinks: [], logoUrl: '',
     accentColor: null, historicalPeriods: [], moduleNames: ['F-16C'], soughtModuleNames: [],
-    experienceNames: [], sections: [], images: [{ url: IMG, alt: null }],
+    experienceNames: [], sections: [], images: [{ url: IMG, alt: null }], streamerIds: [],
     ...overrides,
   }
 }

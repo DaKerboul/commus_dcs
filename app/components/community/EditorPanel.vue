@@ -191,6 +191,60 @@
       <CommunityGalleryEditor v-model="draft.images" />
     </template>
 
+    <!-- ── Streameurs ──────────────────────────────── -->
+    <template v-else-if="zone === 'streamers'">
+      <p class="text-xs text-gray-500 dark:text-gray-400">
+        Les chaînes Twitch qui streament pour votre communauté : leurs directs et rediffusions s'affichent sur votre fiche,
+        et votre commu apparaît sur leurs streams dans l'annuaire. Publié sans validation.
+      </p>
+
+      <div v-if="linked.length" class="space-y-2">
+        <div v-for="c in linked" :key="c.id" class="flex items-center gap-3 rounded-lg border border-gray-200 dark:border-gray-800 p-2">
+          <img v-if="c.avatarUrl" :src="c.avatarUrl" alt="" class="size-8 rounded-full">
+          <span class="min-w-0 flex-1 truncate text-sm font-medium text-gray-900 dark:text-white">{{ c.displayName }}</span>
+          <UButton icon="i-heroicons-x-mark" variant="ghost" color="error" size="xs" :aria-label="`Retirer ${c.displayName}`" @click="unlink(c.id)" />
+        </div>
+      </div>
+
+      <div v-if="openSuggestions.length" class="space-y-2">
+        <p class="text-xs font-medium uppercase tracking-wide text-gray-500">Suggestions</p>
+        <div v-for="s in openSuggestions" :key="s.streamerId" class="rounded-lg bg-primary/5 p-2">
+          <div class="flex items-center gap-3">
+            <img v-if="s.avatarUrl" :src="s.avatarUrl" alt="" class="size-8 rounded-full">
+            <span class="min-w-0 flex-1 truncate text-sm font-medium text-gray-900 dark:text-white">{{ s.displayName }}</span>
+            <UButton size="xs" icon="i-heroicons-plus" @click="link(s.streamerId)">Ajouter</UButton>
+            <UButton size="xs" variant="ghost" color="neutral" @click="dismiss(s.streamerId)">Ignorer</UButton>
+          </div>
+          <p class="mt-1 pl-11 text-xs text-gray-500 line-clamp-2">{{ s.evidence }}</p>
+        </div>
+      </div>
+
+      <UFormField label="Chercher une chaîne suivie" :description="`${channels.length} chaînes DCS francophones suivies.`">
+        <UInput v-model="channelQuery" icon="i-heroicons-magnifying-glass" placeholder="Pseudo Twitch…" class="w-full" />
+        <div v-if="channelMatches.length" class="mt-2 space-y-1">
+          <button
+            v-for="c in channelMatches"
+            :key="c.id"
+            type="button"
+            class="flex w-full items-center gap-3 rounded-lg p-1.5 text-left hover:bg-gray-100 dark:hover:bg-gray-800"
+            @click="link(c.id); channelQuery = ''"
+          >
+            <img v-if="c.avatarUrl" :src="c.avatarUrl" alt="" class="size-7 rounded-full">
+            <span class="flex-1 truncate text-sm">{{ c.displayName }}</span>
+            <UIcon name="i-heroicons-plus" class="text-primary" />
+          </button>
+        </div>
+      </UFormField>
+
+      <UFormField label="Chaîne absente ?" description="Saisissez son pseudo ou son lien Twitch : elle sera vérifiée puis suivie.">
+        <div class="flex gap-2">
+          <UInput v-model="newLogin" placeholder="twitch.tv/…" class="flex-1" @keydown.enter.prevent="addByLogin" />
+          <UButton :loading="adding" :disabled="!newLogin.trim()" @click="addByLogin">Ajouter</UButton>
+        </div>
+        <p v-if="addError" class="mt-1 text-xs text-red-500">{{ addError }}</p>
+      </UFormField>
+    </template>
+
     <!-- ── Informations ────────────────────────────── -->
     <template v-else-if="zone === 'info'">
       <div class="grid gap-4 grid-cols-2">
@@ -239,6 +293,8 @@
 <script setup lang="ts">
 import { h } from 'vue'
 import { UBadge, UIcon } from '#components'
+import type { CommunityStreamer } from '#shared/types'
+import type { StreamerSuggestionItem } from '~/composables/useCommunityDraft'
 import {
   EXPERIENCE_CATEGORY_LABELS,
   FREQUENCY_LABELS,
@@ -252,8 +308,60 @@ const props = defineProps<{
   zone: EditorZone
   modules: string[]
   experiences: { name: string; category: string | null }[]
+  communityId: number
+  channels: CommunityStreamer[]
+  suggestions: StreamerSuggestionItem[]
 }>()
+const emit = defineEmits<{ 'channel-added': [channel: { id: number; login: string; displayName: string; avatarUrl: string | null }] }>()
 const draft = defineModel<CommunityDraft>('draft', { required: true })
+
+// ── Streamers ──────────────────────────────────────────
+const channelById = computed(() => new Map(props.channels.map(c => [c.id, c])))
+const linked = computed(() => draft.value.streamerIds.map(id => channelById.value.get(id)).filter((c): c is CommunityStreamer => !!c))
+const dismissed = ref(new Set<number>())
+const openSuggestions = computed(() => props.suggestions.filter(s =>
+  !draft.value.streamerIds.includes(s.streamerId) && !dismissed.value.has(s.streamerId)))
+
+const channelQuery = ref('')
+const channelMatches = computed(() => {
+  const q = channelQuery.value.trim().toLowerCase()
+  if (q.length < 2) return []
+  return props.channels
+    .filter(c => !draft.value.streamerIds.includes(c.id) && (c.displayName.toLowerCase().includes(q) || c.login.includes(q)))
+    .slice(0, 6)
+})
+
+function link(id: number) {
+  if (!draft.value.streamerIds.includes(id) && draft.value.streamerIds.length < 20) draft.value.streamerIds.push(id)
+}
+function unlink(id: number) {
+  draft.value.streamerIds = draft.value.streamerIds.filter(x => x !== id)
+}
+async function dismiss(streamerId: number) {
+  dismissed.value = new Set([...dismissed.value, streamerId])
+  await $fetch(`/api/my/communities/${props.communityId}/streamers/dismiss`, { method: 'POST', body: { streamerId } }).catch(() => {})
+}
+
+const newLogin = ref('')
+const adding = ref(false)
+const addError = ref('')
+async function addByLogin() {
+  if (!newLogin.value.trim() || adding.value) return
+  adding.value = true
+  addError.value = ''
+  try {
+    const channel = await $fetch<{ id: number; login: string; displayName: string; avatarUrl: string | null }>(
+      `/api/my/communities/${props.communityId}/streamers/add`,
+      { method: 'POST', body: { login: newLogin.value } },
+    )
+    emit('channel-added', channel)
+    newLogin.value = ''
+  } catch (error: any) {
+    addError.value = error?.data?.statusMessage || 'Ajout impossible.'
+  } finally {
+    adding.value = false
+  }
+}
 
 const reviewedHere = computed(() => ZONES[props.zone].fields.filter(f => REVIEWED_FIELDS.includes(f)))
 

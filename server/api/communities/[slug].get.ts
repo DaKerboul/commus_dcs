@@ -79,9 +79,14 @@ export default defineEventHandler(async (event) => {
   const description = community.description
   const objectives = community.objectives
 
-  const [sectionRows, memberCount] = await Promise.all([
+  const [sectionRows, memberCount, streamerIds] = await Promise.all([
     getCommunitySections(community.id),
     countCommunityManagers(community.id),
+    linkedStreamerIds(community.id),
+  ])
+  const [streamerRows, streamerVods] = await Promise.all([
+    streamerSummaries(streamerIds),
+    recentDcsVods(streamerIds, 1),
   ])
 
   return {
@@ -101,6 +106,9 @@ export default defineEventHandler(async (event) => {
     bannerUrl: community.bannerUrl,
     // Drives the "managed by the community" badge, the incentive for others to claim.
     isManagedByCommunity: memberCount > 0,
+    // The channels that stream for it: its best shop window.
+    streamers: streamerRows,
+    latestVod: streamerVods[0] ?? null,
     logoUrl: mediaUrl('logo', community.id, community.logoUrl),
     sizeCategory: community.sizeCategory,
     communityType: community.communityType,

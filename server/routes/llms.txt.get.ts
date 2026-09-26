@@ -49,7 +49,7 @@ Préférez l'API JSON à la lecture des pages HTML.
 - [Annuaire des communautés](${siteUrl}/communautes): recherche et filtres
 - [Trouver sa communauté](${siteUrl}/trouver): assistant en 5 questions
 - [Statistiques](${siteUrl}/stats): répartitions par type, taille et module
-- [Streameurs DCS FR](${siteUrl}/streamers): et leurs [classements](${siteUrl}/streamers/stats)
+- [Streameurs DCS FR](${siteUrl}/streamers): en direct, ce soir, rediffusions et classements
 - [Chronologie de la scène](${siteUrl}/timeline): communautés par année de fondation
 - [Proposer une communauté](${siteUrl}/soumettre)
 
