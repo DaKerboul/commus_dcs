@@ -88,6 +88,9 @@
                   alt=""
                   class="mt-1 h-20 w-20 rounded object-cover border border-gray-200 dark:border-gray-800"
                 />
+                <div v-else-if="isGallery(change.from)" class="mt-1 grid grid-cols-3 gap-1">
+                  <img v-for="(img, i) in change.from" :key="i" :src="img.url" :alt="img.alt || ''" :title="img.alt || ''" class="aspect-video w-full rounded object-cover" />
+                </div>
                 <p v-else class="text-gray-700 dark:text-gray-300 line-through break-words mt-0.5">
                   {{ display(change.from) }}
                 </p>
@@ -100,6 +103,9 @@
                   alt=""
                   class="mt-1 h-20 w-20 rounded object-cover border border-gray-200 dark:border-gray-800"
                 />
+                <div v-else-if="isGallery(change.to)" class="mt-1 grid grid-cols-3 gap-1">
+                  <img v-for="(img, i) in change.to" :key="i" :src="img.url" :alt="img.alt || ''" :title="img.alt || ''" class="aspect-video w-full rounded object-cover" />
+                </div>
                 <p v-else class="text-gray-900 dark:text-white break-words mt-0.5">
                   {{ display(change.to) }}
                 </p>
@@ -227,10 +233,17 @@ function isExternalLink(value: unknown): boolean {
   return typeof value === 'string' && /^https?:\/\//i.test(value)
 }
 
+/** A gallery value: approving it blind ("5 éléments") was impossible to judge. */
+function isGallery(value: unknown): value is { url: string; alt: string | null }[] {
+  return Array.isArray(value) && value.length > 0 && value.every(v => typeof v?.url === 'string' && isImage(v.url))
+}
+
 /** Renderable image: an uploaded data URI or an http(s) image URL. */
 function isImage(value: unknown): boolean {
   if (typeof value !== 'string' || !value) return false
-  return value.startsWith('data:image/') || /^https?:\/\/\S+\.(png|jpe?g|webp|gif)(\?|$)/i.test(value)
+  return value.startsWith('data:image/')
+    || value.startsWith('/commus_img/')
+    || /^https?:\/\/\S+\.(png|jpe?g|webp|gif)(\?|$)/i.test(value)
 }
 
 function formatDate(value: string) {

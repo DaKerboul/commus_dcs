@@ -33,6 +33,13 @@ export interface CommunityDetail extends CommunityCard {
   twitterUrl: string | null
   otherLinks: { label: string; url: string }[] | null
   images: { url: string; alt: string | null }[]
+  /** Markdown rendered and sanitized by the server. */
+  descriptionHtml?: string | null
+  objectivesHtml?: string | null
+  sections?: { title: string; bodyHtml: string }[]
+  accentColor?: string | null
+  accentHex?: string | null
+  isManagedByCommunity?: boolean
   soughtModuleNames: string[]
   featured: boolean
   votes: number

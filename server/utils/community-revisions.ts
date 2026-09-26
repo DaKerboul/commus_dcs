@@ -1,5 +1,5 @@
-import { and, eq } from 'drizzle-orm'
-import { communities, communityRevisions } from '#server/db/schema'
+import { and, asc, eq } from 'drizzle-orm'
+import { communities, communityImages, communityRevisions } from '#server/db/schema'
 
 /**
  * Sensitive fields go through admin review instead of publishing directly.
@@ -49,6 +49,19 @@ function isSameValue(a: unknown, b: unknown): boolean {
 }
 
 /**
+ * The published gallery in the shape normalizeImages produces, or null when
+ * empty. Images live in their own table, not on the communities row, so a
+ * lookup on the row would never match and every save would queue the gallery.
+ */
+export async function publishedImages(communityId: number) {
+  const rows = await useDB().select({ url: communityImages.url, alt: communityImages.alt })
+    .from(communityImages)
+    .where(eq(communityImages.communityId, communityId))
+    .orderBy(asc(communityImages.sortOrder), asc(communityImages.id))
+  return rows.length ? rows.map(r => ({ url: r.url, alt: r.alt || null })) : null
+}
+
+/**
  * Merges the proposed sensitive changes into this community's single pending
  * revision, creating it when needed. Values equal to what is already published
  * are dropped, and a revision left with nothing to change is deleted.
@@ -72,6 +85,16 @@ export async function queueSensitiveChanges(
     ))
     .limit(1)
 
+  // Compared in normalised form: a link imported as `https://site.fr` comes
+  // back from the editor as `https://site.fr/`, which is no change at all.
+  const published: Record<string, unknown> = { ...current }
+  for (const field of SENSITIVE_FIELDS) {
+    if (field.endsWith('Url') && field !== 'logoUrl') published[field] = normalizeUrl(current[field as keyof typeof current])
+  }
+  published.logoUrl = normalizeImageUrl(current.logoUrl)
+  published.otherLinks = normalizeOtherLinks(current.otherLinks)
+  if ('images' in proposed) published.images = await publishedImages(communityId)
+
   const patch: Record<string, unknown> = { ...(existing?.fieldsPatch ?? {}) }
 
   for (const field of SENSITIVE_FIELDS) {
@@ -79,7 +102,7 @@ export async function queueSensitiveChanges(
 
     const value = proposed[field]
     // Back to the published value → nothing left to review for this field.
-    if (isSameValue(value, (current as Record<string, unknown>)[field])) {
+    if (isSameValue(value, published[field])) {
       delete patch[field]
     } else {
       patch[field] = value

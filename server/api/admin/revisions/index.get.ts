@@ -1,6 +1,6 @@
 import { desc, eq } from 'drizzle-orm'
 import { communities, communityRevisions, users } from '#server/db/schema'
-import { SENSITIVE_FIELDS } from '#server/utils/community-revisions'
+import { publishedImages, SENSITIVE_FIELDS } from '#server/utils/community-revisions'
 
 /**
  * Pending edits to sensitive fields, each paired with the value currently
@@ -28,17 +28,24 @@ export default defineEventHandler(async (event) => {
     .leftJoin(users, eq(communityRevisions.userId, users.id))
     .orderBy(desc(communityRevisions.createdAt))
 
-  return rows.map(({ community, fieldsPatch, ...rest }) => ({
-    ...rest,
-    communityId: community.id,
-    communitySlug: community.slug,
-    communityName: community.name,
-    changes: SENSITIVE_FIELDS
-      .filter(field => field in (fieldsPatch ?? {}))
-      .map(field => ({
-        field,
-        from: (community as Record<string, unknown>)[field] ?? null,
-        to: (fieldsPatch as Record<string, unknown>)[field] ?? null,
-      })),
+  return Promise.all(rows.map(async ({ community, fieldsPatch, ...rest }) => {
+    // Gallery lives in its own table: without this the "before" side was always empty.
+    const published: Record<string, unknown> = { ...community }
+    if (rest.status === 'pending' && 'images' in (fieldsPatch ?? {})) {
+      published.images = await publishedImages(community.id)
+    }
+    return {
+      ...rest,
+      communityId: community.id,
+      communitySlug: community.slug,
+      communityName: community.name,
+      changes: SENSITIVE_FIELDS
+        .filter(field => field in (fieldsPatch ?? {}))
+        .map(field => ({
+          field,
+          from: published[field] ?? null,
+          to: (fieldsPatch as Record<string, unknown>)[field] ?? null,
+        })),
+    }
   }))
 })

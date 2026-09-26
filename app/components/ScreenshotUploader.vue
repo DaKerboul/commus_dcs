@@ -184,57 +184,6 @@ function removeImage(index: number) {
   emit('update:modelValue', newImages)
 }
 
-async function compressImage(file: File, maxWidth: number, quality: number): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const img = new Image()
-    img.onload = () => {
-      let { width, height } = img
-      if (width > maxWidth) {
-        height = Math.round((height * maxWidth) / width)
-        width = maxWidth
-      }
-
-      const canvas = document.createElement('canvas')
-      canvas.width = width
-      canvas.height = height
-      const ctx = canvas.getContext('2d')!
-      ctx.drawImage(img, 0, 0, width, height)
-
-      // Try WebP first, fallback to JPEG
-      canvas.toBlob(
-        (blob) => {
-          if (blob) {
-            const reader = new FileReader()
-            reader.onloadend = () => resolve(reader.result as string)
-            reader.onerror = reject
-            reader.readAsDataURL(blob)
-          } else {
-            // Fallback to JPEG
-            canvas.toBlob(
-              (jpegBlob) => {
-                if (jpegBlob) {
-                  const reader = new FileReader()
-                  reader.onloadend = () => resolve(reader.result as string)
-                  reader.onerror = reject
-                  reader.readAsDataURL(jpegBlob)
-                } else {
-                  resolve(canvas.toDataURL('image/jpeg', quality))
-                }
-              },
-              'image/jpeg',
-              quality,
-            )
-          }
-        },
-        'image/webp',
-        quality,
-      )
-    }
-    img.onerror = reject
-    img.src = URL.createObjectURL(file)
-  })
-}
-
 function formatSize(dataUrl: string): string {
   // Estimate size from base64
   const base64Len = dataUrl.length - dataUrl.indexOf(',') - 1

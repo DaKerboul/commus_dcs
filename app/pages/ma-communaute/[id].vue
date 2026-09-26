@@ -4,497 +4,134 @@
       :items="[
         { label: 'Accueil', to: '/' },
         { label: 'Mes communautés', to: '/ma-communaute' },
-        { label: form.name || 'Édition' },
+        { label: managed?.name || 'Tableau de bord' },
       ]"
     />
 
-    <div v-if="loadError" class="rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/30 p-6">
-      <p class="text-red-700 dark:text-red-400">{{ loadError }}</p>
+    <div v-if="!managed && !account.pending.value" class="rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/30 p-6">
+      <p class="text-red-700 dark:text-red-400">Vous ne gérez pas cette fiche, ou votre session a expiré.</p>
       <UButton to="/ma-communaute" variant="ghost" color="neutral" class="mt-3">Retour</UButton>
     </div>
 
-    <template v-else>
+    <template v-else-if="managed">
       <div class="flex items-start justify-between gap-4 flex-wrap">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ form.name }}</h1>
-          <p class="text-sm text-gray-500 mt-1">Modifiez les informations de votre communauté.</p>
+        <div class="flex items-center gap-4 min-w-0">
+          <div class="h-14 w-14 shrink-0 rounded-xl bg-gray-200 dark:bg-gray-800 flex items-center justify-center overflow-hidden">
+            <NuxtImg v-if="managed.logoUrl" :src="managed.logoUrl" :provider="managed.logoUrl.startsWith('/api/media/') ? 'none' : undefined" :alt="managed.name" width="56" height="56" class="h-full w-full object-cover" />
+            <UIcon v-else name="i-heroicons-user-group" class="text-gray-500 text-2xl" />
+          </div>
+          <div class="min-w-0">
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white truncate">{{ managed.name }}</h1>
+            <p class="text-sm text-gray-500 mt-0.5">Tableau de bord de votre fiche.</p>
+          </div>
         </div>
-        <UButton :to="`/communautes/${form.slug}`" variant="outline" color="neutral" size="sm" icon="i-heroicons-eye">
-          Voir la fiche
-        </UButton>
-      </div>
-
-      <!-- Pending review -->
-      <div
-        v-if="pendingFields.length"
-        class="mt-6 rounded-lg border border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 p-4 text-sm"
-      >
-        <p class="font-medium text-amber-800 dark:text-amber-300">
-          <UIcon name="i-heroicons-clock" class="mr-1 align-text-bottom" />
-          {{ pendingFields.length }} modification{{ pendingFields.length > 1 ? 's' : '' }} en attente de validation
-        </p>
-        <p class="text-amber-700 dark:text-amber-400 mt-1">
-          {{ pendingFields.map(f => SENSITIVE_LABELS[f] || f).join(', ') }}.
-          Le reste de vos changements est déjà en ligne.
-        </p>
-      </div>
-
-      <!-- Stats -->
-      <div v-if="stats" class="mt-6 grid gap-3 grid-cols-2 sm:grid-cols-4">
-        <div v-for="s in statTiles" :key="s.label" class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-4">
-          <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ s.value }}</p>
-          <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ s.label }}</p>
-        </div>
-      </div>
-
-      <div class="mt-8 space-y-8">
-        <!-- Presentation -->
-        <section class="space-y-4">
-          <div class="flex items-center justify-between gap-3">
-            <h2 class="font-semibold text-gray-900 dark:text-white">Présentation</h2>
-            <UButton
-              :icon="previewOn ? 'i-heroicons-pencil' : 'i-heroicons-eye'"
-              variant="ghost"
-              color="neutral"
-              size="xs"
-              @click="togglePreview"
-            >
-              {{ previewOn ? 'Éditer' : 'Aperçu' }}
-            </UButton>
-          </div>
-
-          <p class="text-xs text-gray-500 dark:text-gray-400">
-            Mise en forme possible&nbsp;: <code>**gras**</code>, <code>*italique*</code>,
-            <code>### titre</code>, listes avec <code>-</code>, <code>&gt; citation</code>,
-            <code>[lien](https://…)</code>.
-          </p>
-
-          <UFormField label="Description courte" hint="Affichée dans les listes (300 caractères max)">
-            <UTextarea v-model="form.shortDescription" :rows="2" :maxlength="300" class="w-full" />
-          </UFormField>
-
-          <UFormField label="Description">
-            <CommunityRichText v-if="previewOn" :html="previewHtml.description" class="rounded-lg border border-gray-200 dark:border-gray-800 p-4 min-h-32" />
-            <UTextarea v-else v-model="form.description" :rows="8" class="w-full font-mono text-sm" />
-          </UFormField>
-
-          <UFormField label="Objectifs">
-            <CommunityRichText v-if="previewOn" :html="previewHtml.objectives" class="rounded-lg border border-gray-200 dark:border-gray-800 p-4 min-h-24" />
-            <UTextarea v-else v-model="form.objectives" :rows="5" class="w-full font-mono text-sm" />
-          </UFormField>
-
-          <UFormField label="Conditions d'entrée">
-            <UTextarea v-model="form.entryConditions" :rows="3" class="w-full" />
-          </UFormField>
-
-          <div class="grid gap-4 sm:grid-cols-2">
-            <UFormField label="Fondateur">
-              <UInput v-model="form.founder" class="w-full" />
-            </UFormField>
-            <UFormField label="Effectif (texte libre)" hint="Ex : 16 membres actifs">
-              <UInput v-model="form.sizeText" class="w-full" />
-            </UFormField>
-            <UFormField
-              label="Date de fondation"
-              hint="Affichée sur la timeline"
-              description="AAAA, AAAA-MM ou AAAA-MM-JJ. Ex : 2003 si vous ne connaissez que l'année."
-            >
-              <UInput v-model="form.foundedDate" placeholder="2003" :maxlength="10" class="w-full" />
-            </UFormField>
-            <UFormField
-              label="Contact"
-              hint="Affiché publiquement"
-              description="Qui contacter pour rejoindre ou poser une question. Ex : un pseudo Discord."
-            >
-              <UInput v-model="form.contact" :maxlength="255" class="w-full" />
-            </UFormField>
-          </div>
-        </section>
-
-        <!-- Classification -->
-        <section class="space-y-4">
-          <h2 class="font-semibold text-gray-900 dark:text-white">Classification</h2>
-          <div class="grid gap-4 sm:grid-cols-2">
-            <UFormField label="Type de communauté">
-              <USelect v-model="form.communityType" :items="typeOptions" class="w-full" />
-            </UFormField>
-            <UFormField label="Taille">
-              <USelect v-model="form.sizeCategory" :items="sizeOptions" class="w-full" />
-            </UFormField>
-            <UFormField label="Recrutement">
-              <USelect v-model="form.recruitmentStatus" :items="recruitmentOptions" class="w-full" />
-            </UFormField>
-            <UFormField label="Fréquence des événements">
-              <USelect v-model="form.eventFrequency" :items="frequencyOptions" class="w-full" />
-            </UFormField>
-          </div>
-
-          <UFormField label="Périodes historiques">
-            <div class="flex flex-wrap gap-2">
-              <UButton
-                v-for="p in periodOptions"
-                :key="p.value"
-                :variant="form.historicalPeriods.includes(p.value) ? 'solid' : 'outline'"
-                :color="form.historicalPeriods.includes(p.value) ? 'primary' : 'neutral'"
-                size="xs"
-                @click="toggle(form.historicalPeriods, p.value)"
-              >
-                {{ p.label }}
-              </UButton>
-            </div>
-          </UFormField>
-        </section>
-
-        <!-- Modules -->
-        <section class="space-y-4">
-          <h2 class="font-semibold text-gray-900 dark:text-white">Modules DCS</h2>
-
-          <UFormField label="Modules utilisés">
-            <UInput v-model="moduleFilter" placeholder="Filtrer les modules…" size="sm" class="w-full mb-2" />
-            <div class="flex flex-wrap gap-1.5 max-h-56 overflow-y-auto p-1">
-              <UButton
-                v-for="m in filteredModules"
-                :key="m"
-                :variant="form.moduleNames.includes(m) ? 'solid' : 'outline'"
-                :color="form.moduleNames.includes(m) ? 'primary' : 'neutral'"
-                size="xs"
-                @click="toggle(form.moduleNames, m)"
-              >
-                {{ m }}
-              </UButton>
-            </div>
-          </UFormField>
-
-          <UFormField label="Modules recherchés" hint="Ce que vous aimeriez voir chez vos recrues">
-            <div class="flex flex-wrap gap-1.5 max-h-40 overflow-y-auto p-1">
-              <UButton
-                v-for="m in filteredModules"
-                :key="m"
-                :variant="form.soughtModuleNames.includes(m) ? 'solid' : 'outline'"
-                :color="form.soughtModuleNames.includes(m) ? 'primary' : 'neutral'"
-                size="xs"
-                @click="toggle(form.soughtModuleNames, m)"
-              >
-                {{ m }}
-              </UButton>
-            </div>
-          </UFormField>
-        </section>
-
-        <!-- Experiences -->
-        <section class="space-y-4">
-          <h2 class="font-semibold text-gray-900 dark:text-white">Expériences proposées</h2>
-          <div class="flex flex-wrap gap-1.5">
-            <UButton
-              v-for="e in allExperiences"
-              :key="e"
-              :variant="form.experienceNames.includes(e) ? 'solid' : 'outline'"
-              :color="form.experienceNames.includes(e) ? 'primary' : 'neutral'"
-              size="xs"
-              @click="toggle(form.experienceNames, e)"
-            >
-              {{ e }}
-            </UButton>
-          </div>
-        </section>
-
-        <!-- Free sections -->
-        <section class="space-y-4">
-          <div class="flex items-center justify-between gap-3">
-            <div>
-              <h2 class="font-semibold text-gray-900 dark:text-white">Sections libres</h2>
-              <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Jusqu'à {{ MAX_SECTIONS }} sections de votre choix (« Nos serveurs », « Notre histoire »…).
-              </p>
-            </div>
-            <UButton
-              v-if="form.sections.length < MAX_SECTIONS"
-              icon="i-heroicons-plus"
-              variant="outline"
-              color="neutral"
-              size="xs"
-              @click="form.sections.push({ title: '', body: '' })"
-            >
-              Ajouter
-            </UButton>
-          </div>
-
-          <div
-            v-for="(section, i) in form.sections"
-            :key="i"
-            class="rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-3"
-          >
-            <div class="flex items-center gap-2">
-              <UInput v-model="section.title" placeholder="Titre de la section" class="flex-1" />
-              <UButton icon="i-heroicons-arrow-up" variant="ghost" color="neutral" size="xs" :disabled="i === 0" @click="moveSection(i, -1)" />
-              <UButton icon="i-heroicons-arrow-down" variant="ghost" color="neutral" size="xs" :disabled="i === form.sections.length - 1" @click="moveSection(i, 1)" />
-              <UButton icon="i-heroicons-trash" variant="ghost" color="error" size="xs" @click="form.sections.splice(i, 1)" />
-            </div>
-            <UTextarea v-model="section.body" :rows="5" placeholder="Contenu (markdown accepté)" class="w-full font-mono text-sm" />
-          </div>
-        </section>
-
-        <!-- Appearance -->
-        <section class="space-y-4">
-          <div>
-            <h2 class="font-semibold text-gray-900 dark:text-white">Apparence</h2>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              Une couleur d'accent pour votre fiche, choisie dans la palette de l'annuaire.
-            </p>
-          </div>
-          <div class="flex flex-wrap gap-2 items-center">
-            <button
-              v-for="c in ACCENT_COLORS"
-              :key="c.value"
-              type="button"
-              :title="c.label"
-              class="h-8 w-8 rounded-full border-2 transition-transform hover:scale-110"
-              :class="form.accentColor === c.value ? 'border-gray-900 dark:border-white scale-110' : 'border-transparent'"
-              :style="{ backgroundColor: c.hex }"
-              @click="form.accentColor = c.value"
-            />
-            <UButton v-if="form.accentColor" variant="ghost" color="neutral" size="xs" @click="form.accentColor = null">
-              Réinitialiser
-            </UButton>
-          </div>
-        </section>
-
-        <!-- Identity & links — reviewed before publishing -->
-        <section class="space-y-4">
-          <div>
-            <h2 class="font-semibold text-gray-900 dark:text-white">Identité et liens</h2>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              <UIcon name="i-heroicons-shield-check" class="align-text-bottom" />
-              Ces champs passent par une validation avant publication (protection contre
-              l'usurpation et les liens malveillants).
-            </p>
-          </div>
-
-          <UFormField label="Nom de la communauté">
-            <UInput v-model="form.name" class="w-full" />
-          </UFormField>
-
-          <UFormField label="Logo" hint="Carré, recadré automatiquement">
-            <div class="flex items-center gap-4">
-              <div class="h-20 w-20 shrink-0 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-100 dark:bg-gray-900 overflow-hidden flex items-center justify-center">
-                <img v-if="form.logoUrl" :src="form.logoUrl" alt="Logo" class="h-full w-full object-cover" />
-                <UIcon v-else name="i-heroicons-photo" class="text-2xl text-gray-400" />
-              </div>
-              <div class="flex flex-col gap-2">
-                <input ref="logoInputRef" type="file" accept="image/*" class="hidden" @change="onLogoFileChange">
-                <UButton icon="i-heroicons-arrow-up-tray" variant="outline" color="neutral" size="sm" @click="logoInputRef?.click()">
-                  {{ form.logoUrl ? 'Changer le logo' : 'Ajouter un logo' }}
-                </UButton>
-                <UButton
-                  v-if="form.logoUrl"
-                  icon="i-heroicons-trash"
-                  variant="ghost"
-                  color="error"
-                  size="sm"
-                  @click="form.logoUrl = ''"
-                >
-                  Retirer
-                </UButton>
-              </div>
-            </div>
-          </UFormField>
-
-          <ClientOnly>
-            <LogoCropModal
-              v-model:open="cropModalOpen"
-              :image-src="cropImageSrc"
-              @cropped="(url: string) => (form.logoUrl = url)"
-            />
-          </ClientOnly>
-
-          <div class="grid gap-4 sm:grid-cols-2">
-            <UFormField v-for="link in LINK_FIELDS" :key="link.key" :label="link.label">
-              <UInput
-                v-model="(form as any)[link.key]"
-                type="url"
-                :placeholder="link.placeholder"
-                class="w-full"
-              />
-            </UFormField>
-          </div>
-        </section>
-
-        <!-- Managers -->
-        <section v-if="isOwner" class="space-y-4">
-          <div>
-            <h2 class="font-semibold text-gray-900 dark:text-white">Gestionnaires</h2>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              Invitez un co-gestionnaire avec un lien à usage unique valable 72&nbsp;h.
-            </p>
-          </div>
-
-          <div v-if="members.length" class="space-y-2">
-            <div
-              v-for="m in members"
-              :key="m.userId"
-              class="flex items-center gap-3 rounded-lg border border-gray-200 dark:border-gray-800 p-3"
-            >
-              <img v-if="m.avatarUrl" :src="m.avatarUrl" alt="" class="h-8 w-8 rounded-full" />
-              <UIcon v-else name="i-heroicons-user-circle" class="text-2xl text-gray-400" />
-              <span class="flex-1 min-w-0 truncate text-sm text-gray-900 dark:text-white">{{ m.displayName }}</span>
-              <UBadge :color="m.role === 'owner' ? 'primary' : 'neutral'" variant="subtle" size="xs">
-                {{ m.role === 'owner' ? 'Responsable' : 'Éditeur' }}
-              </UBadge>
-              <UButton
-                v-if="m.role === 'editor'"
-                variant="ghost"
-                color="neutral"
-                size="xs"
-                :loading="memberBusy === m.userId"
-                @click="setRole(m.userId, 'owner')"
-              >
-                Promouvoir
-              </UButton>
-              <UButton
-                icon="i-heroicons-x-mark"
-                variant="ghost"
-                color="error"
-                size="xs"
-                :loading="memberBusy === m.userId"
-                @click="removeMember(m.userId)"
-              />
-            </div>
-          </div>
-
-          <div class="flex items-center gap-2 flex-wrap">
-            <UButton icon="i-heroicons-link" variant="outline" color="neutral" size="sm" :loading="inviteBusy" @click="createInvite">
-              Générer un lien d'invitation
-            </UButton>
-            <UButton v-if="members.length" variant="ghost" color="neutral" size="sm" icon="i-heroicons-arrow-path" @click="loadMembers">
-              Rafraîchir
-            </UButton>
-          </div>
-
-          <div v-if="inviteCode" class="rounded-lg border border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/30 p-3">
-            <p class="text-xs text-emerald-800 dark:text-emerald-300 mb-2">
-              Partagez ce lien avec la personne concernée. Il n'est affiché qu'une fois.
-            </p>
-            <div class="flex items-center gap-2">
-              <UInput :model-value="inviteUrl" readonly class="flex-1 font-mono text-xs" />
-              <UButton icon="i-heroicons-clipboard" variant="outline" color="neutral" size="sm" @click="copyInvite">
-                {{ copied ? 'Copié' : 'Copier' }}
-              </UButton>
-            </div>
-          </div>
-
-          <p v-if="memberError" class="text-sm text-red-500">{{ memberError }}</p>
-        </section>
-      </div>
-
-      <!-- Save bar -->
-      <div class="sticky bottom-0 mt-10 -mx-4 sm:-mx-6 lg:-mx-8 border-t border-gray-200 dark:border-gray-800 bg-white/90 dark:bg-gray-950/90 backdrop-blur px-4 sm:px-6 lg:px-8 py-4">
-        <div class="flex items-center justify-between gap-4">
-          <p v-if="saveError" class="text-sm text-red-500">{{ saveError }}</p>
-          <p v-else-if="savedAt" class="text-sm text-emerald-600 dark:text-emerald-400">
-            <UIcon name="i-heroicons-check-circle" class="align-text-bottom" />
-            Modifications enregistrées.
-          </p>
-          <span v-else />
-          <UButton :loading="saving" :disabled="!loaded" icon="i-heroicons-check" @click="save">
-            Enregistrer
+        <div class="flex gap-2">
+          <UButton :to="`/communautes/${managed.slug}`" variant="outline" color="neutral" icon="i-heroicons-eye">
+            Voir
+          </UButton>
+          <UButton :to="`/communautes/${managed.slug}?edit=1`" icon="i-heroicons-pencil-square">
+            Modifier la fiche
           </UButton>
         </div>
       </div>
+
+      <p class="mt-6 rounded-lg bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 p-4 text-sm text-gray-600 dark:text-gray-400">
+        <UIcon name="i-heroicons-cursor-arrow-rays" class="align-text-bottom mr-1" />
+        La fiche se modifie directement sur la page publique : cliquez sur un bloc, le résultat s'affiche en direct,
+        puis publiez. Votre brouillon est conservé si vous fermez l'onglet.
+      </p>
+
+      <!-- Stats -->
+      <section class="mt-8">
+        <h2 class="font-semibold text-gray-900 dark:text-white mb-3">Audience</h2>
+        <div v-if="stats" class="grid gap-3 grid-cols-2 sm:grid-cols-4">
+          <div v-for="s in statTiles" :key="s.label" class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-4">
+            <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ s.value }}</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ s.label }}</p>
+          </div>
+        </div>
+        <p v-else class="text-sm text-gray-500">Statistiques indisponibles pour le moment.</p>
+      </section>
+
+      <!-- Managers -->
+      <section v-if="isOwner" class="mt-10 space-y-4">
+        <div>
+          <h2 class="font-semibold text-gray-900 dark:text-white">Gestionnaires</h2>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            Invitez un co-gestionnaire avec un lien à usage unique valable 72&nbsp;h.
+          </p>
+        </div>
+
+        <div v-if="members.length" class="space-y-2">
+          <div
+            v-for="m in members"
+            :key="m.userId"
+            class="flex items-center gap-3 rounded-lg border border-gray-200 dark:border-gray-800 p-3"
+          >
+            <img v-if="m.avatarUrl" :src="m.avatarUrl" alt="" class="h-8 w-8 rounded-full" />
+            <UIcon v-else name="i-heroicons-user-circle" class="text-2xl text-gray-400" />
+            <span class="flex-1 min-w-0 truncate text-sm text-gray-900 dark:text-white">{{ m.displayName }}</span>
+            <UBadge :color="m.role === 'owner' ? 'primary' : 'neutral'" variant="subtle" size="xs">
+              {{ m.role === 'owner' ? 'Responsable' : 'Éditeur' }}
+            </UBadge>
+            <UButton
+              v-if="m.role === 'editor'"
+              variant="ghost"
+              color="neutral"
+              size="xs"
+              :loading="memberBusy === m.userId"
+              @click="setRole(m.userId, 'owner')"
+            >
+              Promouvoir
+            </UButton>
+            <UButton
+              icon="i-heroicons-x-mark"
+              variant="ghost"
+              color="error"
+              size="xs"
+              :aria-label="`Retirer ${m.displayName}`"
+              :loading="memberBusy === m.userId"
+              @click="removeMember(m.userId)"
+            />
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 flex-wrap">
+          <UButton icon="i-heroicons-link" variant="outline" color="neutral" size="sm" :loading="inviteBusy" @click="createInvite">
+            Générer un lien d'invitation
+          </UButton>
+          <UButton v-if="members.length" variant="ghost" color="neutral" size="sm" icon="i-heroicons-arrow-path" @click="loadMembers">
+            Rafraîchir
+          </UButton>
+        </div>
+
+        <div v-if="inviteCode" class="rounded-lg border border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/30 p-3">
+          <p class="text-xs text-emerald-800 dark:text-emerald-300 mb-2">
+            Partagez ce lien avec la personne concernée. Il n'est affiché qu'une fois.
+          </p>
+          <div class="flex items-center gap-2">
+            <UInput :model-value="inviteUrl" readonly class="flex-1 font-mono text-xs" />
+            <UButton icon="i-heroicons-clipboard" variant="outline" color="neutral" size="sm" @click="copyInvite">
+              {{ copied ? 'Copié' : 'Copier' }}
+            </UButton>
+          </div>
+        </div>
+
+        <p v-if="memberError" class="text-sm text-red-500">{{ memberError }}</p>
+      </section>
     </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import {
-  SIZE_LABELS,
-  TYPE_LABELS,
-  RECRUITMENT_LABELS,
-  FREQUENCY_LABELS,
-  PERIOD_LABELS,
-} from '#shared/types'
-
 const route = useRoute()
 const id = Number(route.params.id)
 
-const loaded = ref(false)
-const loadError = ref('')
-const saving = ref(false)
-const saveError = ref('')
-const savedAt = ref<number | null>(null)
-const moduleFilter = ref('')
-
-const previewOn = ref(false)
-const previewHtml = reactive({ description: '', objectives: '' })
-const pendingFields = ref<string[]>([])
-
-const SENSITIVE_LABELS: Record<string, string> = {
-  name: 'Nom de la communauté',
-  logoUrl: 'Logo',
-  discordUrl: 'Lien Discord',
-  websiteUrl: 'Site web',
-  youtubeUrl: 'YouTube',
-  instagramUrl: 'Instagram',
-  facebookUrl: 'Facebook',
-  twitchUrl: 'Twitch',
-  twitterUrl: 'X / Twitter',
-  otherLinks: 'Autres liens',
-  images: 'Galerie',
-}
-
-const MAX_SECTIONS = 4
-
-// Logo upload — same crop-then-base64 flow as the public submission form.
-const logoInputRef = ref<HTMLInputElement | null>(null)
-const cropModalOpen = ref(false)
-const cropImageSrc = ref('')
-
-function onLogoFileChange(e: Event) {
-  const input = e.target as HTMLInputElement
-  const file = input.files?.[0]
-  if (file?.type.startsWith('image/')) {
-    cropImageSrc.value = URL.createObjectURL(file)
-    cropModalOpen.value = true
-  }
-  // Reset so picking the same file twice still fires a change event.
-  input.value = ''
-}
-
-// Mirrors the server-side palette in server/utils/community-theme.ts.
-const ACCENT_COLORS = [
-  { value: 'blue', label: 'Bleu', hex: '#3b82f6' },
-  { value: 'sky', label: 'Ciel', hex: '#0ea5e9' },
-  { value: 'cyan', label: 'Cyan', hex: '#06b6d4' },
-  { value: 'teal', label: 'Turquoise', hex: '#14b8a6' },
-  { value: 'emerald', label: 'Émeraude', hex: '#10b981' },
-  { value: 'amber', label: 'Ambre', hex: '#f59e0b' },
-  { value: 'orange', label: 'Orange', hex: '#f97316' },
-  { value: 'red', label: 'Rouge', hex: '#ef4444' },
-  { value: 'rose', label: 'Rose', hex: '#f43f5e' },
-  { value: 'violet', label: 'Violet', hex: '#8b5cf6' },
-  { value: 'indigo', label: 'Indigo', hex: '#6366f1' },
-  { value: 'slate', label: 'Ardoise', hex: '#64748b' },
-]
-
-interface Member {
-  userId: number
-  displayName: string
-  avatarUrl: string | null
-  role: 'owner' | 'editor'
-}
-
 const account = useAccount()
-const members = ref<Member[]>([])
-const memberBusy = ref<number | null>(null)
-const memberError = ref('')
-const inviteBusy = ref(false)
-const inviteCode = ref('')
-const copied = ref(false)
-
+const managed = computed(() => account.communities.value.find(c => c.id === id) ?? null)
 const isOwner = computed(() => account.roleFor(id) === 'owner')
-const inviteUrl = computed(() =>
-  inviteCode.value ? `${window.location.origin}/invitation?code=${inviteCode.value}` : '',
-)
 
+// ── Stats ────────────────────────────────────────────
 interface Stats {
   totals: Record<string, number>
   totalVotes: number
@@ -525,6 +162,25 @@ async function loadStats() {
     stats.value = null
   }
 }
+
+// ── Team ─────────────────────────────────────────────
+interface Member {
+  userId: number
+  displayName: string
+  avatarUrl: string | null
+  role: 'owner' | 'editor'
+}
+
+const members = ref<Member[]>([])
+const memberBusy = ref<number | null>(null)
+const memberError = ref('')
+const inviteBusy = ref(false)
+const inviteCode = ref('')
+const copied = ref(false)
+
+const inviteUrl = computed(() =>
+  inviteCode.value ? `${window.location.origin}/invitation?code=${inviteCode.value}` : '',
+)
 
 async function loadMembers() {
   try {
@@ -560,7 +216,7 @@ async function setRole(userId: number, role: 'owner' | 'editor') {
     await $fetch(`/api/my/communities/${id}/members/${userId}`, { method: 'PUT', body: { role } })
     await loadMembers()
   } catch (error: any) {
-    memberError.value = error?.data?.statusMessage || "Modification impossible."
+    memberError.value = error?.data?.statusMessage || 'Modification impossible.'
   } finally {
     memberBusy.value = null
   }
@@ -574,186 +230,20 @@ async function removeMember(userId: number) {
     await loadMembers()
     await account.refresh()
   } catch (error: any) {
-    memberError.value = error?.data?.statusMessage || "Retrait impossible."
+    memberError.value = error?.data?.statusMessage || 'Retrait impossible.'
   } finally {
     memberBusy.value = null
   }
 }
 
-function moveSection(index: number, delta: number) {
-  const target = index + delta
-  if (target < 0 || target >= form.sections.length) return
-  const [item] = form.sections.splice(index, 1)
-  form.sections.splice(target, 0, item!)
-}
-
-const LINK_FIELDS = [
-  { key: 'discordUrl', label: 'Discord', placeholder: 'https://discord.gg/…' },
-  { key: 'websiteUrl', label: 'Site web', placeholder: 'https://…' },
-  { key: 'youtubeUrl', label: 'YouTube', placeholder: 'https://youtube.com/…' },
-  { key: 'twitchUrl', label: 'Twitch', placeholder: 'https://twitch.tv/…' },
-  { key: 'instagramUrl', label: 'Instagram', placeholder: 'https://instagram.com/…' },
-  { key: 'facebookUrl', label: 'Facebook', placeholder: 'https://facebook.com/…' },
-  { key: 'twitterUrl', label: 'X / Twitter', placeholder: 'https://x.com/…' },
-] as const
-
-const form = reactive({
-  name: '',
-  slug: '',
-  shortDescription: '',
-  description: '',
-  objectives: '',
-  entryConditions: '',
-  sizeText: '',
-  founder: '',
-  contact: '',
-  foundedDate: '',
-  communityType: 'other',
-  sizeCategory: 'unknown',
-  recruitmentStatus: 'unknown',
-  eventFrequency: 'unknown',
-  discordUrl: '',
-  websiteUrl: '',
-  youtubeUrl: '',
-  twitchUrl: '',
-  instagramUrl: '',
-  facebookUrl: '',
-  twitterUrl: '',
-  logoUrl: '',
-  accentColor: null as string | null,
-  historicalPeriods: [] as string[],
-  moduleNames: [] as string[],
-  soughtModuleNames: [] as string[],
-  experienceNames: [] as string[],
-  sections: [] as { title: string; body: string }[],
+// The account may still be loading on a client-side navigation.
+onMounted(() => {
+  watch(managed, (now, before) => {
+    if (!now || before) return
+    loadStats()
+    if (isOwner.value) loadMembers()
+  }, { immediate: true })
 })
 
-/**
- * Preview is rendered by the server so it goes through the exact same markdown
- * pipeline (and sanitizer) as the published page.
- */
-async function refreshPreview() {
-  const [description, objectives] = await Promise.all([
-    renderPreview(form.description),
-    renderPreview(form.objectives),
-  ])
-  previewHtml.description = description
-  previewHtml.objectives = objectives
-}
-
-async function togglePreview() {
-  previewOn.value = !previewOn.value
-  if (previewOn.value) await refreshPreview()
-}
-
-async function renderPreview(source: string): Promise<string> {
-  if (!source.trim()) return ''
-  try {
-    const res = await $fetch<{ html: string }>('/api/markdown/preview', {
-      method: 'POST',
-      body: { source },
-    })
-    return res.html
-  } catch {
-    return ''
-  }
-}
-
-function toOptions(labels: Record<string, string>) {
-  return Object.entries(labels).map(([value, label]) => ({ value, label }))
-}
-
-const typeOptions = toOptions(TYPE_LABELS)
-const sizeOptions = toOptions(SIZE_LABELS)
-const recruitmentOptions = toOptions(RECRUITMENT_LABELS)
-const frequencyOptions = toOptions(FREQUENCY_LABELS)
-const periodOptions = toOptions(PERIOD_LABELS)
-
-const { data: modulesData } = await useFetch<{ name: string }[]>('/api/modules')
-const { data: experiencesData } = await useFetch<{ name: string }[]>('/api/experiences')
-
-const allModules = computed(() => (modulesData.value ?? []).map(m => m.name))
-const allExperiences = computed(() => (experiencesData.value ?? []).map(e => e.name))
-
-const filteredModules = computed(() => {
-  const q = moduleFilter.value.trim().toLowerCase()
-  return q ? allModules.value.filter(m => m.toLowerCase().includes(q)) : allModules.value
-})
-
-function toggle(list: string[], value: string) {
-  const i = list.indexOf(value)
-  if (i === -1) list.push(value)
-  else list.splice(i, 1)
-}
-
-onMounted(async () => {
-  try {
-    const data = await $fetch<Record<string, any>>(`/api/my/communities/${id}`)
-    // Show any sensitive value already submitted for review, so the field does
-    // not appear to have reverted while it waits.
-    const proposed = data.pendingRevision?.patch ?? {}
-
-    Object.assign(form, {
-      name: proposed.name ?? data.name ?? '',
-      slug: data.slug ?? '',
-      shortDescription: data.shortDescription ?? '',
-      description: data.description ?? '',
-      objectives: data.objectives ?? '',
-      entryConditions: data.entryConditions ?? '',
-      sizeText: data.sizeText ?? '',
-      founder: data.founder ?? '',
-      contact: data.contact ?? '',
-      foundedDate: data.foundedDate ?? '',
-      communityType: data.communityType ?? 'other',
-      sizeCategory: data.sizeCategory ?? 'unknown',
-      recruitmentStatus: data.recruitmentStatus ?? 'unknown',
-      eventFrequency: data.eventFrequency ?? 'unknown',
-      discordUrl: proposed.discordUrl ?? data.discordUrl ?? '',
-      websiteUrl: proposed.websiteUrl ?? data.websiteUrl ?? '',
-      youtubeUrl: proposed.youtubeUrl ?? data.youtubeUrl ?? '',
-      twitchUrl: proposed.twitchUrl ?? data.twitchUrl ?? '',
-      instagramUrl: proposed.instagramUrl ?? data.instagramUrl ?? '',
-      facebookUrl: proposed.facebookUrl ?? data.facebookUrl ?? '',
-      twitterUrl: proposed.twitterUrl ?? data.twitterUrl ?? '',
-      // A pending logo change shows instead of the published one, like the
-      // other fields awaiting review.
-      logoUrl: proposed.logoUrl ?? data.logoUrl ?? '',
-      accentColor: data.accentColor ?? null,
-      historicalPeriods: data.historicalPeriods ?? [],
-      moduleNames: data.moduleNames ?? [],
-      soughtModuleNames: data.soughtModuleNames ?? [],
-      experienceNames: data.experienceNames ?? [],
-      sections: data.sections ?? [],
-    })
-    pendingFields.value = data.pendingRevision?.fields ?? []
-    loaded.value = true
-    await Promise.all([loadMembers(), loadStats()])
-  } catch (error: any) {
-    loadError.value = error?.data?.statusMessage
-      || "Impossible de charger cette fiche. Vérifiez que vous la gérez bien."
-  }
-})
-
-async function save() {
-  if (saving.value) return
-  saving.value = true
-  saveError.value = ''
-  savedAt.value = null
-
-  try {
-    const res = await $fetch<{ pendingFields?: string[] }>(`/api/my/communities/${id}`, {
-      method: 'PUT',
-      body: { ...form },
-    })
-    pendingFields.value = res?.pendingFields ?? []
-    savedAt.value = Date.now()
-    if (previewOn.value) await refreshPreview()
-  } catch (error: any) {
-    saveError.value = error?.data?.statusMessage || "L'enregistrement a échoué. Réessayez."
-  } finally {
-    saving.value = false
-  }
-}
-
-useHead({ title: 'Modifier ma communauté — Commus DCS FR' })
+useHead({ title: 'Tableau de bord — Commus DCS FR' })
 </script>

@@ -196,6 +196,7 @@ Valeur livrée seule : les responsables se connectent, réclament leur fiche via
 Valeur : le cœur de la promesse produit — édition inline permissive, markdown, revue des champs sensibles.
 - Pipeline markdown sanitisé + composant `CommunityRichText` (fiche publique inchangée pour le texte brut existant — le markdown est un sur-ensemble, zéro migration de contenu).
 - Onglet « Ma page » : édition inline section par section, réutilisation des composants de `[slug].vue`.
+  - **Livré le 2026-09-26** sous forme d'édition *sur la fiche publique elle-même* (`/communautes/<slug>?edit=1`) : `CommunityProfile` sert le public et l'éditeur, `CommunityEditZone` rend chaque bloc cliquable, panneau latéral (tiroir bas sur mobile), brouillon local + annuler/rétablir (`useCommunityDraft`), galerie (ajout, ordre, texte alternatif). `/ma-communaute/[id]` devient le tableau de bord (audience, équipe).
 - `community_revisions` : name/URLs/images en file, fusion des pending, diff admin dans `/admin/revisions`, restore depuis snapshots.
 - Signalement public.
 **Risques** : XSS markdown (le point de sécurité n°1 du projet — sanitisation serveur systématique, revue de code dédiée) ; l'édition inline est le gros du coût front — fallback acceptable : garder le formulaire de Phase 1 par section.

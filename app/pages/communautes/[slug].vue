@@ -14,297 +14,19 @@
       Retour aux communautés
     </UButton>
 
-    <!-- Header -->
-    <div class="flex flex-col sm:flex-row items-start gap-6 mb-8">
-      <div class="shrink-0 h-24 w-24 rounded-xl bg-gray-200 dark:bg-gray-800 flex items-center justify-center overflow-hidden">
-        <NuxtImg v-if="community.logoUrl" :src="community.logoUrl" :provider="community.logoUrl.startsWith('/api/media/') ? 'none' : undefined" :alt="community.name" width="96" height="96" loading="lazy" class="h-full w-full object-cover" />
-        <UIcon v-else name="i-heroicons-user-group" class="text-gray-500 text-4xl" />
-      </div>
-      <div class="flex-1">
-        <div class="flex items-center gap-3 flex-wrap">
-          <h1 class="text-3xl font-bold text-gray-900 dark:text-white">{{ community.name }}</h1>
-          <UBadge :color="recruitmentColor" variant="subtle">
-            {{ RECRUITMENT_LABELS[community.recruitmentStatus] }}
-          </UBadge>
-          <UBadge
-            v-if="(community as any).isManagedByCommunity"
-            color="success"
-            variant="subtle"
-            title="Fiche tenue à jour par ses responsables"
-          >
-            <UIcon name="i-heroicons-check-badge" class="mr-0.5" />
-            Gérée par la commu
-          </UBadge>
-          <UBadge v-if="(community as any).isCommunityPillar" color="warning" variant="solid">
-            ⭐ Pilier de la Communauté
-          </UBadge>
-          <UBadge v-if="community.communityType !== 'other'" variant="outline" color="neutral">
-            {{ TYPE_LABELS[community.communityType] }}
-          </UBadge>
-        </div>
-        <p v-if="community.shortDescription" class="mt-2 text-gray-500 dark:text-gray-400 text-lg">
-          {{ community.shortDescription }}
-        </p>
-        <!-- Social links -->
-        <div class="mt-4 flex items-center gap-2 flex-wrap">
-          <UButton
-            v-if="community.discordUrl"
-            :to="community.discordUrl"
-            target="_blank"
-            icon="i-simple-icons-discord"
-            color="primary"
-            size="sm"
-            @click="trackSocial('discord')"
-          >
-            Discord
-          </UButton>
-          <UButton
-            v-if="community.websiteUrl"
-            :to="community.websiteUrl"
-            target="_blank"
-            icon="i-heroicons-globe-alt"
-            variant="outline"
-            color="neutral"
-            size="sm"
-            @click="trackSocial('website')"
-          >
-            Site web
-          </UButton>
-          <UButton
-            v-if="community.youtubeUrl"
-            :to="community.youtubeUrl"
-            target="_blank"
-            icon="i-simple-icons-youtube"
-            variant="outline"
-            color="neutral"
-            size="sm"
-            :aria-label="`${community.name} sur YouTube`"
-            :title="`${community.name} sur YouTube`"
-            @click="trackSocial('youtube')"
-          >
-            YouTube
-          </UButton>
-          <UButton
-            v-if="community.twitchUrl"
-            :to="community.twitchUrl"
-            target="_blank"
-            icon="i-simple-icons-twitch"
-            variant="outline"
-            color="neutral"
-            size="sm"
-            :aria-label="`${community.name} sur Twitch`"
-            :title="`${community.name} sur Twitch`"
-            @click="trackSocial('twitch')"
-          >
-            Twitch
-          </UButton>
-          <UButton
-            v-if="community.instagramUrl"
-            :to="community.instagramUrl"
-            target="_blank"
-            icon="i-simple-icons-instagram"
-            variant="outline"
-            color="neutral"
-            size="sm"
-            :aria-label="`${community.name} sur Instagram`"
-            :title="`${community.name} sur Instagram`"
-            @click="trackSocial('instagram')"
-          >
-            Instagram
-          </UButton>
-          <UButton
-            v-if="community.facebookUrl"
-            :to="community.facebookUrl"
-            target="_blank"
-            icon="i-simple-icons-facebook"
-            variant="outline"
-            color="neutral"
-            size="sm"
-            :aria-label="`${community.name} sur Facebook`"
-            :title="`${community.name} sur Facebook`"
-            @click="trackSocial('facebook')"
-          >
-            Facebook
-          </UButton>
-          <UButton
-            v-if="community.twitterUrl"
-            :to="community.twitterUrl"
-            target="_blank"
-            icon="i-simple-icons-x"
-            variant="outline"
-            color="neutral"
-            size="sm"
-            :aria-label="`${community.name} sur X (Twitter)`"
-            :title="`${community.name} sur X (Twitter)`"
-            @click="trackSocial('twitter')"
-          >
-            X
-          </UButton>
-        </div>
-      </div>
-    </div>
+    <ClientOnly v-if="editing">
+      <LazyCommunityEditor :community="community" @exit="exitEdit" @published="refresh()">
+        <template #default="{ preview }">
+          <CommunityProfile :community="preview" />
+        </template>
+      </LazyCommunityEditor>
+      <template #fallback>
+        <CommunityProfile :community="community" />
+      </template>
+    </ClientOnly>
 
-    <div class="grid gap-8 lg:grid-cols-3">
-      <!-- Main content (2/3) -->
-      <div class="lg:col-span-2 space-y-8">
-        <!-- Description -->
-        <section v-if="community.description">
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Présentation</h2>
-          <CommunityRichText :html="community.descriptionHtml" :fallback="community.description" />
-        </section>
-
-        <!-- Objectives -->
-        <section v-if="community.objectives">
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Objectifs</h2>
-          <CommunityRichText :html="community.objectivesHtml" :fallback="community.objectives" />
-        </section>
-
-        <!-- Community-authored sections -->
-        <section v-for="section in community.sections || []" :key="section.title">
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">{{ section.title }}</h2>
-          <CommunityRichText :html="section.bodyHtml" />
-        </section>
-
-        <!-- Modules -->
-        <section v-if="community.moduleNames?.length">
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Modules DCS</h2>
-          <div class="flex flex-wrap gap-2">
-            <!-- Vers la page du module : c'est ce qui la rend indexable. -->
-            <NuxtLink
-              v-for="mod in community.moduleNames"
-              :key="mod"
-              :to="`/modules/${moduleSlug(mod)}`"
-            >
-              <UBadge variant="subtle" color="primary" size="md">{{ mod }}</UBadge>
-            </NuxtLink>
-          </div>
-        </section>
-
-        <!-- Sought modules -->
-        <section v-if="community.soughtModuleNames?.length">
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Modules recherchés</h2>
-          <p class="text-sm text-gray-500 mb-2">La communauté recherche activement des pilotes sur ces modules :</p>
-          <div class="flex flex-wrap gap-2">
-            <UBadge v-for="mod in community.soughtModuleNames" :key="mod" variant="outline" color="warning" size="md">
-              {{ mod }}
-            </UBadge>
-          </div>
-        </section>
-
-        <!-- Experiences -->
-        <section v-if="community.experienceNames?.length">
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Expériences proposées</h2>
-          <div class="flex flex-wrap gap-2">
-            <UBadge v-for="exp in community.experienceNames" :key="exp" variant="subtle" color="neutral" size="md">
-              {{ exp }}
-            </UBadge>
-          </div>
-        </section>
-
-        <!-- Images gallery -->
-        <section v-if="community.images?.length">
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Galerie</h2>
-          <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-            <div
-              v-for="(img, i) in community.images"
-              :key="i"
-              class="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-800"
-            >
-              <NuxtImg :src="img.url" :provider="img.url.startsWith('/api/media/') ? 'none' : undefined" :alt="img.alt || community.name" width="400" height="192" loading="lazy" class="w-full h-48 object-cover" />
-            </div>
-          </div>
-        </section>
-
-        <!-- Other links -->
-        <section v-if="community.otherLinks?.length">
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Liens</h2>
-          <div class="space-y-2">
-            <a
-              v-for="link in community.otherLinks"
-              :key="link.url"
-              :href="link.url"
-              target="_blank"
-              class="flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors"
-              @click="trackSocial('other')"
-            >
-              <UIcon name="i-heroicons-link" />
-              {{ link.label }}
-            </a>
-          </div>
-        </section>
-      </div>
-
-      <!-- Sidebar (1/3) -->
-      <div class="space-y-4">
-        <!-- Info card -->
-        <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5 space-y-4">
-          <h3 class="font-semibold text-gray-900 dark:text-white">Informations</h3>
-
-          <div v-if="community.sizeText || community.sizeCategory !== 'unknown'" class="flex items-start gap-3">
-            <UIcon name="i-heroicons-users" class="text-gray-500 mt-0.5" />
-            <div>
-              <div class="text-sm text-gray-500 dark:text-gray-400">Taille</div>
-              <div class="text-sm text-gray-900 dark:text-white">{{ community.sizeText || SIZE_LABELS[community.sizeCategory] }}</div>
-            </div>
-          </div>
-
-          <div v-if="community.eventFrequency !== 'unknown'" class="flex items-start gap-3">
-            <UIcon name="i-heroicons-calendar" class="text-gray-500 mt-0.5" />
-            <div>
-              <div class="text-sm text-gray-500 dark:text-gray-400">Fréquence des événements</div>
-              <div class="text-sm text-gray-900 dark:text-white">{{ FREQUENCY_LABELS[community.eventFrequency] }}</div>
-            </div>
-          </div>
-
-          <div v-if="community.historicalPeriods?.length" class="flex items-start gap-3">
-            <UIcon name="i-heroicons-clock" class="text-gray-500 mt-0.5" />
-            <div>
-              <div class="text-sm text-gray-500 dark:text-gray-400">Périodes historiques</div>
-              <div class="text-sm text-gray-900 dark:text-white">
-                {{ community.historicalPeriods.map((p: string) => PERIOD_LABELS[p] || p).join(', ') }}
-              </div>
-            </div>
-          </div>
-
-          <div v-if="community.founder" class="flex items-start gap-3">
-            <UIcon name="i-heroicons-user" class="text-gray-500 mt-0.5" />
-            <div>
-              <div class="text-sm text-gray-500 dark:text-gray-400">Fondateur</div>
-              <div class="text-sm text-gray-900 dark:text-white">{{ community.founder }}</div>
-            </div>
-          </div>
-
-          <div v-if="community.contact" class="flex items-start gap-3">
-            <UIcon name="i-heroicons-chat-bubble-left-right" class="text-gray-500 mt-0.5" />
-            <div>
-              <div class="text-sm text-gray-500 dark:text-gray-400">Contact</div>
-              <div class="text-sm text-gray-900 dark:text-white">{{ community.contact }}</div>
-            </div>
-          </div>
-
-          <div v-if="community.entryConditions" class="flex items-start gap-3">
-            <UIcon name="i-heroicons-clipboard-document-check" class="text-gray-500 mt-0.5" />
-            <div>
-              <div class="text-sm text-gray-500 dark:text-gray-400">Conditions d'entrée</div>
-              <div class="text-sm text-gray-900 dark:text-white whitespace-pre-line">{{ community.entryConditions }}</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Discord CTA -->
-        <UButton
-          v-if="community.discordUrl"
-          :to="community.discordUrl"
-          target="_blank"
-          icon="i-simple-icons-discord"
-          color="primary"
-          size="lg"
-          block
-          @click="trackSocial('discord')"
-        >
-          Rejoindre le Discord
-        </UButton>
-
+    <CommunityProfile v-else :community="community" @social="trackSocial">
+      <template #aside>
         <!-- Share -->
         <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5">
           <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Partager</h3>
@@ -313,7 +35,7 @@
             :text="`Découvrez ${community.name} sur Commus DCS FR`"
           />
         </div>
-
+  
         <!-- Upvote -->
         <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5">
           <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Soutenir</h3>
@@ -354,33 +76,40 @@
             {{ voteError }}
           </p>
         </div>
-
+  
         <!-- Claim / manage this page -->
         <div class="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 p-5">
           <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Gérer cette fiche</h3>
-
+  
           <template v-if="managesThisCommunity">
             <UButton
-              :to="`/ma-communaute/${community.id}`"
+              :to="{ query: { edit: '1' } }"
               icon="i-heroicons-pencil-square"
               color="primary"
-              variant="soft"
               size="sm"
               block
             >
               Modifier cette page
             </UButton>
-            <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
-              Vous gérez cette communauté.
-            </p>
+            <UButton
+              :to="`/ma-communaute/${community.id}`"
+              icon="i-heroicons-chart-bar"
+              color="neutral"
+              variant="ghost"
+              size="sm"
+              block
+              class="mt-1"
+            >
+              Statistiques et équipe
+            </UButton>
           </template>
-
+  
           <template v-else-if="claimSent">
             <p class="text-sm text-emerald-600 dark:text-emerald-400">
               Demande envoyée. Elle sera examinée prochainement.
             </p>
           </template>
-
+  
           <template v-else>
             <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">
               Vous êtes responsable de cette communauté&nbsp;? Réclamez cette page pour la mettre à jour vous-même.
@@ -409,8 +138,8 @@
             </UButton>
           </template>
         </div>
-      </div>
-    </div>
+      </template>
+    </CommunityProfile>
 
     <!-- Claim request modal -->
     <UModal v-model:open="claimOpen" title="Réclamer cette page">
@@ -438,7 +167,7 @@
     </UModal>
 
     <!-- Similar communities -->
-    <section v-if="similar?.data?.length" class="mt-12">
+    <section v-if="similar?.data?.length && !editing" class="mt-12">
       <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Communautés similaires</h2>
       <div class="grid gap-4 md:grid-cols-3">
         <CommunityCard v-for="c in similar.data" :key="c.id" :community="c" />
@@ -448,21 +177,21 @@
 </template>
 
 <script setup lang="ts">
-import { SIZE_LABELS, TYPE_LABELS, FREQUENCY_LABELS, RECRUITMENT_LABELS, PERIOD_LABELS, RECRUITMENT_COLORS } from '#shared/types'
 import type { CommunityDetail, CommunityCard } from '#shared/types'
+import type { SocialNetwork } from '~/components/community/Profile.vue'
 
 const route = useRoute()
 const slug = route.params.slug as string
 
 const { track } = useUmami()
 
-function trackSocial(network: 'discord' | 'website' | 'youtube' | 'instagram' | 'facebook' | 'twitch' | 'twitter' | 'other') {
+function trackSocial(network: SocialNetwork) {
   track('social_click', { network, slug })
   // Also counted per-community so managers see it in their own dashboard.
   if (network !== 'other') recordPageEvent(`click_${network}`)
 }
 
-const { data: community } = await useFetch<CommunityDetail>(`/api/communities/${slug}`)
+const { data: community, refresh } = await useFetch<CommunityDetail>(`/api/communities/${slug}`)
 
 if (!community.value) {
   throw createError({ statusCode: 404, statusMessage: 'Communauté introuvable' })
@@ -496,10 +225,6 @@ useHead({
       }),
     },
   ],
-})
-
-const recruitmentColor = computed(() => {
-  return (RECRUITMENT_COLORS[community.value!.recruitmentStatus] || 'neutral') as any
 })
 
 // Upvote
@@ -541,6 +266,14 @@ const claimSent = ref(false)
 const managesThisCommunity = computed(() =>
   !!community.value && account.roleFor(community.value.id) !== null,
 )
+
+// In-place editing: the same page, with ?edit, for the people who manage it.
+const editing = computed(() => route.query.edit !== undefined && managesThisCommunity.value)
+
+function exitEdit() {
+  const { edit: _edit, ...query } = route.query
+  navigateTo({ query }, { replace: true })
+}
 
 async function submitClaim() {
   if (claimPending.value) return
