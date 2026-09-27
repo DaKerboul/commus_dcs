@@ -10,7 +10,7 @@
 
     <!-- Navbar — floating glass pill detached from the top -->
     <header class="sticky top-0 z-50 px-4 pt-3">
-      <nav class="mx-auto max-w-7xl rounded-2xl border border-line bg-white/80 dark:bg-gray-950/80 backdrop-blur-lg shadow-sm px-4 sm:px-6">
+      <nav class="relative mx-auto max-w-7xl rounded-2xl border border-line bg-white/80 dark:bg-gray-950/80 backdrop-blur-lg shadow-sm px-4 sm:px-6">
         <div class="flex h-14 items-center justify-between">
           <div class="flex items-center gap-6">
             <NuxtLink to="/" class="flex items-center gap-2">
@@ -41,6 +41,21 @@
             </div>
           </div>
           <div class="flex items-center gap-2">
+            <!-- Always there, quiet; the bubble below points at it. -->
+            <span ref="supportAnchor" class="inline-flex">
+              <UButton
+                :to="SUPPORT_URL"
+                target="_blank"
+                size="sm"
+                variant="soft"
+                icon="i-heroicons-heart"
+                class="bg-rose-50 text-rose-700 hover:bg-rose-100 dark:bg-rose-500/10 dark:text-rose-300 dark:hover:bg-rose-500/20"
+                aria-label="Soutenir le site sur Tipeee"
+                @click="supportBubble?.supported('nav')"
+              >
+                <span class="hidden sm:inline">Soutenir</span>
+              </UButton>
+            </span>
             <!-- Primary action: submitting a community is a CTA, not a nav link -->
             <UButton to="/soumettre" color="primary" size="sm" icon="i-heroicons-plus" class="hidden sm:flex">
               Soumettre
@@ -174,6 +189,9 @@
           </UButton>
         </div>
         </Transition>
+        <ClientOnly>
+          <SupportBubble ref="supportBubble" :anchor="supportAnchor" />
+        </ClientOnly>
       </nav>
     </header>
 
@@ -221,6 +239,12 @@
 </template>
 
 <script setup lang="ts">
+import { SUPPORT_URL } from '~/utils/support-bubble'
+
+// "Soutenir" button and the bubble that points at it (see SupportBubble.vue).
+const supportAnchor = ref<HTMLElement | null>(null)
+const supportBubble = ref<{ supported: (source: 'bubble' | 'nav') => void } | null>(null)
+
 const mobileOpen = ref(false)
 const colorMode = useColorMode()
 const { isRlpdk, disableRlpdk } = useRlpdkTheme()
