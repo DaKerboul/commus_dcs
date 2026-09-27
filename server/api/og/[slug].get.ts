@@ -1,73 +1,91 @@
-import sharp from 'sharp'
-import { eq } from 'drizzle-orm'
-import { communities } from '#server/db/schema'
+import { readFile } from 'node:fs/promises'
+import { join, resolve, sep } from 'node:path'
+import { asc, count, eq } from 'drizzle-orm'
+import { communities, communityImages, communityModules } from '#server/db/schema'
+
+// No route cache here: Nitro's route cache stores bodies as JSON, which once
+// turned this image into {"type":"Buffer",…} (see nuxt.config.ts).
+
+const PUBLIC_ROOTS = [join(process.cwd(), '.output', 'public'), join(process.cwd(), 'public')]
+const MAX_REMOTE_BYTES = 5 * 1024 * 1024
+
+/** An image referenced by a fiche, from wherever it lives; null when unusable. */
+async function loadImage(url: string | null | undefined): Promise<Buffer | null> {
+  if (!url) return null
+
+  if (url.startsWith('data:')) return decodeImageDataUri(url)?.body ?? null
+
+  // Files shipped with the site (/commus_img/…, the hero shots).
+  if (url.startsWith('/')) {
+    for (const root of PUBLIC_ROOTS) {
+      const file = resolve(root, `.${url}`)
+      if (!file.startsWith(root + sep)) return null
+      try {
+        return await readFile(file)
+      } catch { /* try the next root */ }
+    }
+    return null
+  }
+
+  // A logo hosted elsewhere: short timeout, bounded size, images only.
+  if (/^https?:\/\//i.test(url)) {
+    try {
+      const res = await fetch(url, { signal: AbortSignal.timeout(3000), redirect: 'follow' })
+      const size = Number(res.headers.get('content-length') ?? 0)
+      if (!res.ok || !res.headers.get('content-type')?.startsWith('image/') || size > MAX_REMOTE_BYTES) return null
+      const body = Buffer.from(await res.arrayBuffer())
+      return body.length <= MAX_REMOTE_BYTES ? body : null
+    } catch {
+      return null
+    }
+  }
+  return null
+}
 
 export default defineEventHandler(async (event) => {
   const slug = getRouterParam(event, 'slug')
   if (!slug) throw createError({ statusCode: 400 })
 
   const db = useDB()
-  const [community] = await db
-    .select({
-      name: communities.name,
-      shortDescription: communities.shortDescription,
-      recruitmentStatus: communities.recruitmentStatus,
-      sizeCategory: communities.sizeCategory,
-      communityType: communities.communityType,
-    })
-    .from(communities)
-    .where(eq(communities.slug, slug))
-    .limit(1)
+  const [community] = await db.select().from(communities).where(eq(communities.slug, slug)).limit(1)
+  if (!community || !community.published) throw createError({ statusCode: 404 })
 
-  if (!community) {
-    throw createError({ statusCode: 404 })
+  const [[firstImage], [modules]] = await Promise.all([
+    db.select({ url: communityImages.url }).from(communityImages)
+      .where(eq(communityImages.communityId, community.id))
+      .orderBy(asc(communityImages.sortOrder), asc(communityImages.id))
+      .limit(1),
+    db.select({ n: count() }).from(communityModules).where(eq(communityModules.communityId, community.id)),
+  ])
+
+  const hero = (await loadImage('/bck1.png'))!
+  const [photo, logo, siteLogo] = await Promise.all([
+    loadImage(firstImage?.url),
+    loadImage(community.logoUrl),
+    loadImage('/logo.png'),
+  ])
+
+  const card = {
+    name: community.name,
+    shortDescription: community.shortDescription,
+    recruitmentStatus: community.recruitmentStatus,
+    communityType: community.communityType,
+    sizeCategory: community.sizeCategory,
+    votes: community.votes,
+    moduleCount: modules?.n ?? 0,
+    accentHex: accentHex(community.accentColor),
   }
 
-  const recruitLabels: Record<string, string> = {
-    open: 'Recrutement ouvert',
-    closed: 'Recrutement fermé',
-    none: '',
-    unknown: '',
+  // A fiche's own picture may be something sharp cannot read: fall back to the
+  // hero shot and, if the logo is the culprit, to no logo — never a broken card.
+  let jpeg: Buffer
+  try {
+    jpeg = await renderCommunityCard(card, { background: photo ?? hero, logo, siteLogo: siteLogo! })
+  } catch {
+    jpeg = await renderCommunityCard(card, { background: hero, logo: null, siteLogo: siteLogo! })
   }
-  const recruitLabel = recruitLabels[community.recruitmentStatus || 'unknown'] || ''
 
-  // The text area is 1040 px wide. DejaVu Sans Bold averages ~0.62 em per
-  // glyph, so long names shrink instead of running off the card.
-  const name = community.name
-  const titleSize = Math.max(30, Math.min(52, Math.floor(1040 / (name.length * 0.62))))
-  const rawDesc = (community.shortDescription || '').replace(/\s+/g, ' ').trim()
-  const desc = rawDesc.length > 82 ? `${rawDesc.slice(0, 81).trimEnd()}…` : rawDesc
-  const svg = `<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0a0a0a"/>
-      <stop offset="100%" stop-color="#1a1a2e"/>
-    </linearGradient>
-  </defs>
-  <rect width="1200" height="630" fill="url(#bg)"/>
-  <rect x="0" y="0" width="1200" height="4" fill="#3b82f6"/>
-  <text x="80" y="120" font-family="sans-serif" font-size="18" fill="#3b82f6" font-weight="bold" letter-spacing="3">COMMUS DCS FR</text>
-  <text x="80" y="200" font-family="sans-serif" font-size="${titleSize}" fill="white" font-weight="bold">${escapeXml(name)}</text>
-  <text x="80" y="270" font-family="sans-serif" font-size="22" fill="#9ca3af">${escapeXml(desc)}</text>
-  ${recruitLabel ? `<rect x="80" y="340" width="${recruitLabel.length * 12 + 40}" height="40" rx="8" fill="${community.recruitmentStatus === 'open' ? '#065f46' : '#7f1d1d'}"/>
-  <text x="100" y="366" font-family="sans-serif" font-size="16" fill="${community.recruitmentStatus === 'open' ? '#6ee7b7' : '#fca5a5'}">${recruitLabel}</text>` : ''}
-  <text x="80" y="560" font-family="sans-serif" font-size="16" fill="#4b5563">commus.kerboul.me/communautes/${slug}</text>
-  <text x="1120" y="560" font-family="sans-serif" font-size="14" fill="#374151" text-anchor="end">RLPDK Approved</text>
-</svg>`
-
-  // Discord, X and Facebook ignore SVG previews, so the card is rasterised.
-  // The runtime image ships font-dejavu so the text actually renders.
-  const png = await sharp(Buffer.from(svg)).png({ compressionLevel: 9 }).toBuffer()
-  setResponseHeader(event, 'Content-Type', 'image/png')
+  setResponseHeader(event, 'Content-Type', 'image/jpeg')
   setResponseHeader(event, 'Cache-Control', 'public, max-age=86400')
-  return png
+  return jpeg
 })
-
-function escapeXml(str: string): string {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;')
-}
