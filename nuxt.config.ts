@@ -83,7 +83,9 @@ export default defineNuxtConfig({
       '/api/communities': { swr: 60 },        // 1 min SWR - listing changes more often
       '/api/communities/random': { swr: false }, // never cache random
       '/api/changelog': { swr: 300 },         // 5 min SWR
-      '/api/og/**': { swr: 3600 },            // 1 hour SWR for OG images
+      // No route cache for /api/og: Nitro stores bodies as JSON, which turned the
+      // PNG into {"type":"Buffer",…} (broken Discord embeds). The handler sets
+      // its own Cache-Control.
       '/api/streamers': { swr: false },            // live data — no cache
       '/api/streamers/live': { swr: false },       // live data — no cache
       '/api/sitemap.xml': { swr: 3600 },          // 1 hour SWR
