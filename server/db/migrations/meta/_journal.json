@@ -71,6 +71,13 @@
       "when": 1790419984997,
       "tag": "0009_streamer_communities",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1790778061469,
+      "tag": "0010_add_f100d_module",
+      "breakpoints": true
     }
   ]
 }
