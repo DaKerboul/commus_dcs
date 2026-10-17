@@ -295,6 +295,17 @@ export const communityMembers = pgTable('community_members', {
   byUser: index('idx_community_members_user').on(table.userId),
 }))
 
+/** A signed-in visitor's bookmarked communities. Private: never exposed or counted publicly. */
+export const userFavorites = pgTable('user_favorites', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  communityId: integer('community_id').notNull().references(() => communities.id, { onDelete: 'cascade' }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, table => ({
+  uniqueFavorite: uniqueIndex('idx_user_favorites_user_community').on(table.userId, table.communityId),
+  byUser: index('idx_user_favorites_user').on(table.userId),
+}))
+
 /** "I manage this community" requests, reviewed by the admin. */
 export const claimRequests = pgTable('claim_requests', {
   id: serial('id').primaryKey(),
@@ -399,6 +410,7 @@ export const communitiesRelations = relations(communities, ({ many }) => ({
   images: many(communityImages),
   votesLedger: many(communityVotes),
   members: many(communityMembers),
+  favoritedBy: many(userFavorites),
   claimRequests: many(claimRequests),
   snapshots: many(communitySnapshots),
   revisions: many(communityRevisions),
@@ -420,7 +432,13 @@ export const communityRevisionsRelations = relations(communityRevisions, ({ one 
 
 export const usersRelations = relations(users, ({ many }) => ({
   memberships: many(communityMembers),
+  favorites: many(userFavorites),
   claimRequests: many(claimRequests),
+}))
+
+export const userFavoritesRelations = relations(userFavorites, ({ one }) => ({
+  user: one(users, { fields: [userFavorites.userId], references: [users.id] }),
+  community: one(communities, { fields: [userFavorites.communityId], references: [communities.id] }),
 }))
 
 export const communityMembersRelations = relations(communityMembers, ({ one }) => ({

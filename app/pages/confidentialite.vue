@@ -81,12 +81,14 @@
                   e-mail, et aucun jeton Discord n'est stocké.
                 </p>
                 <p>
-                  Ces informations servent à vous identifier comme responsable d'une fiche et à afficher votre
-                  nom dans l'interface d'administration. Elles ne sont jamais transmises à un tiers.
+                  Ces informations servent à vous identifier comme responsable d'une fiche, à rattacher vos votes
+                  et vos favoris à votre compte, et à afficher votre nom dans l'interface d'administration.
+                  Elles ne sont jamais transmises à un tiers.
                 </p>
                 <p>
                   <strong class="text-strong">Durée de conservation :</strong> les comptes
-                  inactifs depuis plus de 18 mois et qui ne gèrent aucune fiche sont supprimés automatiquement.
+                  inactifs depuis plus de 18 mois et qui ne gèrent aucune fiche sont supprimés automatiquement,
+                  avec leurs favoris.
                   Vous pouvez demander la suppression de votre compte à tout moment via la page contact.
                 </p>
               </div>
@@ -142,6 +144,26 @@
                   durée 24 h) complètent ce contrôle.
                   Pour limiter les abus, une empreinte chiffrée de votre adresse IP est enregistrée avec le vote,
                   puis effacée au bout de 30 jours.
+                </p>
+              </div>
+            </div>
+
+            <!-- Favoris -->
+            <div class="rounded-xl border border-line surface p-5">
+              <div class="flex items-center gap-3 mb-3">
+                <UIcon name="i-heroicons-bookmark" class="text-blue-600 dark:text-blue-400 text-lg shrink-0" />
+                <h3 class="font-semibold text-strong">Favoris</h3>
+              </div>
+              <div class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed space-y-2">
+                <p>
+                  Sans compte, vos favoris restent uniquement dans votre navigateur
+                  (<code class="px-1.5 py-0.5 rounded bg-gray-200 dark:bg-gray-800 text-xs font-mono">localStorage</code>) :
+                  nous ne les recevons pas.
+                </p>
+                <p>
+                  Connecté avec Discord, la liste des communautés que vous mettez en favori est enregistrée sur votre
+                  compte pour la retrouver sur vos autres appareils. Elle est privée : elle n'est ni affichée ni
+                  comptée publiquement, et elle est supprimée avec votre compte.
                 </p>
               </div>
             </div>

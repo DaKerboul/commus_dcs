@@ -7,6 +7,7 @@ import {
   experiences,
   communityHistoricalPeriods,
 } from '#server/db/schema'
+import { normalizeFavoriteSlugs } from '#server/utils/favorites'
 
 export default defineEventHandler(async (event) => {
   const db = useDB()
@@ -21,6 +22,7 @@ export default defineEventHandler(async (event) => {
   const frequencyFilter = query.eventFrequency ? (query.eventFrequency as string).split(',') : []
   const periodFilter = query.historicalPeriods ? (query.historicalPeriods as string).split(',') : []
   const experienceFilter = query.experiences ? (query.experiences as string).split(',') : []
+  const slugFilter = typeof query.slugs === 'string' ? normalizeFavoriteSlugs(query.slugs.split(',')) : []
   const sort = (query.sort as string) || 'votes'
   const sortDir = (query.sortDir as string) || (sort === 'votes' ? 'desc' : 'asc')
   const page = Math.max(1, parseInt(query.page as string) || 1)
@@ -33,6 +35,11 @@ export default defineEventHandler(async (event) => {
     conditions.push(
       sql`(unaccent(${communities.name}) ILIKE unaccent(${'%' + search + '%'}) OR unaccent(COALESCE(${communities.shortDescription}, '')) ILIKE unaccent(${'%' + search + '%'}) OR unaccent(COALESCE(${communities.description}, '')) ILIKE unaccent(${'%' + search + '%'}))`
     )
+  }
+
+  // `slugs` present but with nothing usable must match nothing, not everything.
+  if (query.slugs !== undefined) {
+    conditions.push(slugFilter.length > 0 ? inArray(communities.slug, slugFilter) : sql`false`)
   }
 
   if (typeFilter.length > 0) {
