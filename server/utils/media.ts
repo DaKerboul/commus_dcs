@@ -8,7 +8,23 @@ import { createHash } from 'node:crypto'
 
 export type MediaKind = 'logo' | 'image'
 
-const ALLOWED_TYPES = new Set(['image/webp', 'image/png', 'image/jpeg', 'image/gif', 'image/avif'])
+export const ALLOWED_IMAGE_TYPES = new Set(['image/webp', 'image/png', 'image/jpeg', 'image/gif', 'image/avif'])
+
+/**
+ * The image type the bytes really are, from their magic numbers — or null.
+ * A declared type proves nothing: sharp sniffs the content, so an SVG sent
+ * as "image/png" would still reach the SVG renderer.
+ */
+export function sniffImageType(body: Buffer): string | null {
+  if (body.length < 12) return null
+  if (body.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))) return 'image/png'
+  if (body[0] === 0xff && body[1] === 0xd8 && body[2] === 0xff) return 'image/jpeg'
+  const head = body.subarray(0, 4).toString('latin1')
+  if (head === 'GIF8') return 'image/gif'
+  if (head === 'RIFF' && body.subarray(8, 12).toString('latin1') === 'WEBP') return 'image/webp'
+  if (body.subarray(4, 8).toString('latin1') === 'ftyp' && ['avif', 'avis'].includes(body.subarray(8, 12).toString('latin1'))) return 'image/avif'
+  return null
+}
 
 export function mediaVersion(dataUri: string): string {
   return createHash('sha1').update(dataUri).digest('hex').slice(0, 12)
@@ -24,6 +40,6 @@ export function decodeImageDataUri(uri: string): { type: string; body: Buffer } 
   const match = /^data:([a-z0-9.+/-]+);base64,(.*)$/is.exec(uri)
   if (!match) return null
   const type = match[1]!.toLowerCase()
-  if (!ALLOWED_TYPES.has(type)) return null
+  if (!ALLOWED_IMAGE_TYPES.has(type)) return null
   return { type, body: Buffer.from(match[2]!, 'base64') }
 }

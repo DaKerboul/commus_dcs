@@ -7,13 +7,15 @@ import { communities, communityImages, communityModules } from '#server/db/schem
 // turned this image into {"type":"Buffer",…} (see nuxt.config.ts).
 
 const PUBLIC_ROOTS = [join(process.cwd(), '.output', 'public'), join(process.cwd(), 'public')]
-const MAX_REMOTE_BYTES = 5 * 1024 * 1024
 
 /** An image referenced by a fiche, from wherever it lives; null when unusable. */
 async function loadImage(url: string | null | undefined): Promise<Buffer | null> {
   if (!url) return null
 
-  if (url.startsWith('data:')) return decodeImageDataUri(url)?.body ?? null
+  if (url.startsWith('data:')) {
+    const body = decodeImageDataUri(url)?.body
+    return body && sniffImageType(body) ? body : null
+  }
 
   // Files shipped with the site (/commus_img/…, the hero shots).
   if (url.startsWith('/')) {
@@ -27,18 +29,8 @@ async function loadImage(url: string | null | undefined): Promise<Buffer | null>
     return null
   }
 
-  // A logo hosted elsewhere: short timeout, bounded size, images only.
-  if (/^https?:\/\//i.test(url)) {
-    try {
-      const res = await fetch(url, { signal: AbortSignal.timeout(3000), redirect: 'follow' })
-      const size = Number(res.headers.get('content-length') ?? 0)
-      if (!res.ok || !res.headers.get('content-type')?.startsWith('image/') || size > MAX_REMOTE_BYTES) return null
-      const body = Buffer.from(await res.arrayBuffer())
-      return body.length <= MAX_REMOTE_BYTES ? body : null
-    } catch {
-      return null
-    }
-  }
+  // A logo hosted elsewhere: public hosts only, short timeout, bounded size, raster images only.
+  if (/^https?:\/\//i.test(url)) return fetchRemoteImage(url)
   return null
 }
 
