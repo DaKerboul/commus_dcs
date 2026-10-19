@@ -43,6 +43,8 @@ export function useAccount() {
   /** Sends the visitor to Discord, coming back to `redirectTo` afterwards. */
   function signIn(redirectTo?: string) {
     const target = redirectTo ?? useRoute().fullPath
+    // Section only (/communautes, /soumettre…), so the stat stays readable.
+    useUmami().track('login_start', { from: target.split('?')[0]!.split('/')[1] || 'accueil' })
     window.location.href = `/api/auth/discord?redirect=${encodeURIComponent(target)}`
   }
 

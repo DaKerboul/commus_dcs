@@ -1034,6 +1034,7 @@ async function submit() {
       confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } })
     } catch { /* confetti is non-critical */ }
     submitted.value = true
+    track('submission_sent')
     window.scrollTo({ top: 0, behavior: 'smooth' })
     toast.add({
       title: 'Soumission envoyée !',

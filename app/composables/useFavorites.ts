@@ -29,6 +29,7 @@ export function useFavorites() {
   const syncedFor = useState<number | 'anonymous' | null>('favorites-synced-for', () => null)
   const { user } = useAccount()
   const toast = useToast()
+  const { track } = useUmami()
 
   async function load() {
     const userId = user.value?.id ?? null
@@ -47,7 +48,10 @@ export function useFavorites() {
         ? await $fetch<{ slugs: string[] }>('/api/favorites/import', { method: 'POST', body: { slugs: local } })
         : await $fetch<{ slugs: string[] }>('/api/favorites')
       favorites.value = res.slugs
-      if (local.length) clearLocal()
+      if (local.length) {
+        clearLocal()
+        track('favorites_imported', { count: local.length })
+      }
     } catch {
       // Keep what is on screen and try again on the next load.
       syncedFor.value = null
@@ -69,11 +73,13 @@ export function useFavorites() {
 
     if (!user.value) {
       writeLocal(favorites.value)
+      track('favorite_toggle', { active: wanted, synced: false })
       return
     }
 
     try {
       await $fetch(`/api/favorites/${encodeURIComponent(slug)}`, { method: wanted ? 'PUT' : 'DELETE' })
+      track('favorite_toggle', { active: wanted, synced: true })
     } catch (error: any) {
       favorites.value = before
       toast.add({
