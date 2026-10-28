@@ -76,9 +76,27 @@ Le site est accessible sur <http://localhost:3000> et l'admin sur <http://localh
 | `/soumettre` | Formulaire public pour proposer une communauté |
 | `/contact` | Liens de contact |
 | `/admin/login` | Connexion admin |
-| `/admin` | Dashboard admin |
-| `/admin/communautes` | CRUD des communautés |
-| `/admin/submissions` | Modération des soumissions |
+| `/admin` | Vue d'ensemble : à traiter, tendances sur 30 jours, activité récente |
+| `/admin/moderation` | File unique : soumissions, réclamations, modifications (actions groupées, raccourcis J/K/A/R) |
+| `/admin/communautes` | Liste filtrable, publication en un clic, édition, points de restauration |
+| `/admin/comptes` | Comptes, suspension / rétablissement, historique par compte |
+| `/admin/activite` | Journal d'activité filtrable, export CSV |
+| `/admin/streameurs` | Chaînes Twitch et liens avec les communautés |
+| `/admin/systeme` | Migrations, taille des tables, connexions admin, reconstitution de l'historique |
+
+Les anciennes adresses `/admin/submissions`, `/admin/reclamations` et `/admin/revisions` redirigent vers la modération.
+
+### Journal d'activité
+
+Chaque action admin (décision de modération, édition, suppression, blocage de compte, connexion admin…)
+écrit une ligne dans `audit_log`, avec l'auteur (identifiant Authelia, ou « admin (secours) » pour le mot de passe de secours).
+L'écriture ne casse jamais l'action : si la table est absente, l'action réussit et seule la ligne est perdue
+(le démarrage avale les erreurs de migration, vérifiez `/admin/systeme`).
+
+Après le premier déploiement de la migration `0012_admin_audit`, ouvrez **Système → Reconstituer l'historique**
+pour remplir le passé depuis les horodatages existants. L'opération est idempotente. Ne sont pas reconstituables :
+l'auteur des décisions passées, l'historique de blocage, les connexions autres que la dernière, les retraits de
+votes/favoris, les fiches et comptes déjà supprimés.
 
 ## API
 

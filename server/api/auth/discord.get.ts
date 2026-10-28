@@ -72,7 +72,7 @@ const oauthHandler = defineOAuthDiscordEventHandler({
         emoji: '👤',
         title: 'Nouveau compte',
         subject: account.discordUsername,
-        path: '/admin/reclamations',
+        path: '/admin/comptes',
       })
     }
 

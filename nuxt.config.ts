@@ -97,5 +97,16 @@ export default defineNuxtConfig({
     },
   },
 
+  routeRules: {
+    // Behind a login, so there is nothing worth server-rendering: the shell
+    // appears at once and each page loads its own data (with skeletons).
+    '/admin/**': { ssr: false },
+    // The three moderation queues merged into one screen; old links (and the
+    // Telegram notifications already sent) keep working.
+    '/admin/submissions': { redirect: { to: '/admin/moderation?tab=submissions', statusCode: 302 } },
+    '/admin/reclamations': { redirect: { to: '/admin/moderation?tab=claims', statusCode: 302 } },
+    '/admin/revisions': { redirect: { to: '/admin/moderation?tab=revisions', statusCode: 302 } },
+  },
+
   devtools: { enabled: true },
 })

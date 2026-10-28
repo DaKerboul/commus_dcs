@@ -96,12 +96,13 @@ const menuOpen = ref(false)
 const loggingOut = ref(false)
 
 const navItems = computed(() => [
-  { to: '/admin', label: 'Dashboard', icon: 'i-heroicons-home', exact: true },
+  { to: '/admin', label: "Vue d'ensemble", icon: 'i-heroicons-home', exact: true },
+  { to: '/admin/moderation', label: 'Modération', icon: 'i-heroicons-inbox-stack', badge: totalPending.value },
   { to: '/admin/communautes', label: 'Communautés', icon: 'i-heroicons-users' },
-  { to: '/admin/submissions', label: 'Soumissions', icon: 'i-heroicons-inbox', badge: counts.value.pendingSubmissions },
-  { to: '/admin/reclamations', label: 'Réclamations', icon: 'i-heroicons-hand-raised', badge: counts.value.pendingClaims },
-  { to: '/admin/revisions', label: 'Modifications', icon: 'i-heroicons-document-check', badge: counts.value.pendingRevisions },
+  { to: '/admin/comptes', label: 'Comptes', icon: 'i-heroicons-user-circle' },
+  { to: '/admin/activite', label: 'Activité', icon: 'i-heroicons-clock' },
   { to: '/admin/streameurs', label: 'Streameurs', icon: 'i-simple-icons-twitch' },
+  { to: '/admin/systeme', label: 'Système', icon: 'i-heroicons-cog-6-tooth' },
 ])
 
 const totalPending = computed(() =>
