@@ -75,6 +75,14 @@ export default defineEventHandler(async (event) => {
       blocked: !result.ok,
     }))
 
+    await recordAudit(event, {
+      action: 'admin.login_failed',
+      entityType: 'session',
+      summary: result.ok ? 'Échec de connexion admin (mot de passe)' : 'Connexion admin bloquée après trop d’échecs',
+      metadata: { blocked: !result.ok },
+      actor: { type: 'system', label: 'visiteur anonyme', userId: null },
+    })
+
     if (!result.ok) {
       throw createError({ statusCode: 429, statusMessage: 'Trop de tentatives. Réessayez plus tard.' })
     }
@@ -90,6 +98,14 @@ export default defineEventHandler(async (event) => {
     ip,
     timestamp: new Date(now).toISOString(),
   }))
+
+  await recordAudit(event, {
+    action: 'admin.login',
+    entityType: 'session',
+    summary: 'Connexion admin par mot de passe de secours',
+    metadata: { via: 'password' },
+    actor: { type: 'admin', label: 'admin (secours)', userId: null },
+  })
 
   await setUserSession(event, {
     user: { role: 'admin', name: 'admin' },

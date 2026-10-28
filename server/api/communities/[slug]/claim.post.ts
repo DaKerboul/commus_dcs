@@ -71,6 +71,14 @@ export default defineEventHandler(async (event) => {
         message,
       }).returning()
 
+  await recordAudit(event, {
+    action: existingRequest ? 'claim.reopened' : 'claim.created',
+    entityType: 'claim',
+    entityId: claim.id,
+    communityId: community.id,
+    summary: `Réclamation de « ${community.name} » par ${user.discordUsername}`,
+  })
+
   console.log(JSON.stringify({
     event: 'community.claim',
     result: existingRequest ? 'reopened' : 'requested',

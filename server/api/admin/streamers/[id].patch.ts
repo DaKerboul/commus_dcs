@@ -25,8 +25,20 @@ export default defineEventHandler(async (event) => {
     if (typeof body.frenchOverride === 'boolean') set.isFrench = body.frenchOverride
   }
 
-  const [row] = await useDB().update(streamers).set(set).where(eq(streamers.id, id)).returning({ id: streamers.id })
+  const [row] = await useDB().update(streamers).set(set).where(eq(streamers.id, id))
+    .returning({ id: streamers.id, login: streamers.twitchLogin })
   if (!row) throw createError({ statusCode: 404, statusMessage: 'Chaîne introuvable' })
+
+  await recordAudit(event, {
+    action: 'streamer.updated',
+    entityType: 'streamer',
+    entityId: id,
+    summary: `Chaîne ${row.login} : ${[
+      typeof body?.isActive === 'boolean' ? (body.isActive ? 'réactivée' : 'masquée') : null,
+      body && 'frenchOverride' in body ? `langue ${body.frenchOverride === null ? 'automatique' : body.frenchOverride ? 'forcée FR' : 'forcée non FR'}` : null,
+    ].filter(Boolean).join(', ') || 'modifiée'}`,
+    metadata: { isActive: body?.isActive, frenchOverride: body?.frenchOverride },
+  })
 
   console.log(JSON.stringify({ event: 'streamer.admin', id, ...body }))
   return { ok: true }

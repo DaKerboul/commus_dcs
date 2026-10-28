@@ -40,6 +40,15 @@ export default defineEventHandler(async (event) => {
     eq(communityMembers.userId, targetUserId),
   ))
 
+  await recordAudit(event, {
+    action: 'member.removed',
+    entityType: 'member',
+    entityId: targetUserId,
+    communityId: id,
+    summary: `Accès retiré au compte #${targetUserId} sur la fiche #${id}`,
+    metadata: { role: target.role },
+  })
+
   console.log(JSON.stringify({
     event: 'community.member',
     result: 'removed',

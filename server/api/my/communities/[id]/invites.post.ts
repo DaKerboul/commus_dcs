@@ -45,6 +45,14 @@ export default defineEventHandler(async (event) => {
     expiresAt: new Date(Date.now() + INVITE_TTL_MS),
   })
 
+  await recordAudit(event, {
+    action: 'invite.created',
+    entityType: 'invite',
+    communityId: id,
+    summary: `Invitation ${grantsRole === 'owner' ? 'responsable' : 'éditeur'} créée pour la fiche #${id}`,
+    metadata: { grantsRole },
+  })
+
   console.log(JSON.stringify({
     event: 'community.invite',
     result: 'created',

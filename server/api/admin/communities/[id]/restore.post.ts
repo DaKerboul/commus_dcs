@@ -73,6 +73,15 @@ export default defineEventHandler(async (event) => {
     images: data?.images ?? [],
   }, ALL_RELATIONS)
 
+  await recordAudit(event, {
+    action: 'community.restored',
+    entityType: 'community',
+    entityId: id,
+    communityId: id,
+    summary: `Fiche #${id} restaurée depuis une sauvegarde`,
+    metadata: { snapshotId, snapshotDate: snapshot.createdAt },
+  })
+
   console.log(JSON.stringify({
     event: 'community.restore',
     result: 'restored',

@@ -95,6 +95,13 @@ export default defineEventHandler(async (event) => {
     submittedByUserId,
   }).returning()
 
+  await recordAudit(event, {
+    action: 'submission.created',
+    entityType: 'submission',
+    entityId: submission.id,
+    summary: `Soumission « ${communityName} »`,
+  })
+
   // This flow had no structured log at all — the only pending queue without one.
   console.log(JSON.stringify({
     event: 'submission.created',

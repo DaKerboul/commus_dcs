@@ -57,6 +57,16 @@ const oauthHandler = defineOAuthDiscordEventHandler({
       },
     }).returning()
 
+    if (isNewAccount) {
+      await recordAudit(event, {
+        action: 'user.signup',
+        entityType: 'user',
+        entityId: account.id,
+        summary: `Inscription de ${account.discordUsername}`,
+        actor: { type: 'user', label: account.discordUsername, userId: account.id },
+      })
+    }
+
     if (isNewAccount && !account.isBlocked) {
       notifyAdminAsync({
         emoji: '👤',
@@ -67,6 +77,13 @@ const oauthHandler = defineOAuthDiscordEventHandler({
     }
 
     if (account.isBlocked) {
+      await recordAudit(event, {
+        action: 'user.login_blocked',
+        entityType: 'user',
+        entityId: account.id,
+        summary: `Tentative de connexion d’un compte suspendu : ${account.discordUsername}`,
+        actor: { type: 'user', label: account.discordUsername, userId: account.id },
+      })
       console.log(JSON.stringify({ event: 'auth.discord', result: 'blocked', userId: account.id }))
       return sendRedirect(event, '/?erreur=compte-suspendu')
     }

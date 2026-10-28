@@ -15,5 +15,12 @@ export default defineEventHandler(async (event) => {
     iconUrl: body.iconUrl || null,
   }).returning()
 
+  await recordAudit(event, {
+    action: 'module.created',
+    entityType: 'module',
+    entityId: mod.id,
+    summary: `Module « ${mod.name} » créé`,
+  })
+
   return mod
 })

@@ -1,5 +1,5 @@
-import { eq } from 'drizzle-orm'
-import { communities } from '#server/db/schema'
+import { count, eq } from 'drizzle-orm'
+import { communities, communityMembers, communitySnapshots, communityVotes } from '#server/db/schema'
 
 /**
  * Deletes a community and everything hanging off it.
@@ -29,6 +29,29 @@ export default defineEventHandler(async (event) => {
   if (!community) {
     throw createError({ statusCode: 404, statusMessage: 'Communauté introuvable' })
   }
+
+  // The cascade takes snapshots, votes and members with it: keep what it is
+  // about to erase in the audit line, written first so it survives a crash
+  // between the two statements.
+  const [[votes], [members], [snapshots]] = await Promise.all([
+    db.select({ n: count() }).from(communityVotes).where(eq(communityVotes.communityId, id)),
+    db.select({ n: count() }).from(communityMembers).where(eq(communityMembers.communityId, id)),
+    db.select({ n: count() }).from(communitySnapshots).where(eq(communitySnapshots.communityId, id)),
+  ])
+
+  await recordAudit(event, {
+    action: 'community.deleted',
+    entityType: 'community',
+    entityId: id,
+    communityId: id,
+    summary: `Fiche « ${community.name} » supprimée`,
+    metadata: {
+      slug: community.slug,
+      votes: votes?.n ?? 0,
+      members: members?.n ?? 0,
+      snapshots: snapshots?.n ?? 0,
+    },
+  })
 
   await db.delete(communities).where(eq(communities.id, id))
 
