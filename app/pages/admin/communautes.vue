@@ -1,65 +1,131 @@
 <template>
   <div>
-    <div class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-bold text-strong">Communautés</h1>
-      <UButton icon="i-heroicons-plus" @click="showCreate = true">
-        Ajouter
-      </UButton>
+    <div class="flex items-center justify-between gap-4 flex-wrap mb-6">
+      <div>
+        <h1 class="text-2xl font-bold text-strong">Communautés</h1>
+        <p v-if="data" class="text-sm text-soft mt-1">
+          {{ data.totals.all }} fiche{{ data.totals.all > 1 ? 's' : '' }}
+          <template v-if="data.totals.unpublished"> · {{ data.totals.unpublished }} non publiée{{ data.totals.unpublished > 1 ? 's' : '' }}</template>
+        </p>
+      </div>
+      <UButton icon="i-heroicons-plus" @click="openEditor(null)">Ajouter</UButton>
     </div>
 
-    <!-- List -->
+    <!-- Filtres -->
+    <div class="flex items-center gap-3 flex-wrap mb-4">
+      <UInput
+        v-model="search"
+        icon="i-heroicons-magnifying-glass"
+        placeholder="Nom ou adresse…"
+        class="w-full sm:w-64"
+        :ui="{ trailing: 'pe-1' }"
+      >
+        <template v-if="search" #trailing>
+          <UButton icon="i-heroicons-x-mark" variant="link" color="neutral" size="xs" aria-label="Effacer" @click="search = ''" />
+        </template>
+      </UInput>
+
+      <div class="flex gap-1.5">
+        <UButton
+          v-for="f in publishedFilters"
+          :key="f.value"
+          :variant="params.published === f.value ? 'solid' : 'outline'"
+          :color="params.published === f.value ? 'primary' : 'neutral'"
+          size="xs"
+          @click="setFilter('published', f.value)"
+        >
+          {{ f.label }}
+        </UButton>
+      </div>
+
+      <USelect
+        :model-value="String(params.type)"
+        :items="typeFilterItems"
+        size="sm"
+        class="w-48"
+        aria-label="Type de communauté"
+        @update:model-value="setFilter('type', $event)"
+      />
+
+      <USelect
+        :model-value="`${params.sort}:${params.dir}`"
+        :items="sortItems"
+        size="sm"
+        class="w-48 ml-auto"
+        aria-label="Tri"
+        @update:model-value="setSort"
+      />
+    </div>
+
     <AdminDataState
-      :pending="pending"
+      :pending="pending && !data"
       :error="error"
-      :empty="!communities?.length"
-      empty-label="Aucune communauté enregistrée."
+      :empty="!items.length"
+      :empty-label="isFiltered ? 'Aucune communauté ne correspond.' : 'Aucune communauté enregistrée.'"
       empty-icon="i-heroicons-user-group"
       @retry="refresh()"
     >
-    <div class="space-y-2">
-      <div
-        v-for="c in communities"
-        :key="c.id"
-        class="flex items-center justify-between gap-4 rounded-lg border border-line surface p-4"
-      >
-        <div class="flex items-center gap-3 min-w-0">
-          <div class="h-10 w-10 rounded-lg bg-gray-200 dark:bg-gray-800 flex items-center justify-center overflow-hidden shrink-0">
-            <img v-if="c.logoUrl" :src="c.logoUrl" :alt="c.name" class="h-full w-full object-cover" />
-            <UIcon v-else name="i-heroicons-user-group" class="text-gray-500" />
-          </div>
-          <div class="min-w-0">
-            <div class="font-medium text-strong truncate">{{ c.name }}</div>
-            <div class="text-xs text-gray-500">{{ c.slug }} · {{ c.published ? 'Publié' : 'Brouillon' }}</div>
-          </div>
-        </div>
-        <div class="flex items-center gap-2 shrink-0">
-          <UButton
-            :to="`/communautes/${c.slug}`"
-            target="_blank"
-            icon="i-heroicons-eye"
-            variant="ghost"
-            color="neutral"
-            size="xs"
-          />
-          <UButton
-            icon="i-heroicons-pencil"
-            variant="ghost"
-            color="neutral"
-            size="xs"
-            @click="editCommunity(c)"
-          />
-          <UButton
-            icon="i-heroicons-trash"
-            variant="ghost"
-            color="error"
-            size="xs"
-            :loading="isPending(c.id)"
-            @click="askDelete(c)"
-          />
-        </div>
+      <template #empty>
+        <UButton v-if="isFiltered" class="mt-3" size="sm" variant="outline" color="neutral" icon="i-heroicons-funnel" @click="reset()">
+          Réinitialiser les filtres
+        </UButton>
+      </template>
+
+      <div class="rounded-xl border border-line surface overflow-x-auto" :class="{ 'opacity-60': pending }">
+        <table class="w-full text-sm">
+          <thead class="text-left text-xs uppercase tracking-wide text-gray-500 border-b border-line">
+            <tr>
+              <th class="px-4 py-2.5 font-medium">Communauté</th>
+              <th class="px-3 py-2.5 font-medium hidden md:table-cell">Type</th>
+              <th class="px-3 py-2.5 font-medium text-right hidden sm:table-cell">Votes</th>
+              <th class="px-3 py-2.5 font-medium text-right hidden lg:table-cell">Gestionnaires</th>
+              <th class="px-3 py-2.5 font-medium hidden lg:table-cell">Modifiée</th>
+              <th class="px-3 py-2.5 font-medium">Publiée</th>
+              <th class="px-3 py-2.5" />
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
+            <tr v-for="c in items" :key="c.id" class="hover:bg-gray-50 dark:hover:bg-gray-900/40">
+              <td class="px-4 py-2.5">
+                <button type="button" class="text-left" @click="openEditor(c.id)">
+                  <span class="font-medium text-strong">{{ c.name }}</span>
+                  <span class="block text-xs text-gray-500">{{ c.slug }}<template v-if="c.featured"> · à la une</template></span>
+                </button>
+              </td>
+              <td class="px-3 py-2.5 hidden md:table-cell text-gray-600 dark:text-gray-400">
+                {{ TYPE_LABELS[c.communityType] || c.communityType }}
+              </td>
+              <td class="px-3 py-2.5 text-right tabular-nums hidden sm:table-cell">{{ c.votes }}</td>
+              <td class="px-3 py-2.5 text-right tabular-nums hidden lg:table-cell">
+                <span :class="c.members ? '' : 'text-gray-400'">{{ c.members || 'aucun' }}</span>
+              </td>
+              <td class="px-3 py-2.5 hidden lg:table-cell text-gray-500" :title="formatDateTime(c.updatedAt)">
+                {{ timeAgo(c.updatedAt) }}
+              </td>
+              <td class="px-3 py-2.5">
+                <USwitch
+                  :model-value="c.published"
+                  :disabled="isPending(`pub-${c.id}`)"
+                  :aria-label="c.published ? `Dépublier ${c.name}` : `Publier ${c.name}`"
+                  @update:model-value="togglePublished(c, $event)"
+                />
+              </td>
+              <td class="px-3 py-2.5">
+                <div class="flex items-center justify-end gap-1">
+                  <UButton :to="`/communautes/${c.slug}`" target="_blank" icon="i-heroicons-eye" variant="ghost" color="neutral" size="xs" aria-label="Voir la fiche publique" />
+                  <UButton icon="i-heroicons-pencil" variant="ghost" color="neutral" size="xs" aria-label="Modifier" @click="openEditor(c.id)" />
+                  <UButton icon="i-heroicons-trash" variant="ghost" color="error" size="xs" aria-label="Supprimer" @click="askDelete(c)" />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-    </div>
+
+      <AdminPager v-model:page="params.page" :total="total" :page-size="limit" />
     </AdminDataState>
+
+    <AdminCommunityEditor v-model:open="editorOpen" :community-id="editingId" @saved="onSaved" />
 
     <!-- Suppression : irréversible, snapshots compris -->
     <AdminConfirmDialog
@@ -69,8 +135,9 @@
       :consequences="[
         'Modules, expériences, périodes et galerie',
         'Membres gestionnaires, réclamations et modifications en attente',
-        'Votes et statistiques accumulés',
+        `${deleteTarget?.votes ?? 0} vote(s) et les statistiques accumulées`,
         'Historique de sauvegardes — la restauration ne sera plus possible',
+        'L’opération reste tracée dans le journal d’activité',
       ]"
       :confirm-text="deleteTarget?.slug"
       confirm-label="Supprimer définitivement"
@@ -95,215 +162,96 @@
         </UButton>
       </div>
     </AdminConfirmDialog>
-
-    <!-- Create/Edit Modal -->
-    <UModal v-model:open="showModal">
-      <template #content>
-        <div class="p-6 max-h-[80vh] overflow-y-auto">
-          <h2 class="text-xl font-bold text-strong mb-4">
-            {{ editingId ? 'Modifier' : 'Nouvelle' }} communauté
-          </h2>
-          <form class="space-y-4" @submit.prevent="saveCommunity">
-            <div class="grid gap-4 sm:grid-cols-2">
-              <UFormField label="Nom" required>
-                <UInput v-model="form.name" />
-              </UFormField>
-              <UFormField label="Slug" required>
-                <UInput v-model="form.slug" />
-              </UFormField>
-            </div>
-
-            <UFormField label="Description courte">
-              <UInput v-model="form.shortDescription" />
-            </UFormField>
-
-            <UFormField label="Description complète">
-              <UTextarea v-model="form.description" :rows="4" />
-            </UFormField>
-
-            <UFormField label="Objectifs">
-              <UTextarea v-model="form.objectives" :rows="3" />
-            </UFormField>
-
-            <UFormField label="URL du logo">
-              <UInput v-model="form.logoUrl" placeholder="/commus_img/..." />
-            </UFormField>
-
-            <div class="grid gap-4 sm:grid-cols-2">
-              <UFormField label="Type">
-                <USelect v-model="form.communityType" :items="typeItems" />
-              </UFormField>
-              <UFormField label="Taille">
-                <USelect v-model="form.sizeCategory" :items="sizeItems" />
-              </UFormField>
-            </div>
-
-            <div class="grid gap-4 sm:grid-cols-2">
-              <UFormField label="Recrutement">
-                <USelect v-model="form.recruitmentStatus" :items="recruitItems" />
-              </UFormField>
-              <UFormField label="Fréquence événements">
-                <USelect v-model="form.eventFrequency" :items="freqItems" />
-              </UFormField>
-            </div>
-
-            <UFormField label="Texte taille (libre)">
-              <UInput v-model="form.sizeText" placeholder="Ex: +300 Membres" />
-            </UFormField>
-
-            <div class="grid gap-4 sm:grid-cols-2">
-              <UFormField label="Fondateur">
-                <UInput v-model="form.founder" />
-              </UFormField>
-              <UFormField label="Contact">
-                <UInput v-model="form.contact" />
-              </UFormField>
-              <UFormField label="Date de fondation" hint="AAAA, AAAA-MM ou AAAA-MM-JJ">
-                <UInput v-model="form.foundedDate" placeholder="2003" :maxlength="10" />
-              </UFormField>
-            </div>
-
-            <UFormField label="Conditions d'entrée">
-              <UTextarea v-model="form.entryConditions" :rows="2" />
-            </UFormField>
-
-            <h3 class="text-lg font-semibold text-strong pt-2">Liens</h3>
-            <div class="grid gap-4 sm:grid-cols-2">
-              <UFormField label="Discord">
-                <UInput v-model="form.discordUrl" />
-              </UFormField>
-              <UFormField label="Site web">
-                <UInput v-model="form.websiteUrl" />
-              </UFormField>
-              <UFormField label="YouTube">
-                <UInput v-model="form.youtubeUrl" />
-              </UFormField>
-              <UFormField label="Twitch">
-                <UInput v-model="form.twitchUrl" />
-              </UFormField>
-              <UFormField label="Instagram">
-                <UInput v-model="form.instagramUrl" />
-              </UFormField>
-              <UFormField label="Facebook">
-                <UInput v-model="form.facebookUrl" />
-              </UFormField>
-              <UFormField label="Twitter / X">
-                <UInput v-model="form.twitterUrl" />
-              </UFormField>
-            </div>
-
-            <div class="flex items-center gap-4 pt-2">
-              <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-                <input v-model="form.published" type="checkbox" class="rounded" />
-                Publié
-              </label>
-              <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-                <input v-model="form.featured" type="checkbox" class="rounded" />
-                À la une
-              </label>
-            </div>
-
-            <div class="flex justify-end gap-2 pt-4">
-              <UButton variant="ghost" color="neutral" @click="showModal = false">Annuler</UButton>
-              <UButton type="submit" :loading="saving">
-                {{ editingId ? 'Mettre à jour' : 'Créer' }}
-              </UButton>
-            </div>
-          </form>
-        </div>
-      </template>
-    </UModal>
   </div>
 </template>
 
 <script setup lang="ts">
-import { SIZE_LABELS, TYPE_LABELS, RECRUITMENT_LABELS, FREQUENCY_LABELS } from '#shared/types'
+import { TYPE_LABELS } from '#shared/types'
 
 definePageMeta({ layout: 'admin' })
-useHead({ title: 'Admin Communautés — Commus DCS FR' })
+useHead({ title: 'Communautés — Admin' })
 
-const { data: communities, refresh, pending, error } = await useFetch<any[]>('/api/admin/communities')
-
-const showModal = ref(false)
-const showCreate = ref(false)
-const editingId = ref<number | null>(null)
-const saving = ref(false)
-
-const emptyForm = () => ({
-  name: '', slug: '', shortDescription: '', description: '', objectives: '',
-  logoUrl: '', communityType: 'other', sizeCategory: 'unknown',
-  recruitmentStatus: 'unknown', eventFrequency: 'unknown',
-  sizeText: '', founder: '', contact: '', foundedDate: '', entryConditions: '',
-  discordUrl: '', websiteUrl: '', youtubeUrl: '', twitchUrl: '',
-  instagramUrl: '', facebookUrl: '', twitterUrl: '',
-  published: true, featured: false,
-})
-
-const form = reactive(emptyForm())
-
-const typeItems = Object.entries(TYPE_LABELS).map(([value, label]) => ({ value, label }))
-const sizeItems = Object.entries(SIZE_LABELS).map(([value, label]) => ({ value, label }))
-const recruitItems = Object.entries(RECRUITMENT_LABELS).map(([value, label]) => ({ value, label }))
-const freqItems = Object.entries(FREQUENCY_LABELS).map(([value, label]) => ({ value, label }))
-
-watch(showCreate, (v) => {
-  if (v) {
-    Object.assign(form, emptyForm())
-    editingId.value = null
-    showModal.value = true
-    showCreate.value = false
-  }
-})
-
-function editCommunity(c: any) {
-  editingId.value = c.id
-  Object.assign(form, {
-    name: c.name || '', slug: c.slug || '',
-    shortDescription: c.shortDescription || '', description: c.description || '',
-    objectives: c.objectives || '', logoUrl: c.logoUrl || '',
-    communityType: c.communityType || 'other', sizeCategory: c.sizeCategory || 'unknown',
-    recruitmentStatus: c.recruitmentStatus || 'unknown', eventFrequency: c.eventFrequency || 'unknown',
-    sizeText: c.sizeText || '', founder: c.founder || '', contact: c.contact || '',
-    foundedDate: c.foundedDate || '',
-    entryConditions: c.entryConditions || '',
-    discordUrl: c.discordUrl || '', websiteUrl: c.websiteUrl || '',
-    youtubeUrl: c.youtubeUrl || '', twitchUrl: c.twitchUrl || '',
-    instagramUrl: c.instagramUrl || '', facebookUrl: c.facebookUrl || '',
-    twitterUrl: c.twitterUrl || '', published: c.published, featured: c.featured,
-  })
-  showModal.value = true
+interface Row {
+  id: number
+  slug: string
+  name: string
+  communityType: string
+  published: boolean
+  featured: boolean
+  updatedAt: string
+  votes: number
+  members: number
 }
+
+const { items, total, data, limit, pending, error, refresh, params, search, setFilter, reset, isFiltered } =
+  useAdminList<Row, { totals: { all: number, unpublished: number } }>('/api/admin/communities', {
+    key: 'admin-communities',
+    limit: 50,
+    defaults: { published: '', type: 'all', sort: 'name', dir: 'asc' },
+  })
 
 const { run, isPending } = useAdminAction()
 const { refresh: refreshCounts } = useAdminCounts()
 
-async function saveCommunity() {
-  saving.value = true
-  const isEdit = !!editingId.value
+const publishedFilters = [
+  { value: '', label: 'Toutes' },
+  { value: 'yes', label: 'Publiées' },
+  { value: 'no', label: 'Non publiées' },
+]
 
-  const result = await run(editingId.value ?? 'new', () => (
-    isEdit
-      ? $fetch(`/api/admin/communities/${editingId.value}`, { method: 'PUT', body: form })
-      : $fetch('/api/admin/communities', { method: 'POST', body: form })
-  ), {
-    success: isEdit ? 'Fiche mise à jour' : 'Communauté créée',
-    error: isEdit ? 'La mise à jour a échoué' : 'La création a échoué',
-  })
+const typeFilterItems = [
+  { value: 'all', label: 'Tous les types' },
+  ...Object.entries(TYPE_LABELS).map(([value, label]) => ({ value, label })),
+]
 
-  saving.value = false
-  if (!result) return
+const sortItems = [
+  { value: 'name:asc', label: 'Nom (A → Z)' },
+  { value: 'updatedAt:desc', label: 'Modifiées récemment' },
+  { value: 'createdAt:desc', label: 'Créées récemment' },
+  { value: 'votes:desc', label: 'Plus votées' },
+]
 
-  showModal.value = false
+function setSort(value: string) {
+  const [sort, dir] = value.split(':')
+  params.sort = sort!
+  params.dir = dir!
+  params.page = 1
+}
+
+// ── Édition ─────────────────────────────────────────────
+const editorOpen = ref(false)
+const editingId = ref<number | null>(null)
+
+function openEditor(id: number | null) {
+  editingId.value = id
+  editorOpen.value = true
+}
+
+async function onSaved() {
   await Promise.all([refresh(), refreshCounts()])
 }
 
-// ── Suppression ────────────────────────────────────────
+// Un clic, sans ouvrir l'éditeur : c'est le geste le plus fréquent.
+async function togglePublished(c: Row, published: boolean) {
+  const full = await $fetch<any>(`/api/admin/communities/${c.id}`)
+  const result = await run(`pub-${c.id}`, () => $fetch(`/api/admin/communities/${c.id}`, {
+    method: 'PUT',
+    // The API replaces every column: send the record back, flipping one flag.
+    body: { ...full, published },
+  }), {
+    success: published ? `« ${c.name} » est publiée` : `« ${c.name} » est repassée en brouillon`,
+    error: 'Le changement a échoué',
+  })
+  if (result) await Promise.all([refresh(), refreshCounts()])
+}
+
+// ── Suppression ─────────────────────────────────────────
 // Cascades over ~15 tables, snapshots included, so it cannot be undone from
 // the app. The dialog offers a JSON export and demands the slug be typed.
-const deleteTarget = ref<any>(null)
+const deleteTarget = ref<Row | null>(null)
 const deleteOpen = ref(false)
 
-function askDelete(c: any) {
+function askDelete(c: Row) {
   deleteTarget.value = c
   deleteOpen.value = true
 }

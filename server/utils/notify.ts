@@ -54,7 +54,7 @@ export interface NotificationInput {
   subject?: string
   /** Secondary detail, e.g. "par Kerboul". Escaped automatically. */
   detail?: string
-  /** Admin path to act on it, e.g. "/admin/submissions". */
+  /** Admin path to act on it, e.g. "/admin/moderation?tab=submissions". */
   path?: string
   emoji?: string
 }

@@ -119,8 +119,9 @@ interface Badge { id: number; name: string; slug: string }
 interface Channel { id: number; login: string; displayName: string; avatarUrl: string | null; isActive: boolean; isFrench: boolean; dcsMinutes30d: number; communities: Badge[] }
 interface Suggestion { communityId: number; communityName: string; communitySlug: string; managed: boolean; streamerId: number; login: string; displayName: string; avatarUrl: string | null; evidence: string }
 
-const { data, pending, refresh } = await useFetch<{ channels: Channel[]; communities: (Badge & { managed: boolean })[] }>('/api/admin/streamers')
-const { data: suggestions, refresh: refreshSuggestions } = await useFetch<Suggestion[]>('/api/admin/streamers/suggestions')
+// Lazy and client-only: the admin is behind a login, and the page shell should appear before the data.
+const { data, pending, refresh } = useFetch<{ channels: Channel[]; communities: (Badge & { managed: boolean })[] }>('/api/admin/streamers', { key: 'admin-streamers', lazy: true, server: false })
+const { data: suggestions, refresh: refreshSuggestions } = useFetch<Suggestion[]>('/api/admin/streamers/suggestions', { key: 'admin-streamer-suggestions', lazy: true, server: false })
 
 const query = ref('')
 const busy = ref<string | null>(null)

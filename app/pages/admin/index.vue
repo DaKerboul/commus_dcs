@@ -1,90 +1,169 @@
 <template>
   <div>
-    <h1 class="text-2xl font-bold text-strong mb-6">Dashboard Admin</h1>
-
-    <!-- Stats grid -->
-    <div v-if="stats" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-      <div class="rounded-xl border border-line surface p-4">
-        <div class="text-2xl font-bold text-strong">{{ stats.totalCommunities }}</div>
-        <div class="text-sm text-gray-500">Communautés</div>
-      </div>
-      <div class="rounded-xl border border-line surface p-4">
-        <div class="text-2xl font-bold text-strong">{{ stats.openRecruitment }}</div>
-        <div class="text-sm text-gray-500">Recrutement ouvert</div>
-      </div>
-      <div class="rounded-xl border border-line surface p-4">
-        <div class="text-2xl font-bold text-strong">{{ stats.totalModules }}</div>
-        <div class="text-sm text-gray-500">Modules</div>
-      </div>
-      <div class="rounded-xl border border-warning-500 dark:border-warning-800 bg-warning-50 dark:bg-warning-950/30 p-4">
-        <div class="text-2xl font-bold text-warning-600 dark:text-warning-400">{{ pendingSubmissions }}</div>
-        <div class="text-sm text-gray-500">En attente</div>
-      </div>
-      <div class="rounded-xl border border-line surface p-4">
-        <div class="text-2xl font-bold text-strong">{{ totalStreamers }}</div>
-        <div class="text-sm text-gray-500">Streameurs</div>
-      </div>
-      <div class="rounded-xl border border-red-500/30 dark:border-red-800 bg-red-50 dark:bg-red-950/30 p-4">
-        <div class="text-2xl font-bold text-red-600 dark:text-red-400">{{ liveStreamers }}</div>
-        <div class="text-sm text-gray-500">En direct</div>
-      </div>
+    <div class="flex items-center justify-between gap-4 flex-wrap mb-6">
+      <h1 class="text-2xl font-bold text-strong">Vue d'ensemble</h1>
+      <UButton icon="i-heroicons-arrow-path" variant="ghost" color="neutral" :loading="pending" @click="refresh()">
+        Rafraîchir
+      </UButton>
     </div>
 
-    <!-- Top types & sizes -->
-    <div v-if="stats" class="grid gap-6 md:grid-cols-2 mb-8">
-      <div class="rounded-xl border border-line surface p-5">
-        <h3 class="font-semibold text-strong mb-3">Par type</h3>
-        <div class="space-y-2">
-          <div v-for="t in stats.communityByType" :key="t.type" class="flex items-center justify-between text-sm">
-            <span class="text-gray-600 dark:text-gray-400">{{ TYPE_LABELS[t.type] || t.type }}</span>
-            <UBadge variant="subtle" color="neutral" size="xs">{{ t.count }}</UBadge>
-          </div>
+    <AdminDataState :pending="false" :error="error" @retry="refresh()">
+      <!-- À traiter -->
+      <section class="mb-8">
+        <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-3">À traiter</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <AdminStatTile
+            label="Soumissions en attente"
+            :value="data?.pending.submissions ?? 0"
+            :loading="!data"
+            :tone="data?.pending.submissions ? 'warning' : 'default'"
+            to="/admin/moderation?tab=submissions"
+          />
+          <AdminStatTile
+            label="Réclamations en attente"
+            :value="data?.pending.claims ?? 0"
+            :loading="!data"
+            :tone="data?.pending.claims ? 'warning' : 'default'"
+            to="/admin/moderation?tab=claims"
+          />
+          <AdminStatTile
+            label="Modifications en attente"
+            :value="data?.pending.revisions ?? 0"
+            :loading="!data"
+            :tone="data?.pending.revisions ? 'warning' : 'default'"
+            to="/admin/moderation?tab=revisions"
+          />
         </div>
-      </div>
-      <div class="rounded-xl border border-line surface p-5">
-        <h3 class="font-semibold text-strong mb-3">Par taille</h3>
-        <div class="space-y-2">
-          <div v-for="s in stats.communityBySize" :key="s.size" class="flex items-center justify-between text-sm">
-            <span class="text-gray-600 dark:text-gray-400">{{ SIZE_LABELS[s.size] || s.size }}</span>
-            <UBadge variant="subtle" color="neutral" size="xs">{{ s.count }}</UBadge>
-          </div>
-        </div>
-      </div>
-    </div>
+      </section>
 
-    <!-- Quick actions -->
-    <h2 class="text-lg font-semibold text-strong mb-4">Actions rapides</h2>
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      <UButton to="/admin/communautes" size="lg" variant="outline" color="neutral" block icon="i-heroicons-users">
-        Communautés
-      </UButton>
-      <UButton to="/admin/submissions" size="lg" variant="outline" :color="pendingSubmissions > 0 ? 'warning' : 'neutral'" block icon="i-heroicons-inbox">
-        Soumissions
-        <UBadge v-if="pendingSubmissions > 0" color="warning" size="xs" class="ml-2">{{ pendingSubmissions }}</UBadge>
-      </UButton>
-      <UButton to="/api/streamers/export?format=csv" external target="_blank" size="lg" variant="outline" color="neutral" block icon="i-heroicons-arrow-down-tray">
-        Export streamers CSV
-      </UButton>
-      <UButton to="/api/communities/export" external target="_blank" size="lg" variant="outline" color="neutral" block icon="i-heroicons-arrow-down-tray">
-        Export communautés JSON
-      </UButton>
-    </div>
+      <!-- Tendances -->
+      <section class="mb-8">
+        <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-3">30 derniers jours</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <AdminStatTile
+            label="Inscriptions"
+            :value="data?.totals.users ?? 0"
+            :loading="!data"
+            :series="values(data?.series.signups)"
+            :delta="sum(data?.series.signups)"
+            to="/admin/comptes"
+          />
+          <AdminStatTile
+            label="Votes"
+            :value="data?.totals.votes ?? 0"
+            :loading="!data"
+            :series="values(data?.series.votes)"
+            :delta="sum(data?.series.votes)"
+            to="/admin/activite?action=vote."
+          />
+          <AdminStatTile
+            label="Soumissions reçues"
+            :value="submissionsTotal"
+            :loading="!data"
+            :series="values(data?.series.submissions)"
+            to="/admin/moderation?tab=submissions&status=all"
+          />
+        </div>
+      </section>
+
+      <div class="grid gap-6 lg:grid-cols-3">
+        <!-- Activité récente -->
+        <section class="lg:col-span-2 rounded-xl border border-line surface p-5">
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="font-semibold text-strong">Activité récente</h2>
+            <NuxtLink to="/admin/activite" class="text-sm text-blue-500 hover:underline">Tout voir</NuxtLink>
+          </div>
+
+          <div v-if="!data" class="space-y-3 py-2">
+            <div v-for="i in 5" :key="i" class="h-9 rounded bg-gray-100 dark:bg-gray-900/50 animate-pulse" />
+          </div>
+          <AdminTimeline v-else-if="data.recentActivity.length" :entries="data.recentActivity" />
+          <div v-else class="py-6 text-center text-sm text-soft">
+            Le journal est vide pour l'instant.
+            <NuxtLink to="/admin/systeme" class="text-blue-500 hover:underline">
+              Reconstituer l'historique existant
+            </NuxtLink>
+          </div>
+        </section>
+
+        <!-- Chiffres clés -->
+        <section class="rounded-xl border border-line surface p-5">
+          <h2 class="font-semibold text-strong mb-3">Chiffres clés</h2>
+          <dl class="space-y-2 text-sm">
+            <div v-for="row in keyFigures" :key="row.label" class="flex items-center justify-between">
+              <dt class="text-gray-600 dark:text-gray-400">{{ row.label }}</dt>
+              <dd class="font-medium tabular-nums text-strong">
+                <NuxtLink v-if="row.to" :to="row.to" class="hover:underline">{{ row.value }}</NuxtLink>
+                <template v-else>{{ row.value }}</template>
+              </dd>
+            </div>
+          </dl>
+
+          <h3 class="font-semibold text-strong mt-6 mb-3">Exports</h3>
+          <div class="flex flex-col gap-2">
+            <UButton to="/api/streamers/export?format=csv" external target="_blank" variant="outline" color="neutral" size="sm" icon="i-heroicons-arrow-down-tray">
+              Streameurs (CSV)
+            </UButton>
+            <UButton to="/api/communities/export" external target="_blank" variant="outline" color="neutral" size="sm" icon="i-heroicons-arrow-down-tray">
+              Communautés (JSON)
+            </UButton>
+            <UButton to="/api/admin/activity/export" external target="_blank" variant="outline" color="neutral" size="sm" icon="i-heroicons-arrow-down-tray">
+              Journal d'activité (CSV)
+            </UButton>
+          </div>
+        </section>
+      </div>
+    </AdminDataState>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { StatsData } from '#shared/types'
-import { TYPE_LABELS, SIZE_LABELS } from '#shared/types'
+import type { TimelineEntry } from '~/components/admin/Timeline.vue'
 
 definePageMeta({ layout: 'admin' })
-useHead({ title: 'Admin — Commus DCS FR' })
+useHead({ title: 'Vue d’ensemble — Admin' })
 
-const { data: stats } = await useFetch<StatsData>('/api/stats')
-const { data: subs } = await useFetch<any[]>('/api/admin/submissions')
-const { data: liveData } = await useFetch<{ count: number }>('/api/streamers/live')
-const { data: streamersData } = await useFetch<{ data: any[] }>('/api/streamers')
+interface Point { day: string, n: number }
+interface Overview {
+  pending: { submissions: number, claims: number, revisions: number }
+  totals: {
+    publishedCommunities: number
+    unpublishedCommunities: number
+    users: number
+    blockedUsers: number
+    votes: number
+    favorites: number
+    liveStreamers: number
+  }
+  series: { signups: Point[], votes: Point[], submissions: Point[] }
+  recentActivity: TimelineEntry[]
+}
 
-const pendingSubmissions = computed(() => subs.value?.filter(s => s.status === 'pending').length || 0)
-const liveStreamers = computed(() => liveData.value?.count || 0)
-const totalStreamers = computed(() => streamersData.value?.data?.length || 0)
+// One request instead of five sequential ones; the page shell renders first.
+const { data, pending, error, refresh } = useFetch<Overview>('/api/admin/overview', {
+  key: 'admin-overview',
+  lazy: true,
+  server: false,
+})
+
+const values = (series?: Point[]) => series?.map(p => p.n) ?? []
+const sum = (series?: Point[]) => (series ? series.reduce((total, p) => total + p.n, 0) : undefined)
+const submissionsTotal = computed(() => sum(data.value?.series.submissions) ?? 0)
+
+const keyFigures = computed(() => {
+  const t = data.value?.totals
+  if (!t) return []
+  return [
+    { label: 'Fiches publiées', value: t.publishedCommunities },
+    { label: 'Fiches non publiées', value: t.unpublishedCommunities, to: '/admin/communautes?published=no' },
+    { label: 'Comptes', value: t.users, to: '/admin/comptes' },
+    { label: 'Comptes suspendus', value: t.blockedUsers, to: '/admin/comptes?blocked=yes' },
+    { label: 'Favoris', value: t.favorites },
+    { label: 'Streameurs en direct', value: t.liveStreamers, to: '/admin/streameurs' },
+  ]
+})
+
+// Counters shown in the sidebar follow every moderation action.
+const { refresh: refreshCounts } = useAdminCounts()
+onMounted(() => refreshCounts())
 </script>
