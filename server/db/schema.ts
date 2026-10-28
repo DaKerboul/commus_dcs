@@ -215,6 +215,7 @@ export const communityVotes = pgTable('community_votes', {
   communityLookup: index('idx_community_votes_community').on(table.communityId),
   ipCreatedLookup: index('idx_community_votes_ip_created').on(table.ipHash, table.createdAt),
   fingerprintCreatedLookup: index('idx_community_votes_fingerprint_created').on(table.fingerprintHash, table.createdAt),
+  byCreated: index('idx_community_votes_created').on(table.createdAt),
 }))
 
 export const submissions = pgTable('submissions', {
@@ -266,7 +267,13 @@ export const submissions = pgTable('submissions', {
 
   // Set when the submitter was signed in — they become owner on approval.
   submittedByUserId: integer('submitted_by_user_id').references(() => users.id, { onDelete: 'set null' }),
-})
+
+  // Who decided and when (NULL on rows decided before the audit log existed).
+  reviewedAt: timestamp('reviewed_at'),
+  reviewedBy: varchar('reviewed_by', { length: 100 }),
+}, table => ({
+  byStatusCreated: index('idx_submissions_status_created').on(table.status, table.createdAt),
+}))
 
 // ── Accounts & community management ────────────────────
 
@@ -279,7 +286,10 @@ export const users = pgTable('users', {
   isBlocked: boolean('is_blocked').notNull().default(false),
   lastLoginAt: timestamp('last_login_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
-})
+}, table => ({
+  byLastLogin: index('idx_users_last_login').on(table.lastLoginAt),
+  byCreated: index('idx_users_created').on(table.createdAt),
+}))
 
 /** Binds a user to a community they are allowed to manage. */
 export const communityMembers = pgTable('community_members', {
@@ -304,6 +314,7 @@ export const userFavorites = pgTable('user_favorites', {
 }, table => ({
   uniqueFavorite: uniqueIndex('idx_user_favorites_user_community').on(table.userId, table.communityId),
   byUser: index('idx_user_favorites_user').on(table.userId),
+  byCreated: index('idx_user_favorites_created').on(table.createdAt),
 }))
 
 /** "I manage this community" requests, reviewed by the admin. */
@@ -660,4 +671,35 @@ export const streamerDailyStatsRelations = relations(streamerDailyStats, ({ one 
 
 export const streamerDcsDaysRelations = relations(streamerDcsDays, ({ one }) => ({
   streamer: one(streamers, { fields: [streamerDcsDays.streamerId], references: [streamers.id] }),
+}))
+
+// ── Admin audit log ────────────────────────────────────
+
+/**
+ * Append-only journal of admin/system actions. `communityId` has no foreign
+ * key on purpose: the trail of a deleted community must outlive it.
+ * Rows with a `backfillKey` were rebuilt from older timestamps
+ * (`approximate` when the date is only an upper bound).
+ */
+export const auditLog = pgTable('audit_log', {
+  id: bigserial('id', { mode: 'number' }).primaryKey(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  actorType: varchar('actor_type', { length: 16 }).notNull().default('admin'),
+  actorUserId: integer('actor_user_id').references(() => users.id, { onDelete: 'set null' }),
+  actorLabel: varchar('actor_label', { length: 100 }),
+  action: varchar('action', { length: 64 }).notNull(),
+  entityType: varchar('entity_type', { length: 32 }).notNull(),
+  entityId: varchar('entity_id', { length: 64 }),
+  communityId: integer('community_id'),
+  summary: text('summary'),
+  metadata: jsonb('metadata').$type<Record<string, unknown>>(),
+  backfillKey: varchar('backfill_key', { length: 128 }),
+  approximate: boolean('approximate').notNull().default(false),
+}, table => ({
+  byCreated: index('idx_audit_log_created').on(table.createdAt),
+  byEntity: index('idx_audit_log_entity').on(table.entityType, table.entityId),
+  byAction: index('idx_audit_log_action').on(table.action),
+  byActorUser: index('idx_audit_log_actor_user').on(table.actorUserId),
+  byCommunity: index('idx_audit_log_community').on(table.communityId),
+  uniqueBackfill: uniqueIndex('idx_audit_log_backfill_key').on(table.backfillKey),
 }))
