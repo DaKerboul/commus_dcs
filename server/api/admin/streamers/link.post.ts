@@ -33,6 +33,14 @@ export default defineEventHandler(async (event) => {
       })
   }
 
+  await recordAudit(event, {
+    action: `streamer.${action}`,
+    entityType: 'streamer',
+    entityId: streamerId,
+    communityId,
+    summary: `Chaîne #${streamerId} ${action === 'link' ? 'liée à' : action === 'unlink' ? 'déliée de' : 'écartée pour'} la fiche #${communityId}`,
+  })
+
   console.log(JSON.stringify({ event: 'streamer.link', action, communityId, streamerId }))
   return { ok: true }
 })

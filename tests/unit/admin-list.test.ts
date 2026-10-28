@@ -68,3 +68,13 @@ describe('toPage', () => {
     })
   })
 })
+
+describe('correlatedCount', () => {
+  it('qualifie la colonne extérieure pour que la jointure ne se compare pas à elle-même', async () => {
+    const { correlatedCount } = await import('../../server/utils/admin-list')
+    const text = JSON.stringify(correlatedCount('community_votes', 'community_id', 'communities').queryChunks)
+    expect(text).toContain('\\"community_votes\\"')
+    expect(text).toContain('x.')
+    expect(text).toContain('\\"communities\\".\\"id\\"')
+  })
+})

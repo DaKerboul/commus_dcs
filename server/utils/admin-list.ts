@@ -1,3 +1,5 @@
+import { sql } from 'drizzle-orm'
+
 /**
  * Query parsing shared by every paginated admin list.
  *
@@ -65,6 +67,18 @@ export function parseListQuery<S extends string>(
 /** `%` and `_` are LIKE wildcards: escape them so a search for "50%" stays literal. */
 export function likePattern(term: string): string {
   return `%${term.replace(/[\\%_]/g, m => `\\${m}`)}%`
+}
+
+/**
+ * `(select count(*) from <table> x where x.<fk> = <outer>)`.
+ *
+ * Written with explicit names because Drizzle prints a column without its table
+ * when the query has a single table, so `${votes.communityId} = ${communities.id}`
+ * inside a sub-select compared the inner table with itself and always counted 0.
+ * Identifiers are constants from the callers, never user input.
+ */
+export function correlatedCount(table: string, foreignKey: string, outerTable: string, outerColumn = 'id') {
+  return sql<number>`(select count(*)::int from ${sql.raw(`"${table}"`)} x where x.${sql.raw(`"${foreignKey}"`)} = ${sql.raw(`"${outerTable}"."${outerColumn}"`)})`
 }
 
 export function toPage<T>(items: T[], total: number, list: Pick<ListQuery, 'page' | 'limit'>): Page<T> {

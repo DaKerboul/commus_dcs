@@ -55,6 +55,15 @@ export default defineEventHandler(async (event) => {
   const [community] = await db.select({ id: communities.id, slug: communities.slug, name: communities.name })
     .from(communities).where(eq(communities.id, invite.communityId)).limit(1)
 
+  await recordAudit(event, {
+    action: 'invite.used',
+    entityType: 'invite',
+    entityId: invite.id,
+    communityId: invite.communityId,
+    summary: `Invitation utilisée pour « ${community?.name ?? `#${invite.communityId}`} »`,
+    metadata: { role: invite.grantsRole },
+  })
+
   console.log(JSON.stringify({
     event: 'community.invite',
     result: 'redeemed',

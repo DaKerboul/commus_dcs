@@ -32,6 +32,10 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Invalid ID' })
   }
 
+  const [before] = await db
+    .select({ name: communities.name, slug: communities.slug, published: communities.published })
+    .from(communities).where(eq(communities.id, id)).limit(1)
+
   await snapshotCommunity(id, null)
 
   const [community] = await db.update(communities).set({
@@ -73,6 +77,22 @@ export default defineEventHandler(async (event) => {
   }
 
   await syncCommunityRelations(id, body, relationsPresentIn(body))
+
+  const changed: Record<string, unknown> = {}
+  if (before && before.name !== community.name) changed.name = { from: before.name, to: community.name }
+  if (before && before.slug !== community.slug) changed.slug = { from: before.slug, to: community.slug }
+  if (before && before.published !== community.published) changed.published = { from: before.published, to: community.published }
+
+  await recordAudit(event, {
+    action: before && before.published !== community.published
+      ? (community.published ? 'community.published' : 'community.unpublished')
+      : 'community.updated',
+    entityType: 'community',
+    entityId: id,
+    communityId: id,
+    summary: `Fiche « ${community.name} » modifiée`,
+    metadata: changed,
+  })
 
   return community
 })

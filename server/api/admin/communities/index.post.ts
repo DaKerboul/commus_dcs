@@ -53,5 +53,14 @@ export default defineEventHandler(async (event) => {
 
   await syncCommunityRelations(community.id, body, relationsPresentIn(body))
 
+  await recordAudit(event, {
+    action: 'community.created',
+    entityType: 'community',
+    entityId: community.id,
+    communityId: community.id,
+    summary: `Fiche « ${community.name} » créée`,
+    metadata: { slug: community.slug, published: community.published },
+  })
+
   return community
 })

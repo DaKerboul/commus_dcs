@@ -57,5 +57,14 @@ export default defineEventHandler(async (event) => {
     ))
     .returning()
 
+  await recordAudit(event, {
+    action: 'member.role_changed',
+    entityType: 'member',
+    entityId: targetUserId,
+    communityId: id,
+    summary: `Compte #${targetUserId} : ${target.role} → ${role} sur la fiche #${id}`,
+    metadata: { from: target.role, to: role },
+  })
+
   return updated
 })

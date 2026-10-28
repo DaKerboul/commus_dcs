@@ -40,12 +40,27 @@ const oidcHandler = defineOAuthOidcEventHandler({
         username,
         reason: 'not in admin group',
       }))
+      await recordAudit(event, {
+        action: 'admin.login_denied',
+        entityType: 'session',
+        summary: `Accès admin refusé à ${username || 'un compte Authelia'}`,
+        metadata: { via: 'authelia', username },
+        actor: { type: 'system', label: username.slice(0, 100) || 'inconnu', userId: null },
+      })
       return sendRedirect(event, '/admin/login?erreur=acces-refuse')
     }
 
     await setUserSession(event, {
       user: { role: 'admin', name: 'admin', via: 'authelia', username },
     }, { maxAge: 8 * 60 * 60 })
+
+    await recordAudit(event, {
+      action: 'admin.login',
+      entityType: 'session',
+      summary: `Connexion admin de ${username} via Authelia`,
+      metadata: { via: 'authelia' },
+      actor: { type: 'admin', label: username.slice(0, 100), userId: null },
+    })
 
     console.log(JSON.stringify({ event: 'auth.authelia', result: 'success', username }))
 
