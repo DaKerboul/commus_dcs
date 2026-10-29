@@ -1,5 +1,6 @@
 import { and, asc, eq } from 'drizzle-orm'
-import { communities, communityImages, communityRevisions } from '#server/db/schema'
+import { communities, communityImages, communityRevisions, users } from '#server/db/schema'
+import { revisionChangeLines, revisionWarnings } from '#server/utils/notify-content'
 
 /**
  * Sensitive fields go through admin review instead of publishing directly.
@@ -125,11 +126,16 @@ export async function queueSensitiveChanges(
       createdAt: new Date(),
     }).where(eq(communityRevisions.id, existing.id))
   } else {
-    await db.insert(communityRevisions).values({
+    const [created] = await db.insert(communityRevisions).values({
       communityId,
       userId,
       fieldsPatch: patch,
-    })
+    }).returning({ id: communityRevisions.id })
+
+    const [author] = userId
+      ? await db.select({ name: users.discordUsername, createdAt: users.createdAt })
+        .from(users).where(eq(users.id, userId)).limit(1)
+      : []
 
     // Only on creation. A manager tweaking the same pending revision several
     // times in a row should not produce a notification per save.
@@ -137,8 +143,12 @@ export async function queueSensitiveChanges(
       emoji: '✏️',
       title: 'Modification à valider',
       subject: current.name,
-      detail: pendingFields.map(f => SENSITIVE_FIELD_LABELS[f] ?? f).join(', '),
-      path: '/admin/moderation?tab=revisions',
+      detail: author ? `par ${author.name}` : undefined,
+      // The actual before → after, not just the field names.
+      lines: revisionChangeLines(patch, published),
+      warnings: revisionWarnings(patch, author?.createdAt ?? null),
+      withQueue: true,
+      path: `/admin/moderation?tab=revisions${created ? `&open=${created.id}` : ''}`,
     })
   }
 

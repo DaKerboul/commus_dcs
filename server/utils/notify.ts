@@ -11,6 +11,10 @@
  * silently swallow the approval callbacks meant for it.
  */
 
+import { eq, sql } from 'drizzle-orm'
+import { claimRequests, communityRevisions, submissions } from '#server/db/schema'
+import { queueLine, type QueueCounts } from '#server/utils/notify-content'
+
 const TELEGRAM_TIMEOUT_MS = 5_000
 
 /** Telegram allows ~20 messages per minute to one chat; stay well under. */
@@ -57,6 +61,17 @@ export interface NotificationInput {
   /** Admin path to act on it, e.g. "/admin/moderation?tab=submissions". */
   path?: string
   emoji?: string
+  /** Context lines (one fact each), escaped automatically. */
+  lines?: string[]
+  /** Red flags worth a look before deciding, shown with ⚠️. Escaped automatically. */
+  warnings?: string[]
+  /**
+   * Delivered without sound or vibration. For what is worth knowing but needs
+   * no action (a new account, a detected streamer): only moderation items ring.
+   */
+  silent?: boolean
+  /** Append how much is waiting in the three moderation queues. */
+  withQueue?: boolean
 }
 
 /**
@@ -66,7 +81,7 @@ export interface NotificationInput {
  * Mirrors the Gjallarhorn convention: emoji, service in bold, em dash before
  * the description, middle dot between fields.
  */
-export function formatNotification(input: NotificationInput, siteUrl: string): string {
+export function formatNotification(input: NotificationInput, siteUrl: string, queue: string | null = null): string {
   const lines = [`${input.emoji ?? '🔔'} *Commus* — ${escapeMarkdown(input.title)}`]
 
   const second = [
@@ -75,9 +90,33 @@ export function formatNotification(input: NotificationInput, siteUrl: string): s
   ].filter(Boolean).join(' · ')
 
   if (second) lines.push(second)
+  for (const line of input.lines ?? []) {
+    if (line) lines.push(escapeMarkdown(line))
+  }
+  for (const warning of input.warnings ?? []) {
+    if (warning) lines.push(`⚠️ ${escapeMarkdown(warning)}`)
+  }
+  if (queue) lines.push(`_${escapeMarkdown(queue)}_`)
   if (input.path) lines.push(`→ ${siteUrl.replace(/\/$/, '')}${input.path}`)
 
   return lines.join('\n')
+}
+
+/** Current backlog, for the queue line. Null on any failure: never blocks a notification. */
+async function pendingCounts(): Promise<QueueCounts | null> {
+  try {
+    const db = useDB()
+    const n = sql<number>`count(*)::int`
+    const [[s], [c], [r]] = await Promise.all([
+      db.select({ n }).from(submissions).where(eq(submissions.status, 'pending')),
+      db.select({ n }).from(claimRequests).where(eq(claimRequests.status, 'pending')),
+      db.select({ n }).from(communityRevisions).where(eq(communityRevisions.status, 'pending')),
+    ])
+    return { submissions: s?.n ?? 0, claims: c?.n ?? 0, revisions: r?.n ?? 0 }
+  }
+  catch {
+    return null
+  }
 }
 
 /**
@@ -95,6 +134,7 @@ export async function notifyAdmin(input: NotificationInput): Promise<void> {
     }
 
     const { token, chatId, siteUrl } = getNotifyConfig()
+    const counts = input.withQueue ? await pendingCounts() : null
 
     // Without a timeout a hung request would keep the handler alive.
     const controller = new AbortController()
@@ -106,9 +146,10 @@ export async function notifyAdmin(input: NotificationInput): Promise<void> {
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
           chat_id: chatId,
-          text: formatNotification(input, siteUrl),
+          text: formatNotification(input, siteUrl, counts ? queueLine(counts) : null),
           parse_mode: 'Markdown',
           disable_web_page_preview: true,
+          disable_notification: !!input.silent,
         }),
         signal: controller.signal,
       })

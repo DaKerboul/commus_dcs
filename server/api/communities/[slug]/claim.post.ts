@@ -1,5 +1,6 @@
-import { and, eq } from 'drizzle-orm'
-import { claimRequests, communities } from '#server/db/schema'
+import { and, eq, ne, sql } from 'drizzle-orm'
+import { claimRequests, communities, communityMembers } from '#server/db/schema'
+import { ageLabel, claimWarnings, excerpt } from '#server/utils/notify-content'
 
 /**
  * "I manage this community" request. Reviewed by the admin, who cross-checks
@@ -88,12 +89,32 @@ export default defineEventHandler(async (event) => {
     userName: user.discordUsername,
   }))
 
+  // What the admin checks before handing a page over, sent with the request.
+  const [[owners], [competing]] = await Promise.all([
+    db.select({ n: sql<number>`count(*)::int` }).from(communityMembers)
+      .where(and(eq(communityMembers.communityId, community.id), eq(communityMembers.role, 'owner'))),
+    db.select({ n: sql<number>`count(*)::int` }).from(claimRequests)
+      .where(and(
+        eq(claimRequests.communityId, community.id),
+        eq(claimRequests.status, 'pending'),
+        ne(claimRequests.userId, user.id),
+      )),
+  ])
+
   notifyAdminAsync({
     emoji: '🙋',
     title: existingRequest ? 'Réclamation rouverte' : 'Réclamation de fiche',
     subject: community.name,
     detail: `par ${user.discordUsername}`,
-    path: '/admin/moderation?tab=claims',
+    lines: [`« ${excerpt(message, 220)} »`, `Compte créé ${ageLabel(user.createdAt)}`],
+    warnings: claimWarnings({
+      accountCreatedAt: user.createdAt,
+      ownerCount: owners?.n ?? 0,
+      competingClaims: competing?.n ?? 0,
+      reopened: !!existingRequest,
+    }),
+    withQueue: true,
+    path: `/admin/moderation?tab=claims&open=${claim.id}`,
   })
 
   return { ok: true, status: claim.status }
