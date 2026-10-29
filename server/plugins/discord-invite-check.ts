@@ -67,7 +67,9 @@ export async function checkDiscordInvites(): Promise<{ checked: number, newlyDea
       title: newlyDead.length > 1 ? `${newlyDead.length} liens Discord morts` : 'Lien Discord mort',
       subject: newlyDead.join(', '),
       detail: 'bouton Discord masqué sur la fiche',
-      path: '/admin',
+      // Already handled automatically (the button is hidden): a heads-up, not an alarm.
+      silent: true,
+      path: '/admin/communautes',
     })
   }
 

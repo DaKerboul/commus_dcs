@@ -1,4 +1,8 @@
+import { sql } from 'drizzle-orm'
+import { SIZE_LABELS, TYPE_LABELS } from '#shared/types'
+import { submissionLines, submissionWarnings } from '#server/utils/notify-content'
 import {
+  communities,
   communityTypeEnum,
   eventFrequencyEnum,
   recruitmentStatusEnum,
@@ -110,12 +114,29 @@ export default defineEventHandler(async (event) => {
     userId: user.id,
   }))
 
+  // A submission for a page that already exists is usually a claim in disguise.
+  const [duplicate] = await db.select({ name: communities.name }).from(communities)
+    .where(sql`lower(${communities.name}) = lower(${communityName})`)
+    .limit(1)
+
+  const facts = {
+    typeLabel: submission.communityType ? TYPE_LABELS[submission.communityType] ?? null : null,
+    sizeLabel: submission.sizeCategory ? SIZE_LABELS[submission.sizeCategory] ?? null : null,
+    shortDescription: submission.shortDescription,
+    hasDiscord: !!submission.discordUrl,
+    imageCount: submission.images?.length ?? 0,
+    moduleCount: submission.moduleNames?.length ?? 0,
+  }
+
   notifyAdminAsync({
     emoji: '📥',
     title: 'Nouvelle soumission',
     subject: communityName,
     detail: `par ${user.discordUsername}`,
-    path: '/admin/moderation?tab=submissions',
+    lines: submissionLines(facts),
+    warnings: submissionWarnings(facts, duplicate?.name ?? null),
+    withQueue: true,
+    path: `/admin/moderation?tab=submissions&open=${submission.id}`,
   })
 
   return submission

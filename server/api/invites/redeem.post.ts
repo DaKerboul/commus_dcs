@@ -77,7 +77,9 @@ export default defineEventHandler(async (event) => {
     title: 'Invitation acceptée',
     subject: community?.name,
     detail: `${user.discordUsername} · ${invite.grantsRole === 'owner' ? 'responsable' : 'éditeur'}`,
-    path: `/communautes/${community?.slug ?? ''}`,
+    // Granted by the page's own owner: informational only.
+    silent: true,
+    path: `/admin/comptes?open=${user.id}`,
   })
 
   return { ok: true, community, role: invite.grantsRole }

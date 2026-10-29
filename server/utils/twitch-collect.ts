@@ -106,7 +106,9 @@ async function discoverFrenchStreamers(streams: TwitchStream[]): Promise<number>
       title: created > 1 ? `${created} nouveaux streameurs` : 'Nouveau streameur',
       subject: french.slice(0, 5).map(s => s.user_login).join(', '),
       detail: created > 5 ? `et ${created - 5} autre(s)` : undefined,
-      path: '/streamers',
+      silent: true,
+      // The admin page, where a channel can be linked to its community.
+      path: '/admin/streameurs',
     })
   }
 

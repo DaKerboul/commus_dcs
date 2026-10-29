@@ -355,6 +355,31 @@ function open(item: any) {
   detailOpen.value = true
 }
 
+// `?open=<id>` (the link in a Telegram notification) lands on the item itself.
+const route = useRoute()
+const router = useRouter()
+const requestedId = Number.parseInt(String(route.query.open ?? ''), 10)
+let lookups = 0
+if (Number.isInteger(requestedId) && requestedId > 0) {
+  watch(data, () => {
+    if (!data.value || lookups > 1) return
+    lookups++
+    const target = items.value.find(i => i.id === requestedId)
+    if (target) {
+      lookups = 2
+      open(target)
+    }
+    // Already decided since the notification: look among every status.
+    else if (params.status !== 'all') setFilter('status', 'all')
+  }, { immediate: true })
+}
+watch(detailOpen, (isOpen) => {
+  if (!isOpen && route.query.open) {
+    const { open: _drop, ...rest } = route.query
+    router.replace({ query: rest })
+  }
+})
+
 function step(direction: 1 | -1) {
   const next = items.value[currentIndex.value + direction]
   if (next) open(next)
